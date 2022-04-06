@@ -84,9 +84,15 @@ func (b *businessUnitController) UpdateBusinessUnit(c *gin.Context) {
 		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, res)
 	} else {
-		result := b.businessUnitService.UpdateBusinessUnit(newData)
-		response := helper.BuildResponse(true, "OK", result)
-		c.JSON(http.StatusOK, response)
+		if err := c.ShouldBindJSON(&newData); err != nil {
+			response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusBadRequest, response)
+			// return
+		} else {
+			result := b.businessUnitService.UpdateBusinessUnit(newData)
+			response := helper.BuildResponse(true, "OK", result)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 

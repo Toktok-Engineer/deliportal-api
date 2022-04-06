@@ -41,6 +41,6 @@ func (db *businessUnitConnection) InsertBusinessUnit(businessUnit model.Business
 }
 
 func (db *businessUnitConnection) UpdateBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit {
-	db.connection.Save(&businessUnit)
+	db.connection.Where("id = ?", businessUnit.ID).Updates(&businessUnit)
 	return businessUnit
 }
