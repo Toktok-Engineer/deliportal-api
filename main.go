@@ -17,17 +17,23 @@ var (
 	divisionRepository     repository.DivisionRepository     = repository.NewDivisionRepository(db)
 	departmentRepository   repository.DepartmentRepository   = repository.NewDepartmentRepository(db)
 	sectionRepository      repository.SectionRepository      = repository.NewSectionRepository(db)
+	positionRepository     repository.PositionRepository     = repository.NewPositionRepository(db)
+	locationRepository     repository.LocationRepository     = repository.NewLocationRepository(db)
 	businessUnitRepository repository.BusinessUnitRepository = repository.NewBusinessUnitRepository(db)
 	authService            service.AuthService               = service.NewAuthService(userRepository)
 	divisionService        service.DivisionService           = service.NewDivisionService(divisionRepository)
 	departmentService      service.DepartmentService         = service.NewDepartmentService(departmentRepository)
 	sectionService         service.SectionService            = service.NewSectionService(sectionRepository)
+	positionService        service.PositionService           = service.NewPositionService(positionRepository)
+	locationService        service.LocationService           = service.NewLocationService(locationRepository)
 	businessUnitService    service.BusinessUnitService       = service.NewBusinessUnitService(businessUnitRepository)
 	jwtService             service.JWTService                = service.NewJWTService()
 	authController         controller.AuthController         = controller.NewAuthController(authService, jwtService)
 	divisionController     controller.DivisionController     = controller.NewDivisionController(divisionService, jwtService)
 	departmentController   controller.DepartmentController   = controller.NewDepartmentController(departmentService, jwtService)
 	sectionController      controller.SectionController      = controller.NewSectionController(sectionService, jwtService)
+	positionController     controller.PositionController     = controller.NewPositionController(positionService, jwtService)
+	locationController     controller.LocationController     = controller.NewLocationController(locationService, jwtService)
 	businessUnitController controller.BusinessUnitController = controller.NewBusinessUnitController(businessUnitService, jwtService)
 )
 
@@ -72,6 +78,26 @@ func main() {
 		sectionGroup.POST("/", sectionController.InsertSection)
 		sectionGroup.PUT("/:id", sectionController.UpdateSection)
 		sectionGroup.DELETE("/:id", sectionController.DeleteSection)
+	}
+
+	positionGroup := r.Group("/api/position", middleware.AuthorizeJWT(jwtService))
+	{
+		positionGroup.GET("/", positionController.FindPositions)
+		positionGroup.GET("/:id", positionController.FindPositionById)
+		positionGroup.GET("/exc/:id", positionController.FindExcPosition)
+		positionGroup.POST("/", positionController.InsertPosition)
+		positionGroup.PUT("/:id", positionController.UpdatePosition)
+		positionGroup.DELETE("/:id", positionController.DeletePosition)
+	}
+
+	locationGroup := r.Group("/api/location", middleware.AuthorizeJWT(jwtService))
+	{
+		locationGroup.GET("/", locationController.FindLocations)
+		locationGroup.GET("/:id", locationController.FindLocationById)
+		locationGroup.GET("/exc/:id", locationController.FindExcLocation)
+		locationGroup.POST("/", locationController.InsertLocation)
+		locationGroup.PUT("/:id", locationController.UpdateLocation)
+		locationGroup.DELETE("/:id", locationController.DeleteLocation)
 	}
 
 	businessUnitGroup := r.Group("/api/businessunit", middleware.AuthorizeJWT(jwtService))
