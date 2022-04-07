@@ -9,12 +9,12 @@ import (
 )
 
 type DivisionService interface {
-	FindDivisions() []model.Division
-	FindDivisionById(id uint) model.Division
-	FindExcDivision(id uint) []model.Division
-	InsertDivision(division model.CreateDivisionParameter) model.Division
-	UpdateDivision(division model.Division, id uint) model.Division
-	DeleteDivision(division model.Division, id uint) model.Division
+	FindDivisions() (divisionOutput []model.Division, err error)
+	FindDivisionById(id uint) (divisionOutput model.Division, err error)
+	FindExcDivision(id uint) (divisionOutput []model.Division, err error)
+	InsertDivision(division model.CreateDivisionParameter) (divisionOutput model.Division, err error)
+	UpdateDivision(division model.Division, id uint) (divisionOutput model.Division, err error)
+	DeleteDivision(division model.Division, id uint) (divisionOutput model.Division, err error)
 }
 
 type divisionService struct {
@@ -27,44 +27,47 @@ func NewDivisionService(divisionRep repository.DivisionRepository) DivisionServi
 	}
 }
 
-func (service *divisionService) FindDivisions() []model.Division {
-	return service.divisionRepository.FindDivisions()
+func (service *divisionService) FindDivisions() (divisionOutput []model.Division, err error) {
+	res, err := service.divisionRepository.FindDivisions()
+	return res, err
 }
 
-func (service *divisionService) FindDivisionById(id uint) model.Division {
-	return service.divisionRepository.FindDivisionById(id)
+func (service *divisionService) FindDivisionById(id uint) (divisionOutput model.Division, err error) {
+	res, err := service.divisionRepository.FindDivisionById(id)
+	return res, err
 }
 
-func (service *divisionService) FindExcDivision(id uint) []model.Division {
-	return service.divisionRepository.FindExcDivision(id)
+func (service *divisionService) FindExcDivision(id uint) (divisionOutput []model.Division, err error) {
+	res, err := service.divisionRepository.FindExcDivision(id)
+	return res, err
 }
 
-func (service *divisionService) InsertDivision(division model.CreateDivisionParameter) model.Division {
+func (service *divisionService) InsertDivision(division model.CreateDivisionParameter) (divisionOutput model.Division, err error) {
 	newDivision := model.Division{}
-	err := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
+	err1 := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
+	if err1 != nil {
+		log.Fatalf("Failed map %v", err1)
 	}
-	res := service.divisionRepository.InsertDivision(newDivision)
-	return res
+	res, err := service.divisionRepository.InsertDivision(newDivision)
+	return res, err
 }
 
-func (service *divisionService) UpdateDivision(division model.Division, id uint) model.Division {
+func (service *divisionService) UpdateDivision(division model.Division, id uint) (divisionOutput model.Division, err error) {
 	newDivision := model.Division{}
-	err := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
+	err1 := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
+	if err1 != nil {
+		log.Fatalf("Failed map %v", err1)
 	}
-	res := service.divisionRepository.UpdateDivision(newDivision, id)
-	return res
+	res, err := service.divisionRepository.UpdateDivision(newDivision, id)
+	return res, err
 }
 
-func (service *divisionService) DeleteDivision(division model.Division, id uint) model.Division {
+func (service *divisionService) DeleteDivision(division model.Division, id uint) (divisionOutput model.Division, err error) {
 	newDivision := model.Division{}
-	err := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
+	err1 := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
+	if err1 != nil {
+		log.Fatalf("Failed map %v", err1)
 	}
-	res := service.divisionRepository.UpdateDivision(newDivision, id)
-	return res
+	res, err := service.divisionRepository.UpdateDivision(newDivision, id)
+	return res, err
 }
