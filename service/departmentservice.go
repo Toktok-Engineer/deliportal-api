@@ -9,13 +9,13 @@ import (
 )
 
 type DepartmentService interface {
-	FindDepartments() []model.SelectDepartmentParameter
-	FindDepartmentById(id uint) model.SelectDepartmentParameter
-	FindExcDepartment(divId uint, id uint) []model.SelectDepartmentParameter
-	FindDepartmentByDivId(divId uint) []model.SelectDepartmentParameter
-	InsertDepartment(department model.CreateDepartmentParameter) model.Department
-	UpdateDepartment(department model.Department, id uint) model.Department
-	DeleteDepartment(department model.Department, id uint) model.Department
+	FindDepartments() (departmentOutput []model.SelectDepartmentParameter, err error)
+	FindDepartmentById(id uint) (departmentOutput model.SelectDepartmentParameter, err error)
+	FindExcDepartment(divId uint, id uint) (departmentOutput []model.SelectDepartmentParameter, err error)
+	FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error)
+	InsertDepartment(department model.CreateDepartmentParameter) (departmentOutput model.Department, err error)
+	UpdateDepartment(department model.Department, id uint) (departmentOutput model.Department, err error)
+	DeleteDepartment(department model.Department, id uint) (departmentOutput model.Department, err error)
 }
 
 type departmentService struct {
@@ -28,48 +28,52 @@ func NewDepartmentService(departmentRep repository.DepartmentRepository) Departm
 	}
 }
 
-func (service *departmentService) FindDepartments() []model.SelectDepartmentParameter {
-	return service.departmentRepository.FindDepartments()
+func (service *departmentService) FindDepartments() (departmentOutput []model.SelectDepartmentParameter, err error) {
+	res, err := service.departmentRepository.FindDepartments()
+	return res, err
 }
 
-func (service *departmentService) FindDepartmentById(id uint) model.SelectDepartmentParameter {
-	return service.departmentRepository.FindDepartmentById(id)
+func (service *departmentService) FindDepartmentById(id uint) (departmentOutput model.SelectDepartmentParameter, err error) {
+	res, err := service.departmentRepository.FindDepartmentById(id)
+	return res, err
 }
 
-func (service *departmentService) FindExcDepartment(divId uint, id uint) []model.SelectDepartmentParameter {
-	return service.departmentRepository.FindExcDepartment(divId, id)
+func (service *departmentService) FindExcDepartment(divId uint, id uint) (departmentOutput []model.SelectDepartmentParameter, err error) {
+	res, err := service.departmentRepository.FindExcDepartment(divId, id)
+	return res, err
 }
 
-func (service *departmentService) FindDepartmentByDivId(divId uint) []model.SelectDepartmentParameter {
-	return service.departmentRepository.FindDepartmentByDivId(divId)
+func (service *departmentService) FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error) {
+	res, err := service.departmentRepository.FindDepartmentByDivId(divId)
+	return res, err
 }
 
-func (service *departmentService) InsertDepartment(department model.CreateDepartmentParameter) model.Department {
+func (service *departmentService) InsertDepartment(department model.CreateDepartmentParameter) (departmentOutput model.Department, err error) {
 	newDepartment := model.Department{}
-	err := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
+	err1 := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
 	if err != nil {
-		log.Fatalf("Failed map %v", err)
+		log.Fatalf("Failed map %v", err1)
 	}
-	res := service.departmentRepository.InsertDepartment(newDepartment)
-	return res
+	res, err := service.departmentRepository.InsertDepartment(newDepartment)
+	return res, err
 }
 
-func (service *departmentService) UpdateDepartment(department model.Department, id uint) model.Department {
+func (service *departmentService) UpdateDepartment(department model.Department, id uint) (departmentOutput model.Department, err error) {
 	newDepartment := model.Department{}
-	err := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
+	err1 := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
 	if err != nil {
-		log.Fatalf("Failed map %v", err)
+		log.Fatalf("Failed map %v", err1)
 	}
-	res := service.departmentRepository.UpdateDepartment(newDepartment, id)
-	return res
+	res, err := service.departmentRepository.UpdateDepartment(newDepartment, id)
+	return res, err
 }
 
-func (service *departmentService) DeleteDepartment(department model.Department, id uint) model.Department {
+func (service *departmentService) DeleteDepartment(department model.Department, id uint) (departmentOutput model.Department, err error) {
 	newDepartment := model.Department{}
-	err := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
+	err1 := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
+	if err1 != nil {
+		log.Fatalf("Failed map %v", err1)
 	}
-	res := service.departmentRepository.UpdateDepartment(newDepartment, id)
-	return res
+	res, err := service.departmentRepository.UpdateDepartment(newDepartment, id)
+	return res, err
 }
