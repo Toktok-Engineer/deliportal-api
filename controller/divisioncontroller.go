@@ -98,14 +98,21 @@ func (b *divisionController) UpdateDivision(c *gin.Context) {
 		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, res)
 	} else {
-		result := b.divisionService.UpdateDivision(newData)
-		response := helper.BuildResponse(true, "OK", result)
-		c.JSON(http.StatusOK, response)
+		if err := c.ShouldBindJSON(&newData); err != nil {
+			response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusBadRequest, response)
+		} else {
+			result := b.divisionService.UpdateDivision(newData, uint(id))
+			response := helper.BuildResponse(true, "OK", result)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
 func (b *divisionController) DeleteDivision(c *gin.Context) {
-	var division model.Division
+
+	var newData model.Division
+	var oldData model.Division
 
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
@@ -114,20 +121,18 @@ func (b *divisionController) DeleteDivision(c *gin.Context) {
 		return
 	}
 
-	userId, err := strconv.ParseUint(c.Param("userId"), 0, 0)
-	if err != nil {
-		res := helper.BuildErrorResponse("No param userId was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	division = b.divisionService.FindDivisionById(uint(id))
-	if (division == model.Division{}) {
+	oldData = b.divisionService.FindDivisionById(uint(id))
+	if (oldData == model.Division{}) {
 		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, res)
 	} else {
-		result := b.divisionService.DeleteDivision(division, uint(userId))
-		response := helper.BuildResponse(true, "OK", result)
-		c.JSON(http.StatusOK, response)
+		if err := c.ShouldBindJSON(&newData); err != nil {
+			response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusBadRequest, response)
+		} else {
+			result := b.divisionService.DeleteDivision(newData, uint(id))
+			response := helper.BuildResponse(true, "OK", result)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }

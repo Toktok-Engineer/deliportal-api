@@ -14,15 +14,18 @@ import (
 var (
 	db                     *gorm.DB                          = config.ConnectDataBase()
 	userRepository         repository.UserRepository         = repository.NewUserRepository(db)
-	businessUnitRepository repository.BusinessUnitRepository = repository.NewBusinessUnitRepository(db)
 	divisionRepository     repository.DivisionRepository     = repository.NewDivisionRepository(db)
+	departmentRepository   repository.DepartmentRepository   = repository.NewDepartmentRepository(db)
+	businessUnitRepository repository.BusinessUnitRepository = repository.NewBusinessUnitRepository(db)
 	authService            service.AuthService               = service.NewAuthService(userRepository)
-	businessUnitService    service.BusinessUnitService       = service.NewBusinessUnitService(businessUnitRepository)
 	divisionService        service.DivisionService           = service.NewDivisionService(divisionRepository)
+	departmentService      service.DepartmentService         = service.NewDepartmentService(departmentRepository)
+	businessUnitService    service.BusinessUnitService       = service.NewBusinessUnitService(businessUnitRepository)
 	jwtService             service.JWTService                = service.NewJWTService()
 	authController         controller.AuthController         = controller.NewAuthController(authService, jwtService)
-	businessUnitController controller.BusinessUnitController = controller.NewBusinessUnitController(businessUnitService, jwtService)
 	divisionController     controller.DivisionController     = controller.NewDivisionController(divisionService, jwtService)
+	departmentController   controller.DepartmentController   = controller.NewDepartmentController(departmentService, jwtService)
+	businessUnitController controller.BusinessUnitController = controller.NewBusinessUnitController(businessUnitService, jwtService)
 )
 
 func main() {
@@ -44,6 +47,17 @@ func main() {
 		divisionGroup.POST("/", divisionController.InsertDivision)
 		divisionGroup.PUT("/:id", divisionController.UpdateDivision)
 		divisionGroup.DELETE("/:id", divisionController.DeleteDivision)
+	}
+
+	departmentGroup := r.Group("/api/department", middleware.AuthorizeJWT(jwtService))
+	{
+		departmentGroup.GET("/", departmentController.FindDepartments)
+		departmentGroup.GET("/:id", departmentController.FindDepartmentById)
+		departmentGroup.GET("/exc/:divId/:id", departmentController.FindExcDepartment)
+		departmentGroup.GET("/byDivision/:divId", departmentController.FindDepartmentByDivId)
+		departmentGroup.POST("/", departmentController.InsertDepartment)
+		departmentGroup.PUT("/:id", departmentController.UpdateDepartment)
+		departmentGroup.DELETE("/:id", departmentController.DeleteDepartment)
 	}
 
 	businessUnitGroup := r.Group("/api/businessunit", middleware.AuthorizeJWT(jwtService))

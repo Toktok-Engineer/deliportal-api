@@ -11,7 +11,7 @@ type DivisionRepository interface {
 	FindDivisionById(id uint) model.Division
 	FindExcDivision(id uint) []model.Division
 	InsertDivision(division model.Division) model.Division
-	UpdateDivision(division model.Division) model.Division
+	UpdateDivision(division model.Division, userID uint) model.Division
 }
 
 type DivisionConnection struct {
@@ -47,7 +47,7 @@ func (db *DivisionConnection) InsertDivision(division model.Division) model.Divi
 	return division
 }
 
-func (db *DivisionConnection) UpdateDivision(division model.Division) model.Division {
-	db.connection.Save(&division)
+func (db *DivisionConnection) UpdateDivision(division model.Division, id uint) model.Division {
+	db.connection.Where("id=?", id).Updates(&division)
 	return division
 }
