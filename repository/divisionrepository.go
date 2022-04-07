@@ -26,7 +26,9 @@ func NewDivisionRepository(db *gorm.DB) DivisionRepository {
 }
 
 func (db *DivisionConnection) FindDivisions() (divisionOutput []model.Division, err error) {
-	var divisions []model.Division
+	var (
+		divisions []model.Division
+	)
 	res := db.connection.Where("deleted_at = 0").Order("division_name").Find(&divisions)
 	if res.Error != nil {
 		log.Println(res.Error.Error())
@@ -36,7 +38,9 @@ func (db *DivisionConnection) FindDivisions() (divisionOutput []model.Division, 
 }
 
 func (db *DivisionConnection) FindDivisionById(id uint) (divisionOutput model.Division, err error) {
-	var division model.Division
+	var (
+		division model.Division
+	)
 	res := db.connection.Where("id=? AND deleted_at = 0", id).Take(&division)
 	if res.Error != nil {
 		log.Println(res.Error.Error())
@@ -46,7 +50,9 @@ func (db *DivisionConnection) FindDivisionById(id uint) (divisionOutput model.Di
 }
 
 func (db *DivisionConnection) FindExcDivision(id uint) (divisionOutput []model.Division, err error) {
-	var divisions []model.Division
+	var (
+		divisions []model.Division
+	)
 	res := db.connection.Where("id!=? AND deleted_at = 0", id).Order("division_name").Find(&divisions)
 	if res.Error != nil {
 		log.Println(res.Error.Error())

@@ -16,15 +16,18 @@ var (
 	userRepository         repository.UserRepository         = repository.NewUserRepository(db)
 	divisionRepository     repository.DivisionRepository     = repository.NewDivisionRepository(db)
 	departmentRepository   repository.DepartmentRepository   = repository.NewDepartmentRepository(db)
+	sectionRepository      repository.SectionRepository      = repository.NewSectionRepository(db)
 	businessUnitRepository repository.BusinessUnitRepository = repository.NewBusinessUnitRepository(db)
 	authService            service.AuthService               = service.NewAuthService(userRepository)
 	divisionService        service.DivisionService           = service.NewDivisionService(divisionRepository)
 	departmentService      service.DepartmentService         = service.NewDepartmentService(departmentRepository)
+	sectionService         service.SectionService            = service.NewSectionService(sectionRepository)
 	businessUnitService    service.BusinessUnitService       = service.NewBusinessUnitService(businessUnitRepository)
 	jwtService             service.JWTService                = service.NewJWTService()
 	authController         controller.AuthController         = controller.NewAuthController(authService, jwtService)
 	divisionController     controller.DivisionController     = controller.NewDivisionController(divisionService, jwtService)
 	departmentController   controller.DepartmentController   = controller.NewDepartmentController(departmentService, jwtService)
+	sectionController      controller.SectionController      = controller.NewSectionController(sectionService, jwtService)
 	businessUnitController controller.BusinessUnitController = controller.NewBusinessUnitController(businessUnitService, jwtService)
 )
 
@@ -58,6 +61,17 @@ func main() {
 		departmentGroup.POST("/", departmentController.InsertDepartment)
 		departmentGroup.PUT("/:id", departmentController.UpdateDepartment)
 		departmentGroup.DELETE("/:id", departmentController.DeleteDepartment)
+	}
+
+	sectionGroup := r.Group("/api/section", middleware.AuthorizeJWT(jwtService))
+	{
+		sectionGroup.GET("/", sectionController.FindSections)
+		sectionGroup.GET("/:id", sectionController.FindSectionById)
+		sectionGroup.GET("/exc/:depId/:id", sectionController.FindExcSection)
+		sectionGroup.GET("/byDepartment/:depId", sectionController.FindSectionByDepId)
+		sectionGroup.POST("/", sectionController.InsertSection)
+		sectionGroup.PUT("/:id", sectionController.UpdateSection)
+		sectionGroup.DELETE("/:id", sectionController.DeleteSection)
 	}
 
 	businessUnitGroup := r.Group("/api/businessunit", middleware.AuthorizeJWT(jwtService))
