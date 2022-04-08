@@ -56,7 +56,7 @@ func (a *authController) Login(c *gin.Context) {
 			response := helper.BuildResponse(true, "OK", loginResponse)
 			c.JSON(http.StatusOK, response)
 		} else {
-			response := helper.BuildResponse(false, "User not found", nil)
+			response := helper.BuildResponse(false, "User not found", helper.EmptyObj{})
 			c.JSON(http.StatusOK, response)
 		}
 
@@ -84,7 +84,7 @@ func (a *authController) Register(c *gin.Context) {
 	} else {
 		createdUser, err := a.authService.CreateUser(createUserParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register user", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register user", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			now := time.Now()
