@@ -3,18 +3,17 @@ package service
 import (
 	"deliportal-api/model"
 	"deliportal-api/repository"
-	"log"
 	"time"
 
 	"github.com/mashingan/smapping"
 )
 
 type BusinessUnitService interface {
-	FindBusinessUnits() []model.BusinessUnit
-	FindBusinessUnitById(id uint) model.BusinessUnit
-	InsertBusinessUnit(businessUnit model.CreateBusinessUnitParameter) model.BusinessUnit
-	UpdateBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit
-	DeleteBusinessUnit(businessUnit model.BusinessUnit, userId uint) model.BusinessUnit
+	FindBusinessUnits() ([]model.BusinessUnit, error)
+	FindBusinessUnitById(id uint) (model.BusinessUnit, error)
+	InsertBusinessUnit(businessUnit model.CreateBusinessUnitParameter) (model.BusinessUnit, error)
+	UpdateBusinessUnit(businessUnit model.BusinessUnit) (model.BusinessUnit, error)
+	DeleteBusinessUnit(businessUnit model.BusinessUnit, userId uint) (model.BusinessUnit, error)
 }
 
 type businessUnitService struct {
@@ -27,41 +26,42 @@ func NewBusinessUnitService(businessUnitRep repository.BusinessUnitRepository) B
 	}
 }
 
-func (service *businessUnitService) FindBusinessUnits() []model.BusinessUnit {
+func (service *businessUnitService) FindBusinessUnits() ([]model.BusinessUnit, error) {
 	return service.businessUnitRepository.FindBusinessUnits()
 }
 
-func (service *businessUnitService) FindBusinessUnitById(id uint) model.BusinessUnit {
+func (service *businessUnitService) FindBusinessUnitById(id uint) (model.BusinessUnit, error) {
 	return service.businessUnitRepository.FindBusinessUnitById(id)
 }
 
-func (service *businessUnitService) InsertBusinessUnit(businessUnit model.CreateBusinessUnitParameter) model.BusinessUnit {
+func (service *businessUnitService) InsertBusinessUnit(businessUnit model.CreateBusinessUnitParameter) (model.BusinessUnit, error) {
 	newBusinessUnit := model.BusinessUnit{}
 	err := smapping.FillStruct(&newBusinessUnit, smapping.MapFields(&businessUnit))
+
 	if err != nil {
-		log.Fatalf("Failed map %v", err)
+		return newBusinessUnit, err
 	}
-	res := service.businessUnitRepository.InsertBusinessUnit(newBusinessUnit)
-	return res
+
+	return service.businessUnitRepository.InsertBusinessUnit(newBusinessUnit)
 }
 
-func (service *businessUnitService) UpdateBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit {
+func (service *businessUnitService) UpdateBusinessUnit(businessUnit model.BusinessUnit) (model.BusinessUnit, error) {
 	newBusinessUnit := model.BusinessUnit{}
 	err := smapping.FillStruct(&newBusinessUnit, smapping.MapFields(&businessUnit))
+
 	if err != nil {
-		log.Fatalf("Failed map %v", err)
+		return newBusinessUnit, err
 	}
-	res := service.businessUnitRepository.UpdateBusinessUnit(newBusinessUnit)
-	return res
+
+	return service.businessUnitRepository.UpdateBusinessUnit(newBusinessUnit)
 }
 
-func (service *businessUnitService) DeleteBusinessUnit(businessUnit model.BusinessUnit, userID uint) model.BusinessUnit {
+func (service *businessUnitService) DeleteBusinessUnit(businessUnit model.BusinessUnit, userID uint) (model.BusinessUnit, error) {
 	now := time.Now()
 	deletedAt := now.Unix()
 
 	businessUnit.DeletedUserID = userID
 	businessUnit.DeletedAt = float64(deletedAt)
 
-	res := service.businessUnitRepository.UpdateBusinessUnit(businessUnit)
-	return res
+	return service.businessUnitRepository.UpdateBusinessUnit(businessUnit)
 }

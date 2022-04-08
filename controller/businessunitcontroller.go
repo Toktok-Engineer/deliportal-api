@@ -31,95 +31,124 @@ func NewBusinessUnitController(businessUnitServ service.BusinessUnitService, jwt
 }
 
 func (b *businessUnitController) FindBusinessUnits(c *gin.Context) {
+	var response helper.Response
 
-	var businessUnits []model.BusinessUnit = b.businessUnitService.FindBusinessUnits()
-	res := helper.BuildResponse(true, "OK", businessUnits)
+	businessUnits, err := b.businessUnitService.FindBusinessUnits()
 
-	c.JSON(http.StatusOK, res)
-}
-
-func (b *businessUnitController) FindBusinessUnitById(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	var businessUnit model.BusinessUnit = b.businessUnitService.FindBusinessUnitById(uint(id))
-	if (businessUnit == model.BusinessUnit{}) {
-		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, res)
-	} else {
-		res := helper.BuildResponse(true, "OK", businessUnit)
-		c.JSON(http.StatusOK, res)
-	}
-}
-
-func (b *businessUnitController) InsertBusinessUnit(c *gin.Context) {
-	var input model.CreateBusinessUnitParameter
-	if err := c.ShouldBindJSON(&input); err != nil {
-		response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		response = helper.BuildErrorResponse("Failed to register user", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		result := b.businessUnitService.InsertBusinessUnit(input)
-		response := helper.BuildResponse(true, "OK", result)
+		response = helper.BuildResponse(true, "OK", businessUnits)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *businessUnitController) UpdateBusinessUnit(c *gin.Context) {
-	var newData model.BusinessUnit
-	var oldData model.BusinessUnit
+func (b *businessUnitController) FindBusinessUnitById(c *gin.Context) {
+	var response helper.Response
 
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	oldData = b.businessUnitService.FindBusinessUnitById(uint(id))
-	if (oldData == model.BusinessUnit{}) {
-		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, res)
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		if err := c.ShouldBindJSON(&newData); err != nil {
-			response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusBadRequest, response)
-			// return
+		businessUnit, err := b.businessUnitService.FindBusinessUnitById(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
 		} else {
-			result := b.businessUnitService.UpdateBusinessUnit(newData)
-			response := helper.BuildResponse(true, "OK", result)
+			response = helper.BuildResponse(true, "OK", businessUnit)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
+func (b *businessUnitController) InsertBusinessUnit(c *gin.Context) {
+	var response helper.Response
+
+	var input model.CreateBusinessUnitParameter
+	if err := c.ShouldBindJSON(&input); err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, response)
+	} else {
+		businessUnit, err := b.businessUnitService.InsertBusinessUnit(input)
+		if err != nil {
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", businessUnit)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *businessUnitController) UpdateBusinessUnit(c *gin.Context) {
+	var response helper.Response
+	var newData model.BusinessUnit
+	var oldData model.BusinessUnit
+
+	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		oldData, err = b.businessUnitService.FindBusinessUnitById(uint(id))
+		if err != nil {
+			res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, res)
+		} else if (oldData == model.BusinessUnit{}) {
+			res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, res)
+		} else {
+			if err = c.ShouldBindJSON(&newData); err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusBadRequest, response)
+			} else {
+				businessUnit, err := b.businessUnitService.UpdateBusinessUnit(newData)
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+					c.JSON(http.StatusNotFound, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", businessUnit)
+					c.JSON(http.StatusOK, response)
+				}
+			}
+		}
+	}
+}
+
 func (b *businessUnitController) DeleteBusinessUnit(c *gin.Context) {
+	var response helper.Response
+
 	var businessUnit model.BusinessUnit
 
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	userId, err := strconv.ParseUint(c.Param("userId"), 0, 0)
-	if err != nil {
-		res := helper.BuildErrorResponse("No param userId was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	businessUnit = b.businessUnitService.FindBusinessUnitById(uint(id))
-	if (businessUnit == model.BusinessUnit{}) {
-		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, res)
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		result := b.businessUnitService.DeleteBusinessUnit(businessUnit, uint(userId))
-		response := helper.BuildResponse(true, "OK", result)
-		c.JSON(http.StatusOK, response)
+		userId, err := strconv.ParseUint(c.Param("userId"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param userId was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			businessUnit, err = b.businessUnitService.FindBusinessUnitById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (businessUnit == model.BusinessUnit{}) {
+				response = helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				result, err := b.businessUnitService.DeleteBusinessUnit(businessUnit, uint(userId))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+					c.JSON(http.StatusNotFound, response)
+				} else {
+					response := helper.BuildResponse(true, "OK", result)
+					c.JSON(http.StatusOK, response)
+				}
+			}
+		}
 	}
 }
