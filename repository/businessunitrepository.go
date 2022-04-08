@@ -7,10 +7,10 @@ import (
 )
 
 type BusinessUnitRepository interface {
-	FindBusinessUnits() []model.BusinessUnit
-	FindBusinessUnitById(id uint) model.BusinessUnit
-	InsertBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit
-	UpdateBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit
+	FindBusinessUnits() ([]model.BusinessUnit, error)
+	FindBusinessUnitById(id uint) (model.BusinessUnit, error)
+	InsertBusinessUnit(businessUnit model.BusinessUnit) (model.BusinessUnit, error)
+	UpdateBusinessUnit(businessUnit model.BusinessUnit) (model.BusinessUnit, error)
 }
 
 type businessUnitConnection struct {
@@ -23,24 +23,24 @@ func NewBusinessUnitRepository(db *gorm.DB) BusinessUnitRepository {
 	}
 }
 
-func (db *businessUnitConnection) FindBusinessUnits() []model.BusinessUnit {
+func (db *businessUnitConnection) FindBusinessUnits() ([]model.BusinessUnit, error) {
 	var businessUnits []model.BusinessUnit
-	db.connection.Order("id").Find(&businessUnits)
-	return businessUnits
+	res := db.connection.Order("id").Find(&businessUnits)
+	return businessUnits, res.Error
 }
 
-func (db *businessUnitConnection) FindBusinessUnitById(id uint) model.BusinessUnit {
+func (db *businessUnitConnection) FindBusinessUnitById(id uint) (model.BusinessUnit, error) {
 	var businessUnit model.BusinessUnit
-	db.connection.Where("id=?", id).Take(&businessUnit)
-	return businessUnit
+	res := db.connection.Where("id=?", id).Take(&businessUnit)
+	return businessUnit, res.Error
 }
 
-func (db *businessUnitConnection) InsertBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit {
-	db.connection.Save(&businessUnit)
-	return businessUnit
+func (db *businessUnitConnection) InsertBusinessUnit(businessUnit model.BusinessUnit) (model.BusinessUnit, error) {
+	res := db.connection.Save(&businessUnit)
+	return businessUnit, res.Error
 }
 
-func (db *businessUnitConnection) UpdateBusinessUnit(businessUnit model.BusinessUnit) model.BusinessUnit {
-	db.connection.Where("id = ?", businessUnit.ID).Updates(&businessUnit)
-	return businessUnit
+func (db *businessUnitConnection) UpdateBusinessUnit(businessUnit model.BusinessUnit) (model.BusinessUnit, error) {
+	res := db.connection.Where("id = ?", businessUnit.ID).Updates(&businessUnit)
+	return businessUnit, res.Error
 }

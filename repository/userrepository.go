@@ -10,7 +10,7 @@ import (
 )
 
 type UserRepository interface {
-	InsertUser(userInput model.User) (userOutput model.User, err error)
+	InsertUser(userInput model.User) (model.User, error)
 	UpdateUser(user model.User) model.User
 	VerifyCredential(username string) interface{}
 	IsDuplicateUsername(username string) (tx *gorm.DB)
@@ -28,7 +28,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-func (db *userConnection) InsertUser(userInput model.User) (userOutput model.User, err error) {
+func (db *userConnection) InsertUser(userInput model.User) (model.User, error) {
 	userInput.Password = hashAndSalt([]byte(userInput.Password))
 	res := db.connection.Save(&userInput)
 
