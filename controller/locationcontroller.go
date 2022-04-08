@@ -10,45 +10,45 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DivisionController interface {
-	FindDivisions(c *gin.Context)
-	FindDivisionById(c *gin.Context)
-	FindExcDivision(c *gin.Context)
-	InsertDivision(c *gin.Context)
-	UpdateDivision(c *gin.Context)
-	DeleteDivision(c *gin.Context)
+type LocationController interface {
+	FindLocations(c *gin.Context)
+	FindLocationById(c *gin.Context)
+	FindExcLocation(c *gin.Context)
+	InsertLocation(c *gin.Context)
+	UpdateLocation(c *gin.Context)
+	DeleteLocation(c *gin.Context)
 }
 
-type divisionController struct {
-	divisionService service.DivisionService
+type locationController struct {
+	locationService service.LocationService
 	jwtService      service.JWTService
 }
 
-func NewDivisionController(divisionServ service.DivisionService, jwtServ service.JWTService) DivisionController {
-	return &divisionController{
-		divisionService: divisionServ,
+func NewLocationController(locationServ service.LocationService, jwtServ service.JWTService) LocationController {
+	return &locationController{
+		locationService: locationServ,
 		jwtService:      jwtServ,
 	}
 }
 
-func (b *divisionController) FindDivisions(c *gin.Context) {
+func (b *locationController) FindLocations(c *gin.Context) {
 	var (
-		divisions []model.Division
+		locations []model.Location
 		response  helper.Response
 	)
-	divisions, err := b.divisionService.FindDivisions()
+	locations, err := b.locationService.FindLocations()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", divisions)
+		response = helper.BuildResponse(true, "OK", locations)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *divisionController) FindDivisionById(c *gin.Context) {
+func (b *locationController) FindLocationById(c *gin.Context) {
 	var (
-		division model.Division
+		location model.Location
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -57,19 +57,19 @@ func (b *divisionController) FindDivisionById(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
-	division, err = b.divisionService.FindDivisionById(uint(id))
+	location, err = b.locationService.FindLocationById(uint(id))
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", division)
+		response = helper.BuildResponse(true, "OK", location)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *divisionController) FindExcDivision(c *gin.Context) {
+func (b *locationController) FindExcLocation(c *gin.Context) {
 	var (
-		divisions []model.Division
+		locations []model.Location
 		response  helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -79,42 +79,42 @@ func (b *divisionController) FindExcDivision(c *gin.Context) {
 		return
 	}
 
-	divisions, err = b.divisionService.FindExcDivision(uint(id))
+	locations, err = b.locationService.FindExcLocation(uint(id))
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", divisions)
+		response = helper.BuildResponse(true, "OK", locations)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *divisionController) InsertDivision(c *gin.Context) {
+func (b *locationController) InsertLocation(c *gin.Context) {
 	var (
-		division                model.Division
+		location                model.Location
 		response                helper.Response
-		CreateDivisionParameter model.CreateDivisionParameter
+		CreateLocationParameter model.CreateLocationParameter
 	)
-	err := c.ShouldBindJSON(&CreateDivisionParameter)
+	err := c.ShouldBindJSON(&CreateLocationParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		division, err = b.divisionService.InsertDivision(CreateDivisionParameter)
+		location, err = b.locationService.InsertLocation(CreateLocationParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register division", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register location", err.Error(), nil)
 			c.JSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", division)
+			response = helper.BuildResponse(true, "OK", location)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *divisionController) UpdateDivision(c *gin.Context) {
+func (b *locationController) UpdateLocation(c *gin.Context) {
 	var (
-		newData  model.Division
-		oldData  model.Division
+		newData  model.Location
+		oldData  model.Location
 		response helper.Response
 	)
 
@@ -132,26 +132,26 @@ func (b *divisionController) UpdateDivision(c *gin.Context) {
 		return
 	}
 
-	oldData, err = b.divisionService.FindDivisionById(uint(id))
-	if (oldData == model.Division{}) {
+	oldData, err = b.locationService.FindLocationById(uint(id))
+	if (oldData == model.Location{}) {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		division, err := b.divisionService.UpdateDivision(newData, uint(id))
+		location, err := b.locationService.UpdateLocation(newData, uint(id))
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to update division", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to update location", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", division)
+			response = helper.BuildResponse(true, "OK", location)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *divisionController) DeleteDivision(c *gin.Context) {
+func (b *locationController) DeleteLocation(c *gin.Context) {
 	var (
-		newData  model.Division
-		oldData  model.Division
+		newData  model.Location
+		oldData  model.Location
 		response helper.Response
 	)
 
@@ -169,17 +169,17 @@ func (b *divisionController) DeleteDivision(c *gin.Context) {
 		return
 	}
 
-	oldData, err = b.divisionService.FindDivisionById(uint(id))
-	if (oldData == model.Division{}) {
+	oldData, err = b.locationService.FindLocationById(uint(id))
+	if (oldData == model.Location{}) {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		division, err := b.divisionService.DeleteDivision(newData, uint(id))
+		location, err := b.locationService.DeleteLocation(newData, uint(id))
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to delete division", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to delete location", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", division)
+			response = helper.BuildResponse(true, "OK", location)
 			c.JSON(http.StatusOK, response)
 		}
 	}

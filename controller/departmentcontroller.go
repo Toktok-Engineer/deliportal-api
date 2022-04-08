@@ -33,39 +33,52 @@ func NewDepartmentController(departmentServ service.DepartmentService, jwtServ s
 }
 
 func (b *departmentController) FindDepartments(c *gin.Context) {
-
-	var departments []model.SelectDepartmentParameter = b.departmentService.FindDepartments()
-	res := helper.BuildResponse(true, "OK", departments)
-
-	c.JSON(http.StatusOK, res)
+	var (
+		departments []model.SelectDepartmentParameter
+		response    helper.Response
+	)
+	departments, err := b.departmentService.FindDepartments()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", departments)
+		c.JSON(http.StatusOK, response)
+	}
 }
 
 func (b *departmentController) FindDepartmentById(c *gin.Context) {
+	var (
+		department model.SelectDepartmentParameter
+		response   helper.Response
+	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
-
-	var department model.SelectDepartmentParameter = b.departmentService.FindDepartmentById(uint(id))
-	if (department == model.SelectDepartmentParameter{}) {
-		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, res)
+	department, err = b.departmentService.FindDepartmentById(uint(id))
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
 	} else {
-		res := helper.BuildResponse(true, "OK", department)
-		c.JSON(http.StatusOK, res)
+		response = helper.BuildResponse(true, "OK", department)
+		c.JSON(http.StatusOK, response)
 	}
 }
 
 func (b *departmentController) FindExcDepartment(c *gin.Context) {
+	var (
+		departments []model.SelectDepartmentParameter
+		response    helper.Response
+	)
 	divId, err := strconv.ParseUint(c.Param("divId"), 0, 0)
 	if err != nil {
 		res := helper.BuildErrorResponse("No param divId was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
@@ -73,12 +86,21 @@ func (b *departmentController) FindExcDepartment(c *gin.Context) {
 		return
 	}
 
-	var departments []model.SelectDepartmentParameter = b.departmentService.FindExcDepartment(uint(divId), uint(id))
-	res := helper.BuildResponse(true, "OK", departments)
-	c.JSON(http.StatusOK, res)
+	departments, err = b.departmentService.FindExcDepartment(uint(divId), uint(id))
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", departments)
+		c.JSON(http.StatusOK, response)
+	}
 }
 
 func (b *departmentController) FindDepartmentByDivId(c *gin.Context) {
+	var (
+		departments []model.SelectDepartmentParameter
+		response    helper.Response
+	)
 	divId, err := strconv.ParseUint(c.Param("divId"), 0, 0)
 	if err != nil {
 		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
@@ -86,26 +108,51 @@ func (b *departmentController) FindDepartmentByDivId(c *gin.Context) {
 		return
 	}
 
-	var departments []model.SelectDepartmentParameter = b.departmentService.FindDepartmentByDivId(uint(divId))
-	res := helper.BuildResponse(true, "OK", departments)
-	c.JSON(http.StatusOK, res)
-}
-
-func (b *departmentController) InsertDepartment(c *gin.Context) {
-	var input model.CreateDepartmentParameter
-	if err := c.ShouldBindJSON(&input); err != nil {
-		response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusBadRequest, response)
+	departments, err = b.departmentService.FindDepartmentByDivId(uint(divId))
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
 	} else {
-		result := b.departmentService.InsertDepartment(input)
-		response := helper.BuildResponse(true, "OK", result)
+		response = helper.BuildResponse(true, "OK", departments)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
+func (b *departmentController) InsertDepartment(c *gin.Context) {
+	var (
+		department                model.Department
+		response                  helper.Response
+		CreateDepartmentParameter model.CreateDepartmentParameter
+	)
+	err := c.ShouldBindJSON(&CreateDepartmentParameter)
+	if err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, response)
+	} else {
+		department, err = b.departmentService.InsertDepartment(CreateDepartmentParameter)
+		if err != nil {
+			response = helper.BuildErrorResponse("Failed to register department", err.Error(), nil)
+			c.JSON(http.StatusBadRequest, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", department)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func (b *departmentController) UpdateDepartment(c *gin.Context) {
-	var newData model.Department
-	var oldData model.SelectDepartmentParameter
+	var (
+		newData  model.Department
+		oldData  model.SelectDepartmentParameter
+		response helper.Response
+	)
+
+	err := c.ShouldBindJSON(&newData)
+	if err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
 
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
@@ -114,25 +161,35 @@ func (b *departmentController) UpdateDepartment(c *gin.Context) {
 		return
 	}
 
-	oldData = b.departmentService.FindDepartmentById(uint(id))
+	oldData, err = b.departmentService.FindDepartmentById(uint(id))
 	if (oldData == model.SelectDepartmentParameter{}) {
-		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+		res := helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, res)
 	} else {
-		if err := c.ShouldBindJSON(&newData); err != nil {
-			response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusBadRequest, response)
+		department, err := b.departmentService.UpdateDepartment(newData, uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Failed to update department", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			result := b.departmentService.UpdateDepartment(newData, uint(id))
-			response := helper.BuildResponse(true, "OK", result)
+			response = helper.BuildResponse(true, "OK", department)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
 func (b *departmentController) DeleteDepartment(c *gin.Context) {
-	var newData model.Department
-	var oldData model.SelectDepartmentParameter
+	var (
+		newData  model.Department
+		oldData  model.SelectDepartmentParameter
+		response helper.Response
+	)
+
+	err := c.ShouldBindJSON(&newData)
+	if err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
 
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
@@ -141,17 +198,17 @@ func (b *departmentController) DeleteDepartment(c *gin.Context) {
 		return
 	}
 
-	oldData = b.departmentService.FindDepartmentById(uint(id))
+	oldData, err = b.departmentService.FindDepartmentById(uint(id))
 	if (oldData == model.SelectDepartmentParameter{}) {
-		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+		res := helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, res)
 	} else {
-		if err := c.ShouldBindJSON(&newData); err != nil {
-			response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusBadRequest, response)
+		department, err := b.departmentService.DeleteDepartment(newData, uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Failed to update department", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			result := b.departmentService.DeleteDepartment(newData, uint(id))
-			response := helper.BuildResponse(true, "OK", result)
+			response = helper.BuildResponse(true, "OK", department)
 			c.JSON(http.StatusOK, response)
 		}
 	}
