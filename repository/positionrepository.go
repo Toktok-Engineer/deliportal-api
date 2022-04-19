@@ -2,7 +2,6 @@ package repository
 
 import (
 	"deliportal-api/model"
-	"log"
 
 	"gorm.io/gorm"
 )
@@ -30,11 +29,7 @@ func (db *PositionConnection) FindPositions() (positionOutput []model.Position, 
 		positions []model.Position
 	)
 	res := db.connection.Where("deleted_at = 0").Order("position_name").Find(&positions)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return positions, res.Error
-	}
-	return positions, nil
+	return positions, res.Error
 }
 
 func (db *PositionConnection) FindPositionById(id uint) (positionOutput model.Position, err error) {
@@ -42,11 +37,7 @@ func (db *PositionConnection) FindPositionById(id uint) (positionOutput model.Po
 		position model.Position
 	)
 	res := db.connection.Where("id=? AND deleted_at = 0", id).Take(&position)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return position, res.Error
-	}
-	return position, nil
+	return position, res.Error
 }
 
 func (db *PositionConnection) FindExcPosition(id uint) (positionOutput []model.Position, err error) {
@@ -54,27 +45,15 @@ func (db *PositionConnection) FindExcPosition(id uint) (positionOutput []model.P
 		positions []model.Position
 	)
 	res := db.connection.Where("id!=? AND deleted_at = 0", id).Order("position_name").Find(&positions)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return positions, res.Error
-	}
-	return positions, nil
+	return positions, res.Error
 }
 
 func (db *PositionConnection) InsertPosition(position model.Position) (positionOutput model.Position, err error) {
 	res := db.connection.Save(&position)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return position, res.Error
-	}
-	return position, nil
+	return position, res.Error
 }
 
 func (db *PositionConnection) UpdatePosition(position model.Position, id uint) (positionOutput model.Position, err error) {
 	res := db.connection.Where("id=?", id).Updates(&position)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return position, res.Error
-	}
-	return position, nil
+	return position, res.Error
 }

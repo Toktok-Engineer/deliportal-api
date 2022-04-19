@@ -3,7 +3,6 @@ package service
 import (
 	"deliportal-api/model"
 	"deliportal-api/repository"
-	"log"
 
 	"github.com/mashingan/smapping"
 )
@@ -45,8 +44,8 @@ func (service *locationService) FindExcLocation(id uint) (locationOutput []model
 func (service *locationService) InsertLocation(location model.CreateLocationParameter) (locationOutput model.Location, err error) {
 	newLocation := model.Location{}
 	err1 := smapping.FillStruct(&newLocation, smapping.MapFields(&location))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newLocation, err1
 	}
 	res, err := service.locationRepository.InsertLocation(newLocation)
 	return res, err
@@ -55,8 +54,8 @@ func (service *locationService) InsertLocation(location model.CreateLocationPara
 func (service *locationService) UpdateLocation(location model.Location, id uint) (locationOutput model.Location, err error) {
 	newLocation := model.Location{}
 	err1 := smapping.FillStruct(&newLocation, smapping.MapFields(&location))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newLocation, err1
 	}
 	res, err := service.locationRepository.UpdateLocation(newLocation, id)
 	return res, err
@@ -65,8 +64,8 @@ func (service *locationService) UpdateLocation(location model.Location, id uint)
 func (service *locationService) DeleteLocation(location model.Location, id uint) (locationOutput model.Location, err error) {
 	newLocation := model.Location{}
 	err1 := smapping.FillStruct(&newLocation, smapping.MapFields(&location))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newLocation, err1
 	}
 	res, err := service.locationRepository.UpdateLocation(newLocation, id)
 	return res, err

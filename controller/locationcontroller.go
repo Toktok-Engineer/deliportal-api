@@ -55,15 +55,15 @@ func (b *locationController) FindLocationById(c *gin.Context) {
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-	location, err = b.locationService.FindLocationById(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", location)
-		c.JSON(http.StatusOK, response)
+		location, err = b.locationService.FindLocationById(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", location)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -76,16 +76,15 @@ func (b *locationController) FindExcLocation(c *gin.Context) {
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	locations, err = b.locationService.FindExcLocation(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", locations)
-		c.JSON(http.StatusOK, response)
+		locations, err = b.locationService.FindExcLocation(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", locations)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -117,33 +116,33 @@ func (b *locationController) UpdateLocation(c *gin.Context) {
 		oldData  model.Location
 		response helper.Response
 	)
-
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	oldData, err = b.locationService.FindLocationById(uint(id))
-	if (oldData == model.Location{}) {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		location, err := b.locationService.UpdateLocation(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to update location", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", location)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.locationService.FindLocationById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.Location{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				location, err := b.locationService.UpdateLocation(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to update location", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", location)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }
@@ -154,33 +153,33 @@ func (b *locationController) DeleteLocation(c *gin.Context) {
 		oldData  model.Location
 		response helper.Response
 	)
-
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	oldData, err = b.locationService.FindLocationById(uint(id))
-	if (oldData == model.Location{}) {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		location, err := b.locationService.DeleteLocation(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to delete location", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", location)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.locationService.FindLocationById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.Location{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				location, err := b.locationService.DeleteLocation(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to delete location", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", location)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"deliportal-api/model"
 	"deliportal-api/repository"
-	"log"
 
 	"github.com/mashingan/smapping"
 )
@@ -52,7 +51,7 @@ func (service *departmentService) InsertDepartment(department model.CreateDepart
 	newDepartment := model.Department{}
 	err1 := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newDepartment, err1
 	}
 	res, err := service.departmentRepository.InsertDepartment(newDepartment)
 	return res, err
@@ -62,7 +61,7 @@ func (service *departmentService) UpdateDepartment(department model.Department, 
 	newDepartment := model.Department{}
 	err1 := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newDepartment, err1
 	}
 	res, err := service.departmentRepository.UpdateDepartment(newDepartment, id)
 	return res, err
@@ -71,8 +70,8 @@ func (service *departmentService) UpdateDepartment(department model.Department, 
 func (service *departmentService) DeleteDepartment(department model.Department, id uint) (departmentOutput model.Department, err error) {
 	newDepartment := model.Department{}
 	err1 := smapping.FillStruct(&newDepartment, smapping.MapFields(&department))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newDepartment, err1
 	}
 	res, err := service.departmentRepository.UpdateDepartment(newDepartment, id)
 	return res, err

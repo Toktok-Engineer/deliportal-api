@@ -3,7 +3,6 @@ package service
 import (
 	"deliportal-api/model"
 	"deliportal-api/repository"
-	"log"
 
 	"github.com/mashingan/smapping"
 )
@@ -52,7 +51,7 @@ func (service *employeeService) InsertEmployee(employee model.CreateEmployeePara
 	newEmployee := model.Employee{}
 	err1 := smapping.FillStruct(&newEmployee, smapping.MapFields(&employee))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newEmployee, err1
 	}
 	res, err := service.employeeRepository.InsertEmployee(newEmployee)
 	return res, err
@@ -62,7 +61,7 @@ func (service *employeeService) UpdateEmployee(employee model.Employee, id uint)
 	newEmployee := model.Employee{}
 	err1 := smapping.FillStruct(&newEmployee, smapping.MapFields(&employee))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newEmployee, err1
 	}
 	res, err := service.employeeRepository.UpdateEmployee(newEmployee, id)
 	return res, err
@@ -72,7 +71,7 @@ func (service *employeeService) DeleteEmployee(employee model.Employee, id uint)
 	newEmployee := model.Employee{}
 	err1 := smapping.FillStruct(&newEmployee, smapping.MapFields(&employee))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newEmployee, err1
 	}
 	res, err := service.employeeRepository.UpdateEmployee(newEmployee, id)
 	return res, err

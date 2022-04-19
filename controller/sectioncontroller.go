@@ -54,17 +54,17 @@ func (b *sectionController) FindSectionById(c *gin.Context) {
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-	section, err = b.sectionService.FindSectionById(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", section)
-		c.JSON(http.StatusOK, response)
+		section, err = b.sectionService.FindSectionById(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", section)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -75,24 +75,23 @@ func (b *sectionController) FindExcSection(c *gin.Context) {
 	)
 	depId, err := strconv.ParseUint(c.Param("depId"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param depId was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
-	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	sections, err = b.sectionService.FindExcSection(uint(depId), uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param depId was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", sections)
-		c.JSON(http.StatusOK, response)
+		id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			sections, err = b.sectionService.FindExcSection(uint(depId), uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", sections)
+				c.JSON(http.StatusOK, response)
+			}
+		}
 	}
 }
 
@@ -103,18 +102,17 @@ func (b *sectionController) FindSectionByDepId(c *gin.Context) {
 	)
 	depId, err := strconv.ParseUint(c.Param("depId"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param depId was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	sections, err = b.sectionService.FindSectionByDepId(uint(depId))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param depId was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", sections)
-		c.JSON(http.StatusOK, response)
+		sections, err = b.sectionService.FindSectionByDepId(uint(depId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", sections)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -147,32 +145,33 @@ func (b *sectionController) UpdateSection(c *gin.Context) {
 		response helper.Response
 	)
 
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	oldData, err = b.sectionService.FindSectionById(uint(id))
-	if (oldData == model.SelectSectionParameter{}) {
-		res := helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, res)
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		section, err := b.sectionService.UpdateSection(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to update section", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", section)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.sectionService.FindSectionById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.SelectSectionParameter{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				section, err := b.sectionService.UpdateSection(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to update section", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", section)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }
@@ -184,32 +183,33 @@ func (b *sectionController) DeleteSection(c *gin.Context) {
 		response helper.Response
 	)
 
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	oldData, err = b.sectionService.FindSectionById(uint(id))
-	if (oldData == model.SelectSectionParameter{}) {
-		res := helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, res)
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		section, err := b.sectionService.DeleteSection(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to update section", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", section)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.sectionService.FindSectionById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.SelectSectionParameter{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				section, err := b.sectionService.DeleteSection(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to delete section", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", section)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }

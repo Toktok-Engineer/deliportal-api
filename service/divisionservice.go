@@ -3,7 +3,6 @@ package service
 import (
 	"deliportal-api/model"
 	"deliportal-api/repository"
-	"log"
 
 	"github.com/mashingan/smapping"
 )
@@ -45,8 +44,8 @@ func (service *divisionService) FindExcDivision(id uint) (divisionOutput []model
 func (service *divisionService) InsertDivision(division model.CreateDivisionParameter) (divisionOutput model.Division, err error) {
 	newDivision := model.Division{}
 	err1 := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newDivision, err1
 	}
 	res, err := service.divisionRepository.InsertDivision(newDivision)
 	return res, err
@@ -55,8 +54,8 @@ func (service *divisionService) InsertDivision(division model.CreateDivisionPara
 func (service *divisionService) UpdateDivision(division model.Division, id uint) (divisionOutput model.Division, err error) {
 	newDivision := model.Division{}
 	err1 := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newDivision, err1
 	}
 	res, err := service.divisionRepository.UpdateDivision(newDivision, id)
 	return res, err
@@ -65,8 +64,8 @@ func (service *divisionService) UpdateDivision(division model.Division, id uint)
 func (service *divisionService) DeleteDivision(division model.Division, id uint) (divisionOutput model.Division, err error) {
 	newDivision := model.Division{}
 	err1 := smapping.FillStruct(&newDivision, smapping.MapFields(&division))
-	if err1 != nil {
-		log.Fatalf("Failed map %v", err1)
+	if err != nil {
+		return newDivision, err1
 	}
 	res, err := service.divisionRepository.UpdateDivision(newDivision, id)
 	return res, err

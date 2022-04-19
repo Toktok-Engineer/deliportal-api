@@ -56,14 +56,15 @@ func (b *positionController) FindPositionById(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
-	}
-	position, err = b.positionService.FindPositionById(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", position)
-		c.JSON(http.StatusOK, response)
+		position, err = b.positionService.FindPositionById(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", position)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -76,16 +77,15 @@ func (b *positionController) FindExcPosition(c *gin.Context) {
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	positions, err = b.positionService.FindExcPosition(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", positions)
-		c.JSON(http.StatusOK, response)
+		positions, err = b.positionService.FindExcPosition(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", positions)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -117,33 +117,33 @@ func (b *positionController) UpdatePosition(c *gin.Context) {
 		oldData  model.Position
 		response helper.Response
 	)
-
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	oldData, err = b.positionService.FindPositionById(uint(id))
-	if (oldData == model.Position{}) {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		position, err := b.positionService.UpdatePosition(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to update position", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", position)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.positionService.FindPositionById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.Position{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				position, err := b.positionService.UpdatePosition(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to update position", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", position)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }
@@ -154,33 +154,33 @@ func (b *positionController) DeletePosition(c *gin.Context) {
 		oldData  model.Position
 		response helper.Response
 	)
-
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	oldData, err = b.positionService.FindPositionById(uint(id))
-	if (oldData == model.Position{}) {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		position, err := b.positionService.DeletePosition(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to delete position", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", position)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.positionService.FindPositionById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.Position{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				position, err := b.positionService.DeletePosition(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to delete position", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", position)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }

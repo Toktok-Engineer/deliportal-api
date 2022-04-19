@@ -55,15 +55,15 @@ func (b *divisionController) FindDivisionById(c *gin.Context) {
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-	division, err = b.divisionService.FindDivisionById(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", division)
-		c.JSON(http.StatusOK, response)
+		division, err = b.divisionService.FindDivisionById(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", division)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -76,16 +76,15 @@ func (b *divisionController) FindExcDivision(c *gin.Context) {
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	divisions, err = b.divisionService.FindExcDivision(uint(id))
-	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", divisions)
-		c.JSON(http.StatusOK, response)
+		divisions, err = b.divisionService.FindExcDivision(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", divisions)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -117,33 +116,33 @@ func (b *divisionController) UpdateDivision(c *gin.Context) {
 		oldData  model.Division
 		response helper.Response
 	)
-
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	oldData, err = b.divisionService.FindDivisionById(uint(id))
-	if (oldData == model.Division{}) {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		division, err := b.divisionService.UpdateDivision(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to update division", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", division)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.divisionService.FindDivisionById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.Division{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				division, err := b.divisionService.UpdateDivision(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to update division", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", division)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }
@@ -154,33 +153,33 @@ func (b *divisionController) DeleteDivision(c *gin.Context) {
 		oldData  model.Division
 		response helper.Response
 	)
-
-	err := c.ShouldBindJSON(&newData)
-	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	oldData, err = b.divisionService.FindDivisionById(uint(id))
-	if (oldData == model.Division{}) {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
 	} else {
-		division, err := b.divisionService.DeleteDivision(newData, uint(id))
+		err := c.ShouldBindJSON(&newData)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to delete division", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", division)
-			c.JSON(http.StatusOK, response)
+			oldData, err = b.divisionService.FindDivisionById(uint(id))
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else if (oldData == model.Division{}) {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				division, err := b.divisionService.DeleteDivision(newData, uint(id))
+				if err != nil {
+					response = helper.BuildErrorResponse("Failed to delete division", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", division)
+					c.JSON(http.StatusOK, response)
+				}
+			}
 		}
 	}
 }

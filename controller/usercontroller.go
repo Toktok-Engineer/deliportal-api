@@ -11,46 +11,46 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-type EmployeeController interface {
-	FindEmployees(c *gin.Context)
-	FindEmployeeById(c *gin.Context)
-	FindEmployeeByNik(c *gin.Context)
-	FindExcEmployee(c *gin.Context)
-	InsertEmployee(c *gin.Context)
-	UpdateEmployee(c *gin.Context)
-	DeleteEmployee(c *gin.Context)
+type UserController interface {
+	FindUsers(c *gin.Context)
+	FindUserById(c *gin.Context)
+	FindUserByUName(c *gin.Context)
+	FindExcUser(c *gin.Context)
+	InsertUser(c *gin.Context)
+	UpdateUser(c *gin.Context)
+	DeleteUser(c *gin.Context)
 }
 
-type employeeController struct {
-	employeeService service.EmployeeService
-	jwtService      service.JWTService
+type userController struct {
+	userService service.UserService
+	jwtService  service.JWTService
 }
 
-func NewEmployeeController(employeeServ service.EmployeeService, jwtServ service.JWTService) EmployeeController {
-	return &employeeController{
-		employeeService: employeeServ,
-		jwtService:      jwtServ,
+func NewUserController(userServ service.UserService, jwtServ service.JWTService) UserController {
+	return &userController{
+		userService: userServ,
+		jwtService:  jwtServ,
 	}
 }
 
-func (b *employeeController) FindEmployees(c *gin.Context) {
+func (b *userController) FindUsers(c *gin.Context) {
 	var (
-		employees []model.SelectEmployeeParameter
-		response  helper.Response
+		users    []model.SelectUserParameter
+		response helper.Response
 	)
-	employees, err := b.employeeService.FindEmployees()
+	users, err := b.userService.FindUsers()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", employees)
+		response = helper.BuildResponse(true, "OK", users)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *employeeController) FindEmployeeById(c *gin.Context) {
+func (b *userController) FindUserById(c *gin.Context) {
 	var (
-		employee model.SelectEmployeeParameter
+		user     model.SelectUserParameter
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -58,87 +58,87 @@ func (b *employeeController) FindEmployeeById(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		employee, err = b.employeeService.FindEmployeeById(uint(id))
+		user, err = b.userService.FindUserById(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employee)
+			response = helper.BuildResponse(true, "OK", user)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) FindEmployeeByNik(c *gin.Context) {
+func (b *userController) FindUserByUName(c *gin.Context) {
 	var (
-		employee model.SelectEmployeeParameter
 		response helper.Response
 	)
-	nik, err := strconv.ParseUint(c.Param("nik"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+	UName := c.Param("UName")
+	if UName == "" {
+		response = helper.BuildErrorResponse("No param UName was found", "No data with given UName", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		employee, err = b.employeeService.FindEmployeeByNik(uint(nik))
+		user, err := b.userService.FindUserByUName(UName)
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employee)
+			response = helper.BuildResponse(true, "OK", user)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) FindExcEmployee(c *gin.Context) {
+func (b *userController) FindExcUser(c *gin.Context) {
 	var (
-		employees []model.SelectEmployeeParameter
-		response  helper.Response
+		users    []model.SelectUserParameter
+		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		employees, err = b.employeeService.FindExcEmployee(uint(id))
+		users, err = b.userService.FindExcUser(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employees)
+			response = helper.BuildResponse(true, "OK", users)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) InsertEmployee(c *gin.Context) {
+func (b *userController) InsertUser(c *gin.Context) {
 	var (
-		employee                model.Employee
-		response                helper.Response
-		CreateEmployeeParameter model.CreateEmployeeParameter
+		user                model.User
+		response            helper.Response
+		CreateUserParameter model.CreateUserParameter
 	)
-	err := c.ShouldBindJSON(&CreateEmployeeParameter)
+	err := c.ShouldBindJSON(&CreateUserParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		employee, err = b.employeeService.InsertEmployee(CreateEmployeeParameter)
+		user, err = b.userService.InsertUser(CreateUserParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register employee", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register user", err.Error(), nil)
 			c.JSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employee)
+			response = helper.BuildResponse(true, "OK", user)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) UpdateEmployee(c *gin.Context) {
+func (b *userController) UpdateUser(c *gin.Context) {
 	var (
-		newData  model.Employee
-		oldData  model.SelectEmployeeParameter
+		newData  model.User
+		oldData  model.SelectUserParameter
 		response helper.Response
 	)
+
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
@@ -149,7 +149,7 @@ func (b *employeeController) UpdateEmployee(c *gin.Context) {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.employeeService.FindEmployeeById(uint(id))
+			oldData, err = b.userService.FindUserById(uint(id))
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
@@ -157,23 +157,22 @@ func (b *employeeController) UpdateEmployee(c *gin.Context) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				employee, err := b.employeeService.UpdateEmployee(newData, uint(id))
+				user, err := b.userService.UpdateUser(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to update employee", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to update user", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", employee)
+					response = helper.BuildResponse(true, "OK", user)
 					c.JSON(http.StatusOK, response)
 				}
 			}
 		}
 	}
 }
-
-func (b *employeeController) DeleteEmployee(c *gin.Context) {
+func (b *userController) DeleteUser(c *gin.Context) {
 	var (
-		newData  model.Employee
-		oldData  model.SelectEmployeeParameter
+		newData  model.User
+		oldData  model.SelectUserParameter
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -186,7 +185,7 @@ func (b *employeeController) DeleteEmployee(c *gin.Context) {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.employeeService.FindEmployeeById(uint(id))
+			oldData, err = b.userService.FindUserById(uint(id))
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
@@ -194,12 +193,12 @@ func (b *employeeController) DeleteEmployee(c *gin.Context) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				employee, err := b.employeeService.DeleteEmployee(newData, uint(id))
+				user, err := b.userService.DeleteUser(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to delete employee", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to delete user", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", employee)
+					response = helper.BuildResponse(true, "OK", user)
 					c.JSON(http.StatusOK, response)
 				}
 			}

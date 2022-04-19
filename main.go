@@ -13,13 +13,15 @@ import (
 
 var (
 	db                     *gorm.DB                          = config.ConnectDataBase()
-	userRepository         repository.UserRepository         = repository.NewUserRepository(db)
 	divisionRepository     repository.DivisionRepository     = repository.NewDivisionRepository(db)
 	departmentRepository   repository.DepartmentRepository   = repository.NewDepartmentRepository(db)
 	sectionRepository      repository.SectionRepository      = repository.NewSectionRepository(db)
 	positionRepository     repository.PositionRepository     = repository.NewPositionRepository(db)
 	locationRepository     repository.LocationRepository     = repository.NewLocationRepository(db)
 	employeeRepository     repository.EmployeeRepository     = repository.NewEmployeeRepository(db)
+	userRepository         repository.UserRepository         = repository.NewUserRepository(db)
+	formRepository         repository.FormRepository         = repository.NewFormRepository(db)
+	formTypeRepository     repository.FormTypeRepository     = repository.NewFormTypeRepository(db)
 	businessUnitRepository repository.BusinessUnitRepository = repository.NewBusinessUnitRepository(db)
 	authService            service.AuthService               = service.NewAuthService(userRepository)
 	divisionService        service.DivisionService           = service.NewDivisionService(divisionRepository)
@@ -28,6 +30,9 @@ var (
 	positionService        service.PositionService           = service.NewPositionService(positionRepository)
 	locationService        service.LocationService           = service.NewLocationService(locationRepository)
 	employeeService        service.EmployeeService           = service.NewEmployeeService(employeeRepository)
+	userService            service.UserService               = service.NewUserService(userRepository)
+	formService            service.FormService               = service.NewFormService(formRepository)
+	formTypeService        service.FormTypeService           = service.NewFormTypeService(formTypeRepository)
 	businessUnitService    service.BusinessUnitService       = service.NewBusinessUnitService(businessUnitRepository)
 	jwtService             service.JWTService                = service.NewJWTService()
 	authController         controller.AuthController         = controller.NewAuthController(authService, jwtService)
@@ -37,6 +42,9 @@ var (
 	positionController     controller.PositionController     = controller.NewPositionController(positionService, jwtService)
 	locationController     controller.LocationController     = controller.NewLocationController(locationService, jwtService)
 	employeeController     controller.EmployeeController     = controller.NewEmployeeController(employeeService, jwtService)
+	userController         controller.UserController         = controller.NewUserController(userService, jwtService)
+	formController         controller.FormController         = controller.NewFormController(formService, jwtService)
+	formTypeController     controller.FormTypeController     = controller.NewFormTypeController(formTypeService, jwtService)
 	businessUnitController controller.BusinessUnitController = controller.NewBusinessUnitController(businessUnitService, jwtService)
 )
 
@@ -108,10 +116,50 @@ func main() {
 		employeeGroup.GET("/", employeeController.FindEmployees)
 		employeeGroup.GET("/:id", employeeController.FindEmployeeById)
 		employeeGroup.GET("/byNik/:nik", employeeController.FindEmployeeByNik)
-		employeeGroup.GET("/exc/:divId/:id", employeeController.FindExcEmployee)
+		employeeGroup.GET("/exc/:id", employeeController.FindExcEmployee)
 		employeeGroup.POST("/", employeeController.InsertEmployee)
 		employeeGroup.PUT("/:id", employeeController.UpdateEmployee)
 		employeeGroup.DELETE("/:id", employeeController.DeleteEmployee)
+	}
+
+	userGroup := r.Group("/api/user", middleware.AuthorizeJWT(jwtService))
+	{
+		userGroup.GET("/", userController.FindUsers)
+		userGroup.GET("/:id", userController.FindUserById)
+		userGroup.GET("/byNUName/:uName", userController.FindUserByUName)
+		userGroup.GET("/exc/:id", userController.FindExcUser)
+		userGroup.POST("/", userController.InsertUser)
+		userGroup.PUT("/:id", userController.UpdateUser)
+		userGroup.DELETE("/:id", userController.DeleteUser)
+	}
+
+	formGroup := r.Group("/api/form", middleware.AuthorizeJWT(jwtService))
+	{
+		formGroup.GET("/", formController.FindForms)
+		formGroup.GET("/formJoinRole/:uId/:fpId", formController.FindFormJoinRole)
+		formGroup.GET("/formByRole/:uId", formController.FindFormByRole)
+		formGroup.GET("/formByType/:tyId", formController.FindFormByType)
+		formGroup.GET("/excFormByType/:tyId/:id", formController.FindExcFormByType)
+		formGroup.GET("/:id", formController.FindFormById)
+		formGroup.GET("/formByFormTypeId/:ftId", formController.FindFormByFormTypeId)
+		formGroup.GET("/excForm/:ftId/:id", formController.FindExcForm)
+		formGroup.GET("/formHead/:ftId", formController.FindFormHead)
+		formGroup.GET("/formHeadDetail/:id", formController.FindFormHeadDetail)
+		formGroup.GET("/excFormHead/:id", formController.FindExcFormHead)
+		formGroup.GET("/excFormOnly/:id", formController.FindExcFormOnly)
+		formGroup.POST("/", formController.InsertForm)
+		formGroup.PUT("/:id", formController.UpdateForm)
+		formGroup.DELETE("/:id", formController.DeleteForm)
+	}
+
+	formTypeGroup := r.Group("/api/formType", middleware.AuthorizeJWT(jwtService))
+	{
+		formTypeGroup.GET("/", formTypeController.FindFormTypes)
+		formTypeGroup.GET("/:id", formTypeController.FindFormTypeById)
+		formTypeGroup.GET("/exc/:id", formTypeController.FindExcFormType)
+		formTypeGroup.POST("/", formTypeController.InsertFormType)
+		formTypeGroup.PUT("/:id", formTypeController.UpdateFormType)
+		formTypeGroup.DELETE("/:id", formTypeController.DeleteFormType)
 	}
 
 	businessUnitGroup := r.Group("/api/businessunit", middleware.AuthorizeJWT(jwtService))

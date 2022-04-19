@@ -2,7 +2,6 @@ package repository
 
 import (
 	"deliportal-api/model"
-	"log"
 
 	"gorm.io/gorm"
 )
@@ -32,11 +31,7 @@ func (db *DepartmentConnection) FindDepartments() (departmentOutput []model.Sele
 	)
 
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("departments.deleted_at = 0").Order("departments.department_name").Find(&departments)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return departments, res.Error
-	}
-	return departments, nil
+	return departments, res.Error
 }
 
 func (db *DepartmentConnection) FindDepartmentById(id uint) (departmentOutput model.SelectDepartmentParameter, err error) {
@@ -45,11 +40,7 @@ func (db *DepartmentConnection) FindDepartmentById(id uint) (departmentOutput mo
 	)
 
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("departments.id=? AND departments.deleted_at = 0", id).Take(&department)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return department, res.Error
-	}
-	return department, nil
+	return department, res.Error
 }
 
 func (db *DepartmentConnection) FindExcDepartment(divId uint, id uint) (departmentOutput []model.SelectDepartmentParameter, err error) {
@@ -58,11 +49,7 @@ func (db *DepartmentConnection) FindExcDepartment(divId uint, id uint) (departme
 	)
 
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("departments.division_id = ? AND departments.id!=? AND departments.deleted_at = 0", divId, id).Order("departments.department_name").Find(&departments)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return departments, res.Error
-	}
-	return departments, nil
+	return departments, res.Error
 }
 
 func (db *DepartmentConnection) FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error) {
@@ -71,27 +58,15 @@ func (db *DepartmentConnection) FindDepartmentByDivId(divId uint) (departmentOut
 	)
 
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("departments.division_id=? AND departments.deleted_at = 0", divId).Order("departments.department_name").Find(&departments)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return departments, res.Error
-	}
-	return departments, nil
+	return departments, res.Error
 }
 
 func (db *DepartmentConnection) InsertDepartment(department model.Department) (departmentOutput model.Department, err error) {
 	res := db.connection.Save(&department)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return department, res.Error
-	}
-	return department, nil
+	return department, res.Error
 }
 
 func (db *DepartmentConnection) UpdateDepartment(department model.Department, id uint) (departmentOutput model.Department, err error) {
 	res := db.connection.Where("id=?", id).Updates(&department)
-	if res.Error != nil {
-		log.Println(res.Error.Error())
-		return department, res.Error
-	}
-	return department, nil
+	return department, res.Error
 }

@@ -8,49 +8,47 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/go-cmp/cmp"
 )
 
-type EmployeeController interface {
-	FindEmployees(c *gin.Context)
-	FindEmployeeById(c *gin.Context)
-	FindEmployeeByNik(c *gin.Context)
-	FindExcEmployee(c *gin.Context)
-	InsertEmployee(c *gin.Context)
-	UpdateEmployee(c *gin.Context)
-	DeleteEmployee(c *gin.Context)
+type FormTypeController interface {
+	FindFormTypes(c *gin.Context)
+	FindFormTypeById(c *gin.Context)
+	FindExcFormType(c *gin.Context)
+	InsertFormType(c *gin.Context)
+	UpdateFormType(c *gin.Context)
+	DeleteFormType(c *gin.Context)
 }
 
-type employeeController struct {
-	employeeService service.EmployeeService
+type formTypeController struct {
+	formTypeService service.FormTypeService
 	jwtService      service.JWTService
 }
 
-func NewEmployeeController(employeeServ service.EmployeeService, jwtServ service.JWTService) EmployeeController {
-	return &employeeController{
-		employeeService: employeeServ,
+func NewFormTypeController(formTypeServ service.FormTypeService, jwtServ service.JWTService) FormTypeController {
+	return &formTypeController{
+		formTypeService: formTypeServ,
 		jwtService:      jwtServ,
 	}
 }
 
-func (b *employeeController) FindEmployees(c *gin.Context) {
+func (b *formTypeController) FindFormTypes(c *gin.Context) {
 	var (
-		employees []model.SelectEmployeeParameter
+		formTypes []model.FormType
 		response  helper.Response
 	)
-	employees, err := b.employeeService.FindEmployees()
+	formTypes, err := b.formTypeService.FindFormTypes()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", employees)
+		response = helper.BuildResponse(true, "OK", formTypes)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *employeeController) FindEmployeeById(c *gin.Context) {
+func (b *formTypeController) FindFormTypeById(c *gin.Context) {
 	var (
-		employee model.SelectEmployeeParameter
+		formType model.FormType
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -58,41 +56,20 @@ func (b *employeeController) FindEmployeeById(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		employee, err = b.employeeService.FindEmployeeById(uint(id))
+		formType, err = b.formTypeService.FindFormTypeById(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employee)
+			response = helper.BuildResponse(true, "OK", formType)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) FindEmployeeByNik(c *gin.Context) {
+func (b *formTypeController) FindExcFormType(c *gin.Context) {
 	var (
-		employee model.SelectEmployeeParameter
-		response helper.Response
-	)
-	nik, err := strconv.ParseUint(c.Param("nik"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		employee, err = b.employeeService.FindEmployeeByNik(uint(nik))
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", employee)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *employeeController) FindExcEmployee(c *gin.Context) {
-	var (
-		employees []model.SelectEmployeeParameter
+		formTypes []model.FormType
 		response  helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -100,43 +77,43 @@ func (b *employeeController) FindExcEmployee(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		employees, err = b.employeeService.FindExcEmployee(uint(id))
+		formTypes, err = b.formTypeService.FindExcFormType(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employees)
+			response = helper.BuildResponse(true, "OK", formTypes)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) InsertEmployee(c *gin.Context) {
+func (b *formTypeController) InsertFormType(c *gin.Context) {
 	var (
-		employee                model.Employee
+		formType                model.FormType
 		response                helper.Response
-		CreateEmployeeParameter model.CreateEmployeeParameter
+		CreateFormTypeParameter model.CreateFormTypeParameter
 	)
-	err := c.ShouldBindJSON(&CreateEmployeeParameter)
+	err := c.ShouldBindJSON(&CreateFormTypeParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		employee, err = b.employeeService.InsertEmployee(CreateEmployeeParameter)
+		formType, err = b.formTypeService.InsertFormType(CreateFormTypeParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register employee", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register formType", err.Error(), nil)
 			c.JSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", employee)
+			response = helper.BuildResponse(true, "OK", formType)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *employeeController) UpdateEmployee(c *gin.Context) {
+func (b *formTypeController) UpdateFormType(c *gin.Context) {
 	var (
-		newData  model.Employee
-		oldData  model.SelectEmployeeParameter
+		newData  model.FormType
+		oldData  model.FormType
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -149,20 +126,20 @@ func (b *employeeController) UpdateEmployee(c *gin.Context) {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.employeeService.FindEmployeeById(uint(id))
+			oldData, err = b.formTypeService.FindFormTypeById(uint(id))
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+			} else if (oldData == model.FormType{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				employee, err := b.employeeService.UpdateEmployee(newData, uint(id))
+				formType, err := b.formTypeService.UpdateFormType(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to update employee", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to update formType", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", employee)
+					response = helper.BuildResponse(true, "OK", formType)
 					c.JSON(http.StatusOK, response)
 				}
 			}
@@ -170,10 +147,10 @@ func (b *employeeController) UpdateEmployee(c *gin.Context) {
 	}
 }
 
-func (b *employeeController) DeleteEmployee(c *gin.Context) {
+func (b *formTypeController) DeleteFormType(c *gin.Context) {
 	var (
-		newData  model.Employee
-		oldData  model.SelectEmployeeParameter
+		newData  model.FormType
+		oldData  model.FormType
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -186,20 +163,20 @@ func (b *employeeController) DeleteEmployee(c *gin.Context) {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.employeeService.FindEmployeeById(uint(id))
+			oldData, err = b.formTypeService.FindFormTypeById(uint(id))
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+			} else if (oldData == model.FormType{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				employee, err := b.employeeService.DeleteEmployee(newData, uint(id))
+				formType, err := b.formTypeService.DeleteFormType(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to delete employee", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to delete formType", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", employee)
+					response = helper.BuildResponse(true, "OK", formType)
 					c.JSON(http.StatusOK, response)
 				}
 			}

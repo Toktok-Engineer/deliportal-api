@@ -3,7 +3,6 @@ package service
 import (
 	"deliportal-api/model"
 	"deliportal-api/repository"
-	"log"
 
 	"github.com/mashingan/smapping"
 )
@@ -52,7 +51,7 @@ func (service *sectionService) InsertSection(section model.CreateSectionParamete
 	newSection := model.Section{}
 	err1 := smapping.FillStruct(&newSection, smapping.MapFields(&section))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newSection, err1
 	}
 	res, err := service.sectionRepository.InsertSection(newSection)
 	return res, err
@@ -62,7 +61,7 @@ func (service *sectionService) UpdateSection(section model.Section, id uint) (se
 	newSection := model.Section{}
 	err1 := smapping.FillStruct(&newSection, smapping.MapFields(&section))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newSection, err1
 	}
 	res, err := service.sectionRepository.UpdateSection(newSection, id)
 	return res, err
@@ -72,7 +71,7 @@ func (service *sectionService) DeleteSection(section model.Section, id uint) (se
 	newSection := model.Section{}
 	err1 := smapping.FillStruct(&newSection, smapping.MapFields(&section))
 	if err != nil {
-		log.Fatalf("Failed map %v", err1)
+		return newSection, err1
 	}
 	res, err := service.sectionRepository.UpdateSection(newSection, id)
 	return res, err
