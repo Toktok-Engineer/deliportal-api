@@ -22,6 +22,9 @@ var (
 	userRepository         repository.UserRepository         = repository.NewUserRepository(db)
 	formRepository         repository.FormRepository         = repository.NewFormRepository(db)
 	formTypeRepository     repository.FormTypeRepository     = repository.NewFormTypeRepository(db)
+	roleRepository         repository.RoleRepository         = repository.NewRoleRepository(db)
+	userRoleRepository     repository.UserRoleRepository     = repository.NewUserRoleRepository(db)
+	roleFormRepository     repository.RoleFormRepository     = repository.NewRoleFormRepository(db)
 	businessUnitRepository repository.BusinessUnitRepository = repository.NewBusinessUnitRepository(db)
 	authService            service.AuthService               = service.NewAuthService(userRepository)
 	divisionService        service.DivisionService           = service.NewDivisionService(divisionRepository)
@@ -33,6 +36,9 @@ var (
 	userService            service.UserService               = service.NewUserService(userRepository)
 	formService            service.FormService               = service.NewFormService(formRepository)
 	formTypeService        service.FormTypeService           = service.NewFormTypeService(formTypeRepository)
+	roleService            service.RoleService               = service.NewRoleService(roleRepository)
+	userRoleService        service.UserRoleService           = service.NewUserRoleService(userRoleRepository)
+	roleFormService        service.RoleFormService           = service.NewRoleFormService(roleFormRepository)
 	businessUnitService    service.BusinessUnitService       = service.NewBusinessUnitService(businessUnitRepository)
 	jwtService             service.JWTService                = service.NewJWTService()
 	authController         controller.AuthController         = controller.NewAuthController(authService, jwtService)
@@ -45,6 +51,9 @@ var (
 	userController         controller.UserController         = controller.NewUserController(userService, jwtService)
 	formController         controller.FormController         = controller.NewFormController(formService, jwtService)
 	formTypeController     controller.FormTypeController     = controller.NewFormTypeController(formTypeService, jwtService)
+	roleController         controller.RoleController         = controller.NewRoleController(roleService, jwtService)
+	userRoleController     controller.UserRoleController     = controller.NewUserRoleController(userRoleService, jwtService)
+	roleFormController     controller.RoleFormController     = controller.NewRoleFormController(roleFormService, jwtService)
 	businessUnitController controller.BusinessUnitController = controller.NewBusinessUnitController(businessUnitService, jwtService)
 )
 
@@ -160,6 +169,40 @@ func main() {
 		formTypeGroup.POST("/", formTypeController.InsertFormType)
 		formTypeGroup.PUT("/:id", formTypeController.UpdateFormType)
 		formTypeGroup.DELETE("/:id", formTypeController.DeleteFormType)
+	}
+
+	roleGroup := r.Group("/api/role", middleware.AuthorizeJWT(jwtService))
+	{
+		roleGroup.GET("/", roleController.FindRoles)
+		roleGroup.GET("/:id", roleController.FindRoleById)
+		roleGroup.GET("/exc/:id", roleController.FindExcRole)
+		roleGroup.POST("/", roleController.InsertRole)
+		roleGroup.PUT("/:id", roleController.UpdateRole)
+		roleGroup.DELETE("/:id", roleController.DeleteRole)
+	}
+
+	userRoleGroup := r.Group("/api/userRole", middleware.AuthorizeJWT(jwtService))
+	{
+		userRoleGroup.GET("/", userRoleController.FindUserRoles)
+		userRoleGroup.GET("/:id", userRoleController.FindUserRoleById)
+		userRoleGroup.GET("/byUserId/:uid", userRoleController.FindUserRoleByUserId)
+		userRoleGroup.GET("/exc/:id/:uid", userRoleController.FindExcUserRole)
+		userRoleGroup.GET("/excOnly/:id", userRoleController.FindExcUserRoleOnly)
+		userRoleGroup.POST("/", userRoleController.InsertUserRole)
+		userRoleGroup.PUT("/:id", userRoleController.UpdateUserRole)
+		userRoleGroup.DELETE("/:id", userRoleController.DeleteUserRole)
+	}
+
+	roleFormGroup := r.Group("/api/roleForm", middleware.AuthorizeJWT(jwtService))
+	{
+		roleFormGroup.GET("/", roleFormController.FindRoleForms)
+		roleFormGroup.GET("/:id", roleFormController.FindRoleFormById)
+		roleFormGroup.GET("/byFormId/:fid/:rid", roleFormController.FindRoleFormByFormId)
+		roleFormGroup.GET("/exc/:id/:rid", roleFormController.FindExcRoleForm)
+		roleFormGroup.GET("/excOnly/:id", roleFormController.FindExcRoleFormOnly)
+		roleFormGroup.POST("/", roleFormController.InsertRoleForm)
+		roleFormGroup.PUT("/:id", roleFormController.UpdateRoleForm)
+		roleFormGroup.DELETE("/:id", roleFormController.DeleteRoleForm)
 	}
 
 	businessUnitGroup := r.Group("/api/businessunit", middleware.AuthorizeJWT(jwtService))
