@@ -41,7 +41,7 @@ func (b *roleFormController) FindRoleForms(c *gin.Context) {
 	)
 	roleForms, err := b.roleFormService.FindRoleForms()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", roleForms)
@@ -157,7 +157,7 @@ func (b *roleFormController) InsertRoleForm(c *gin.Context) {
 	} else {
 		roleForm, err = b.roleFormService.InsertRoleForm(CreateRoleFormParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register roleForm", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register roleForm", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", roleForm)
@@ -187,7 +187,7 @@ func (b *roleFormController) UpdateRoleForm(c *gin.Context) {
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+			} else if (cmp.Equal(oldData, model.SelectRoleFormParameter{})) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
@@ -223,7 +223,7 @@ func (b *roleFormController) DeleteRoleForm(c *gin.Context) {
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+			} else if (cmp.Equal(oldData, model.SelectRoleFormParameter{})) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {

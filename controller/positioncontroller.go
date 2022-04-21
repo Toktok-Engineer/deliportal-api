@@ -38,7 +38,7 @@ func (b *positionController) FindPositions(c *gin.Context) {
 	)
 	positions, err := b.positionService.FindPositions()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", positions)
@@ -102,7 +102,7 @@ func (b *positionController) InsertPosition(c *gin.Context) {
 	} else {
 		position, err = b.positionService.InsertPosition(CreatePositionParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register position", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register position", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", position)

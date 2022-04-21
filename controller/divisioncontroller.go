@@ -38,7 +38,7 @@ func (b *divisionController) FindDivisions(c *gin.Context) {
 	)
 	divisions, err := b.divisionService.FindDivisions()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", divisions)
@@ -101,7 +101,7 @@ func (b *divisionController) InsertDivision(c *gin.Context) {
 	} else {
 		division, err = b.divisionService.InsertDivision(CreateDivisionParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register division", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register division", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", division)

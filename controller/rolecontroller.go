@@ -38,7 +38,7 @@ func (b *roleController) FindRoles(c *gin.Context) {
 	)
 	roles, err := b.roleService.FindRoles()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", roles)
@@ -101,7 +101,7 @@ func (b *roleController) InsertRole(c *gin.Context) {
 	} else {
 		role, err = b.roleService.InsertRole(CreateRoleParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register role", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register role", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", role)

@@ -40,7 +40,7 @@ func (b *userController) FindUsers(c *gin.Context) {
 	)
 	users, err := b.userService.FindUsers()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", users)
@@ -123,7 +123,7 @@ func (b *userController) InsertUser(c *gin.Context) {
 	} else {
 		user, err = b.userService.InsertUser(CreateUserParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register user", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register user", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", user)

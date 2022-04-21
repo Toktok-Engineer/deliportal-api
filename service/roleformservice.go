@@ -79,6 +79,6 @@ func (service *roleFormService) DeleteRoleForm(roleForm model.RoleForm, id uint)
 	if err != nil {
 		return newRoleForm, err1
 	}
-	res, err := service.roleFormRepository.UpdateRoleForm(newRoleForm, id)
+	res, err := service.roleFormRepository.DeleteRoleForm(newRoleForm, id)
 	return res, err
 }

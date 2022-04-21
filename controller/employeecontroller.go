@@ -40,7 +40,7 @@ func (b *employeeController) FindEmployees(c *gin.Context) {
 	)
 	employees, err := b.employeeService.FindEmployees()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", employees)
@@ -124,7 +124,7 @@ func (b *employeeController) InsertEmployee(c *gin.Context) {
 	} else {
 		employee, err = b.employeeService.InsertEmployee(CreateEmployeeParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register employee", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register employee", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", employee)

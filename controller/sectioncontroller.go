@@ -39,7 +39,7 @@ func (b *sectionController) FindSections(c *gin.Context) {
 	)
 	sections, err := b.sectionService.FindSections()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", sections)
@@ -129,7 +129,7 @@ func (b *sectionController) InsertSection(c *gin.Context) {
 	} else {
 		section, err = b.sectionService.InsertSection(CreateSectionParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register section", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register section", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", section)

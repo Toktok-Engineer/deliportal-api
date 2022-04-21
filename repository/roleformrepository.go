@@ -14,6 +14,7 @@ type RoleFormRepository interface {
 	FindExcRoleFormOnly(id uint) (roleFormOutput []model.SelectRoleFormParameter, err error)
 	InsertRoleForm(roleForm model.RoleForm) (roleFormOutput model.RoleForm, err error)
 	UpdateRoleForm(roleForm model.RoleForm, id uint) (roleFormOutput model.RoleForm, err error)
+	DeleteRoleForm(roleForm model.RoleForm, id uint) (roleFormOutput model.RoleForm, err error)
 }
 
 type RoleFormConnection struct {
@@ -77,6 +78,17 @@ func (db *RoleFormConnection) InsertRoleForm(roleForm model.RoleForm) (roleFormO
 }
 
 func (db *RoleFormConnection) UpdateRoleForm(roleForm model.RoleForm, id uint) (roleFormOutput model.RoleForm, err error) {
-	res := db.connection.Where("id=?", id).Updates(&roleForm)
+	var (
+		role_form model.RoleForm
+	)
+	res := db.connection.Model(&role_form).Where("id=?", id).Updates(map[string]interface{}{"role_id": roleForm.RoleID, "form_id": roleForm.FormID, "create_flag": roleForm.CreateFlag, "read_flag": roleForm.ReadFlag, "update_flag": roleForm.UpdateFlag, "delete_flag": roleForm.DeleteFlag, "remark": roleForm.Remark, "created_user_id": roleForm.CreatedUserID, "updated_user_id": roleForm.UpdatedUserID, "deleted_user_id": roleForm.DeletedUserID, "created_at": roleForm.CreatedAt, "updated_at": roleForm.UpdatedAt, "deleted_at": roleForm.DeletedAt})
+	return roleForm, res.Error
+}
+
+func (db *RoleFormConnection) DeleteRoleForm(roleForm model.RoleForm, id uint) (roleFormOutput model.RoleForm, err error) {
+	var (
+		role_form model.RoleForm
+	)
+	res := db.connection.Model(&role_form).Where("id=?", id).Updates(map[string]interface{}{"deleted_user_id": roleForm.DeletedUserID, "deleted_at": roleForm.DeletedAt})
 	return roleForm, res.Error
 }

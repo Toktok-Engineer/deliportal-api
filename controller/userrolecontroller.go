@@ -41,7 +41,7 @@ func (b *userRoleController) FindUserRoles(c *gin.Context) {
 	)
 	userRoles, err := b.userRoleService.FindUserRoles()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", userRoles)
@@ -151,7 +151,7 @@ func (b *userRoleController) InsertUserRole(c *gin.Context) {
 	} else {
 		userRole, err = b.userRoleService.InsertUserRole(CreateUserRoleParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register userRole", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register userRole", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", userRole)

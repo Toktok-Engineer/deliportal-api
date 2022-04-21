@@ -39,7 +39,7 @@ func (b *departmentController) FindDepartments(c *gin.Context) {
 	)
 	departments, err := b.departmentService.FindDepartments()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", departments)
@@ -129,7 +129,7 @@ func (b *departmentController) InsertDepartment(c *gin.Context) {
 	} else {
 		department, err = b.departmentService.InsertDepartment(CreateDepartmentParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register department", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register department", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", department)

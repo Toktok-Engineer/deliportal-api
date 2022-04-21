@@ -2,7 +2,7 @@ package model
 
 type BusinessUnit struct {
 	ID               uint    `json:"business_unit_id"`
-	BusinessUnitName string  `gorm:"type:varchar(50);not null;unique" json:"business_unit_name"`
+	BusinessUnitName string  `gorm:"type:varchar(100);not null;unique" json:"business_unit_name" binding:"required"`
 	Remark           string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserID    uint    `gorm:"type:bigint;not null" json:"created_user_id"`
 	UpdatedUserID    uint    `gorm:"type:bigint;not null" json:"updated_user_id"`
@@ -13,7 +13,7 @@ type BusinessUnit struct {
 }
 
 type CreateBusinessUnitParameter struct {
-	BusinessUnitName string  `gorm:"type:varchar(50);not null;unique" json:"business_unit_name" binding:"required"`
+	BusinessUnitName string  `gorm:"type:varchar(100);not null;unique" json:"business_unit_name" binding:"required"`
 	Remark           string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserID    uint    `gorm:"type:bigint;not null" json:"created_user_id"`
 	UpdatedUserID    uint    `gorm:"type:bigint;not null" json:"updated_user_id"`

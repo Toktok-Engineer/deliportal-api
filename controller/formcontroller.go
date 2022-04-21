@@ -48,7 +48,7 @@ func (b *formController) FindForms(c *gin.Context) {
 	)
 	forms, err := b.formService.FindForms()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", forms)
@@ -318,7 +318,7 @@ func (b *formController) InsertForm(c *gin.Context) {
 	} else {
 		form, err = b.formService.InsertForm(CreateFormParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register form", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register form", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", form)

@@ -161,7 +161,7 @@ func main() {
 		formGroup.DELETE("/:id", formController.DeleteForm)
 	}
 
-	formTypeGroup := r.Group("/api/formType", middleware.AuthorizeJWT(jwtService))
+	formTypeGroup := r.Group("/api/FormType", middleware.AuthorizeJWT(jwtService))
 	{
 		formTypeGroup.GET("/", formTypeController.FindFormTypes)
 		formTypeGroup.GET("/:id", formTypeController.FindFormTypeById)
@@ -181,7 +181,7 @@ func main() {
 		roleGroup.DELETE("/:id", roleController.DeleteRole)
 	}
 
-	userRoleGroup := r.Group("/api/userRole", middleware.AuthorizeJWT(jwtService))
+	userRoleGroup := r.Group("/api/UserRole", middleware.AuthorizeJWT(jwtService))
 	{
 		userRoleGroup.GET("/", userRoleController.FindUserRoles)
 		userRoleGroup.GET("/:id", userRoleController.FindUserRoleById)
@@ -193,7 +193,7 @@ func main() {
 		userRoleGroup.DELETE("/:id", userRoleController.DeleteUserRole)
 	}
 
-	roleFormGroup := r.Group("/api/roleForm", middleware.AuthorizeJWT(jwtService))
+	roleFormGroup := r.Group("/api/RoleForm", middleware.AuthorizeJWT(jwtService))
 	{
 		roleFormGroup.GET("/", roleFormController.FindRoleForms)
 		roleFormGroup.GET("/:id", roleFormController.FindRoleFormById)
@@ -205,10 +205,11 @@ func main() {
 		roleFormGroup.DELETE("/:id", roleFormController.DeleteRoleForm)
 	}
 
-	businessUnitGroup := r.Group("/api/businessunit", middleware.AuthorizeJWT(jwtService))
+	businessUnitGroup := r.Group("/api/BusinessUnit", middleware.AuthorizeJWT(jwtService))
 	{
 		businessUnitGroup.GET("/", businessUnitController.FindBusinessUnits)
 		businessUnitGroup.GET("/:id", businessUnitController.FindBusinessUnitById)
+		businessUnitGroup.GET("/exc/:id", businessUnitController.FindExcBusinessUnit)
 		businessUnitGroup.POST("/", businessUnitController.InsertBusinessUnit)
 		businessUnitGroup.PUT("/:id", businessUnitController.UpdateBusinessUnit)
 		businessUnitGroup.DELETE("/:id", businessUnitController.DeleteBusinessUnit)

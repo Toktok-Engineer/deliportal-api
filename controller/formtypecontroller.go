@@ -38,7 +38,7 @@ func (b *formTypeController) FindFormTypes(c *gin.Context) {
 	)
 	formTypes, err := b.formTypeService.FindFormTypes()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", formTypes)
@@ -101,7 +101,7 @@ func (b *formTypeController) InsertFormType(c *gin.Context) {
 	} else {
 		formType, err = b.formTypeService.InsertFormType(CreateFormTypeParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register formType", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register formType", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", formType)

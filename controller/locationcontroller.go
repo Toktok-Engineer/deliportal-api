@@ -38,7 +38,7 @@ func (b *locationController) FindLocations(c *gin.Context) {
 	)
 	locations, err := b.locationService.FindLocations()
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), nil)
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
 		response = helper.BuildResponse(true, "OK", locations)
@@ -101,7 +101,7 @@ func (b *locationController) InsertLocation(c *gin.Context) {
 	} else {
 		location, err = b.locationService.InsertLocation(CreateLocationParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register location", err.Error(), nil)
+			response = helper.BuildErrorResponse("Failed to register location", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", location)

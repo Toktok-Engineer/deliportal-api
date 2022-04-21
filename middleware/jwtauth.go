@@ -26,7 +26,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 			log.Println("Claim[username] : ", claims["username"])
 		} else {
 			log.Println(err)
-			response := helper.BuildErrorResponse("Token is not valid", err.Error(), nil)
+			response := helper.BuildErrorResponse("Token is not valid", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		}
 	}
@@ -48,7 +48,7 @@ func AuthorizeJWTRefreshToken(jwtService service.JWTService) gin.HandlerFunc {
 			log.Println("Claim[username] : ", claims["username"])
 		} else {
 			log.Println(err)
-			response := helper.BuildErrorResponse("Token is not valid", err.Error(), nil)
+			response := helper.BuildErrorResponse("Token is not valid", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		}
 	}
