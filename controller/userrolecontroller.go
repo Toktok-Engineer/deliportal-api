@@ -74,12 +74,12 @@ func (b *userRoleController) FindUserRoleByUserId(c *gin.Context) {
 	var (
 		response helper.Response
 	)
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+	uid, err := strconv.ParseUint(c.Param("uid"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("No param UName was found", "No data with given UName", helper.EmptyObj{})
+		response = helper.BuildErrorResponse("No param uid was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		userRole, err := b.userRoleService.FindUserRoleByUserId(uint(id))
+		userRole, err := b.userRoleService.FindUserRoleByUserId(uint(uid))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)

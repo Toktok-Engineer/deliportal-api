@@ -102,7 +102,7 @@ func (b *departmentController) FindDepartmentByDivId(c *gin.Context) {
 	)
 	divId, err := strconv.ParseUint(c.Param("divId"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		response = helper.BuildErrorResponse("No param division id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
 		departments, err = b.departmentService.FindDepartmentByDivId(uint(divId))

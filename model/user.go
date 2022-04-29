@@ -58,3 +58,9 @@ type CreateUserParameter struct {
 	UpdatedAt     float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt     float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
 }
+
+type Mail struct {
+	To      string `json:"to"`
+	Subject string `json:"subject"`
+	Body    string `json:"body"`
+}

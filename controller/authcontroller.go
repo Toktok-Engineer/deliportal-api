@@ -14,6 +14,9 @@ type AuthController interface {
 	Login(c *gin.Context)
 	Register(c *gin.Context)
 	RenewToken(c *gin.Context)
+	CheckExisting(c *gin.Context)
+	SendMail(c *gin.Context)
+	UpdateDataPassword(c *gin.Context)
 }
 
 type authController struct {
@@ -143,5 +146,81 @@ func (a *authController) RenewToken(c *gin.Context) {
 		response := helper.BuildResponse(true, "OK", renewTokenResult)
 		c.JSON(http.StatusOK, response)
 		return
+	}
+}
+
+func (b *authController) CheckExisting(c *gin.Context) {
+	var (
+		Data     model.User
+		response helper.Response
+	)
+	err := c.ShouldBindJSON(&Data)
+	if err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		user, err := b.authService.CheckExisting(Data)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", user)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *authController) SendMail(c *gin.Context) {
+	var (
+		Data     model.Mail
+		response helper.Response
+	)
+	err := c.ShouldBindJSON(&Data)
+	if err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		mail, err := b.authService.SendMail(Data)
+		if err != nil {
+			response = helper.BuildErrorResponse("Sent Failed", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", mail)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *authController) UpdateDataPassword(c *gin.Context) {
+	var (
+		Data     model.User
+		response helper.Response
+	)
+
+	username := c.Param("username")
+	if username == "" {
+		response = helper.BuildErrorResponse("No param username was found", "No data with given username", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		email := c.Param("email")
+		if email == "" {
+			response = helper.BuildErrorResponse("No param email was found", "No data with given email", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			err := c.ShouldBindJSON(&Data)
+			if err != nil {
+				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				user, err := b.authService.UpdateDataPassword(Data, username, email)
+				if err != nil {
+					response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+					c.JSON(http.StatusNotFound, response)
+				} else {
+					response = helper.BuildResponse(true, "OK", user)
+					c.JSON(http.StatusOK, response)
+				}
+			}
+		}
 	}
 }
