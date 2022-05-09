@@ -2,10 +2,10 @@ package model
 
 type User struct {
 	ID            uint    `json:"user_id"`
-	Username      string  `gorm:"type:varchar(50);not null;unique" json:"username"`
+	Username      string  `gorm:"type:varchar(50);not null;unique" json:"username" binding:"required"`
 	Password      string  `gorm:"type:varchar(100);typedefault:null" json:"password"`
 	EmployeeID    uint    `gorm:"type:bigint;typedefault:null;index:" json:"employee_id"`
-	Email         string  `gorm:"type:varchar(30);not null" json:"email"`
+	Email         string  `gorm:"type:varchar(30);not null" json:"email" binding:"required"`
 	Remark        string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserId uint    `gorm:"type:bigint;not null" json:"created_user_id"`
 	UpdatedUserId uint    `gorm:"type:bigint;not null" json:"updated_user_id"`
@@ -17,7 +17,7 @@ type User struct {
 
 type SelectUserParameter struct {
 	ID             uint    `json:"user_id"`
-	Username       string  `gorm:"type:varchar(50);not null;unique" json:"username"`
+	Username       string  `gorm:"type:varchar(50);not null;unique" json:"username" binding:"required"`
 	Password       string  `gorm:"type:varchar(100);typedefault:null" json:"password"`
 	EmployeeID     uint    `gorm:"type:bigint;typedefault:null;index:" json:"employee_id"`
 	NIK            string  `gorm:"type:varchar(20);not null" json:"nik"`
@@ -35,7 +35,7 @@ type SelectUserParameter struct {
 	PositionName   string  `gorm:"type:varchar(50);not null;unique" json:"position_name"`
 	LocationID     uint    `gorm:"type:bigint;foreign_key;index:" json:"location_id"`
 	LocationName   string  `gorm:"type:varchar(50);not null;unique" json:"location_name"`
-	Email          string  `gorm:"type:varchar(30);not null" json:"email"`
+	Email          string  `gorm:"type:varchar(30);not null" json:"email" binding:"required"`
 	Remark         string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserId  uint    `gorm:"type:bigint;not null" json:"created_user_id"`
 	UpdatedUserId  uint    `gorm:"type:bigint;not null" json:"updated_user_id"`
@@ -46,10 +46,10 @@ type SelectUserParameter struct {
 }
 
 type CreateUserParameter struct {
-	Username      string  `gorm:"type:varchar(50);not null;unique" json:"username"`
+	Username      string  `gorm:"type:varchar(50);not null;unique" json:"username" binding:"required"`
 	Password      string  `gorm:"type:varchar(100);typedefault:null" json:"password"`
 	EmployeeID    uint    `gorm:"type:bigint;typedefault:null;index:" json:"employee_id"`
-	Email         string  `gorm:"type:varchar(30);not null" json:"email"`
+	Email         string  `gorm:"type:varchar(30);not null" json:"email" binding:"required"`
 	Remark        string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserId uint    `gorm:"type:bigint;not null" json:"created_user_id"`
 	UpdatedUserId uint    `gorm:"type:bigint;not null" json:"updated_user_id"`
@@ -60,7 +60,12 @@ type CreateUserParameter struct {
 }
 
 type Mail struct {
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
+	To      string `json:"to" binding:"required"`
+	Subject string `json:"subject" binding:"required"`
+	Body    string `json:"body" binding:"required"`
+}
+
+type ResetPasswordParameter struct {
+	Password        string `json:"password" binding:"required"`
+	ConfirmPassword string `json:"confirm_password" binding:"required"`
 }

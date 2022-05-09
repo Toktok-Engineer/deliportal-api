@@ -36,9 +36,21 @@ func (a *authController) Login(c *gin.Context) {
 	var loginResponse model.LoginResponse
 	err := c.ShouldBind(&loginParameter)
 	if err != nil {
-		response := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
+		if loginParameter.Username == "" && loginParameter.Password == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Username and Password are missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if loginParameter.Username == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Username is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if loginParameter.Password == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Password is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
 	}
 
 	authResult := a.authService.VerifyCredential(loginParameter.Username, loginParameter.Password)
@@ -156,17 +168,29 @@ func (b *authController) CheckExisting(c *gin.Context) {
 	)
 	err := c.ShouldBindJSON(&Data)
 	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		user, err := b.authService.CheckExisting(Data)
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", user)
-			c.JSON(http.StatusOK, response)
+		if Data.Username == "" && Data.Email == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Username and Email are missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
 		}
+		if Data.Username == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Username is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.Email == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Email is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+	}
+	user, err := b.authService.CheckExisting(Data)
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", "Please check your username or email", helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", user)
+		c.JSON(http.StatusOK, response)
 	}
 }
 
@@ -177,23 +201,40 @@ func (b *authController) SendMail(c *gin.Context) {
 	)
 	err := c.ShouldBindJSON(&Data)
 	if err != nil {
-		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		mail, err := b.authService.SendMail(Data)
-		if err != nil {
-			response = helper.BuildErrorResponse("Sent Failed", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", mail)
-			c.JSON(http.StatusOK, response)
+		if Data.To == "" && Data.Subject == "" && Data.Body == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Recipient, Subject, and Body are missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
 		}
+		if Data.To == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Recipient is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.Subject == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Subject is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.Body == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Body is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+	}
+	mail, err := b.authService.SendMail(Data)
+	if err != nil {
+		response = helper.BuildErrorResponse("Email Sent Failed", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", mail)
+		c.JSON(http.StatusOK, response)
 	}
 }
 
 func (b *authController) UpdateDataPassword(c *gin.Context) {
 	var (
-		Data     model.User
+		Data     model.ResetPasswordParameter
 		response helper.Response
 	)
 
@@ -209,8 +250,26 @@ func (b *authController) UpdateDataPassword(c *gin.Context) {
 		} else {
 			err := c.ShouldBindJSON(&Data)
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				if Data.Password == "" && Data.ConfirmPassword == "" {
+					response := helper.BuildErrorResponse("Failed to process request", "Password and Confirm Password are missing", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					return
+				}
+				if Data.Password == "" {
+					response := helper.BuildErrorResponse("Failed to process request", "Password is missing", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					return
+				}
+				if Data.ConfirmPassword == "" {
+					response := helper.BuildErrorResponse("Failed to process request", "Confirm Password is missing", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					return
+				}
+			}
+			if Data.Password != Data.ConfirmPassword {
+				response := helper.BuildErrorResponse("Failed to process request", "Password and Confirm Password are not match", helper.EmptyObj{})
 				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
 			} else {
 				user, err := b.authService.UpdateDataPassword(Data, username, email)
 				if err != nil {
