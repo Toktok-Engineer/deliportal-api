@@ -9,6 +9,7 @@ import (
 
 type CompanyService interface {
 	FindCompanys() (companyOutput []model.SelectCompanyParameter, err error)
+	FindCompanyApprove() (companyOutput []model.SelectCompanyParameter, err error)
 	FindCompanyById(id uint) (companyOutput model.SelectCompanyParameter, err error)
 	FindExcCompany(id uint) (companyOutput []model.SelectCompanyParameter, err error)
 	InsertCompany(company model.CreateCompanyParameter) (companyOutput model.Company, err error)
@@ -30,6 +31,11 @@ func NewCompanyService(companyRep repository.CompanyRepository) CompanyService {
 
 func (service *companyService) FindCompanys() (companyOutput []model.SelectCompanyParameter, err error) {
 	res, err := service.companyRepository.FindCompanys()
+	return res, err
+}
+
+func (service *companyService) FindCompanyApprove() (companyOutput []model.SelectCompanyParameter, err error) {
+	res, err := service.companyRepository.FindCompanyApprove()
 	return res, err
 }
 

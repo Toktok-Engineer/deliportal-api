@@ -302,6 +302,7 @@ func main() {
 	companyGroup := r.Group("/api/company", middleware.AuthorizeJWT(jwtService))
 	{
 		companyGroup.GET("/", companyController.FindCompanys)
+		companyGroup.GET("/app/", companyController.FindCompanyApprove)
 		companyGroup.GET("/:id", companyController.FindCompanyById)
 		companyGroup.GET("/exc/:id", companyController.FindExcCompany)
 		companyGroup.POST("/", companyController.InsertCompany)
@@ -336,6 +337,8 @@ func main() {
 	companyLicenseGroup := r.Group("/api/companyLicense", middleware.AuthorizeJWT(jwtService))
 	{
 		companyLicenseGroup.GET("/", companyLicenseController.FindCompanyLicenses)
+		companyLicenseGroup.GET("/app/", companyLicenseController.FindCompanyLicenseApp)
+		companyLicenseGroup.GET("/exp/", companyLicenseController.FindExpCompanyLicenses)
 		companyLicenseGroup.GET("/:id", companyLicenseController.FindCompanyLicenseById)
 		companyLicenseGroup.GET("/exc/:id", companyLicenseController.FindExcCompanyLicense)
 		companyLicenseGroup.GET("/byCompany/:id", companyLicenseController.FindCompanyLicenseByCompanyId)

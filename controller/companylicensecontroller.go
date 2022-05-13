@@ -12,6 +12,8 @@ import (
 
 type CompanyLicenseController interface {
 	FindCompanyLicenses(c *gin.Context)
+	FindCompanyLicenseApp(c *gin.Context)
+	FindExpCompanyLicenses(c *gin.Context)
 	FindCompanyLicenseById(c *gin.Context)
 	FindExcCompanyLicense(c *gin.Context)
 	FindCompanyLicenseByCompanyId(c *gin.Context)
@@ -42,6 +44,36 @@ func (b *companyLicenseController) FindCompanyLicenses(c *gin.Context) {
 		response        helper.Response
 	)
 	companyLicenses, err := b.companyLicenseService.FindCompanyLicenses()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", companyLicenses)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyLicenseController) FindCompanyLicenseApp(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+	companyLicenses, err := b.companyLicenseService.FindCompanyLicenseApp()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", companyLicenses)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyLicenseController) FindExpCompanyLicenses(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseExpiredParameter
+		response        helper.Response
+	)
+	companyLicenses, err := b.companyLicenseService.FindExpCompanyLicenses()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)

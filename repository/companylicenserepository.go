@@ -8,6 +8,8 @@ import (
 
 type CompanyLicenseRepository interface {
 	FindCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	FindCompanyLicenseApp() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	FindExpCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseExpiredParameter, err error)
 	FindCompanyLicenseById(id uint) (companyLicenseOutput model.SelectCompanyLicenseParameter, err error)
 	FindExcCompanyLicense(id uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
 	FindCompanyLicenseByCompanyId(id uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
@@ -36,6 +38,24 @@ func (db *CompanyLicenseConnection) FindCompanyLicenses() (companyLicenseOutput 
 	)
 
 	res := db.connection.Debug().Table("company_licenses").Select("company_licenses.id, company_licenses.parent_license_id, company_licenses.license_no, company_licenses.license_type_id, license_types.license_type_name, company_licenses.company_id, company_licenses.renewable, company_licenses.reminder_counter, company_licenses.issued_by, company_licenses.issued_date, company_licenses.expired_date, company_licenses.earliest_renewal_date, company_licenses.last_renewal_date, company_licenses.status, company_licenses.renewal_status, company_licenses.approved_user_id, company_licenses.renewal_approved_user_id, company_licenses.approved_date, company_licenses.renewal_approved_date, company_licenses.remark, company_licenses.created_user_id, company_licenses.updated_user_id, company_licenses.deleted_user_id, company_licenses.created_at, company_licenses.updated_at, company_licenses.deleted_at").Joins("left join license_types ON company_licenses.license_type_id = license_types.id").Where("company_licenses.deleted_at = 0").Order("company_licenses.id").Find(&companyLicenses)
+	return companyLicenses, res.Error
+}
+
+func (db *CompanyLicenseConnection) FindCompanyLicenseApp() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+	)
+
+	res := db.connection.Debug().Table("company_licenses").Select("company_licenses.id, company_licenses.parent_license_id, company_licenses.license_no, company_licenses.license_type_id, license_types.license_type_name, company_licenses.company_id, company_licenses.renewable, company_licenses.reminder_counter, company_licenses.issued_by, company_licenses.issued_date, company_licenses.expired_date, company_licenses.earliest_renewal_date, company_licenses.last_renewal_date, company_licenses.status, company_licenses.renewal_status, company_licenses.approved_user_id, company_licenses.renewal_approved_user_id, company_licenses.approved_date, company_licenses.renewal_approved_date, company_licenses.remark, company_licenses.created_user_id, company_licenses.updated_user_id, company_licenses.deleted_user_id, company_licenses.created_at, company_licenses.updated_at, company_licenses.deleted_at").Joins("left join license_types ON company_licenses.license_type_id = license_types.id").Where("company_licenses.status = 2 AND company_licenses.deleted_at = 0").Order("company_licenses.id").Find(&companyLicenses)
+	return companyLicenses, res.Error
+}
+
+func (db *CompanyLicenseConnection) FindExpCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseExpiredParameter, err error) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseExpiredParameter
+	)
+
+	res := db.connection.Debug().Table("company_licenses").Select("company_licenses.id, license_types.license_type_name, company_licenses.license_no, companies.company_name, company_licenses.expired_date, company_licenses.earliest_renewal_date, company_licenses.last_renewal_date, company_licenses.renewal_status, company_licenses.status, company_licenses.reminder_counter, company_licenses.remark, company_licenses.created_user_id, company_licenses.updated_user_id, company_licenses.deleted_user_id, company_licenses.created_at, company_licenses.updated_at, company_licenses.deleted_at").Joins("inner join license_types ON company_licenses.license_type_id = license_types.id").Joins("inner join companies ON company_licenses.company_id = companies.id").Where("company_licenses.renewable = true AND company_licenses.renewal_status not in (5,6) AND company_licenses.status = 3 AND date(now()) >= date((timezone('Asia/Jakarta', to_timestamp(company_licenses.earliest_renewal_date)) - (license_types.reminder_before_month::text || ' month')::interval) AND company_licenses.deleted_at = 0").Order("company_licenses.expired_date").Find(&companyLicenses)
 	return companyLicenses, res.Error
 }
 
@@ -83,7 +103,7 @@ func (db *CompanyLicenseConnection) UpdateCompanyLicenseStatus(companyLicense mo
 	var (
 		company_license model.CompanyLicense
 	)
-	res := db.connection.Model(&company_license).Where("id=?", id).Updates(map[string]interface{}{"status": companyLicense.Status, "approved_user_id": companyLicense.ApprovedUserID, "approved_date": companyLicense.ApprovedDate, "updated_user_id": companyLicense.UpdatedUserID, "updated_at": companyLicense.UpdatedAt})
+	res := db.connection.Model(&company_license).Where("id=?", id).Updates(map[string]interface{}{"status": companyLicense.Status, "approved_user_id": companyLicense.ApprovedUserID, "approved_date": companyLicense.ApprovedDate})
 	return companyLicense, res.Error
 }
 
@@ -91,7 +111,7 @@ func (db *CompanyLicenseConnection) UpdateCompanyLicenseDeactive(companyLicense 
 	var (
 		company_license model.CompanyLicense
 	)
-	res := db.connection.Model(&company_license).Where("id=?", id).Updates(map[string]interface{}{"status": companyLicense.Status, "updated_user_id": companyLicense.UpdatedUserID, "updated_at": companyLicense.UpdatedAt})
+	res := db.connection.Model(&company_license).Where("id=?", id).Updates(map[string]interface{}{"status": companyLicense.Status})
 	return companyLicense, res.Error
 }
 
@@ -99,7 +119,7 @@ func (db *CompanyLicenseConnection) UpdateCompanyLicenseApprovedRenewalStatus(co
 	var (
 		company_license model.CompanyLicense
 	)
-	res := db.connection.Model(&company_license).Where("id=?", id).Updates(map[string]interface{}{"renewal_status": companyLicense.RenewalStatus, "renewal_approved_user_id": companyLicense.RenewalApprovedUserID, "renewal_approved_date": companyLicense.RenewalApprovedDate, "updated_user_id": companyLicense.UpdatedUserID, "updated_at": companyLicense.UpdatedAt})
+	res := db.connection.Model(&company_license).Where("id=?", id).Updates(map[string]interface{}{"renewal_status": companyLicense.RenewalStatus, "renewal_approved_user_id": companyLicense.RenewalApprovedUserID, "renewal_approved_date": companyLicense.RenewalApprovedDate})
 	return companyLicense, res.Error
 }
 
@@ -112,6 +132,6 @@ func (db *CompanyLicenseConnection) DeleteCompanyLicense(companyLicense model.Co
 }
 
 func (db *CompanyLicenseConnection) UpdateCompanyRemark(companyLicense model.CompanyLicense, id uint) (companyLicenseOutput model.CompanyLicense, err error) {
-	res := db.connection.Model(&companyLicense).Where("id=?", id).Updates(map[string]interface{}{"remark": companyLicense.Remark, "updated_user_id": companyLicense.UpdatedUserID, "updated_at": companyLicense.UpdatedAt})
+	res := db.connection.Model(&companyLicense).Where("id=?", id).Updates(map[string]interface{}{"remark": companyLicense.Remark})
 	return companyLicense, res.Error
 }

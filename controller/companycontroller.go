@@ -13,6 +13,7 @@ import (
 
 type CompanyController interface {
 	FindCompanys(c *gin.Context)
+	FindCompanyApprove(c *gin.Context)
 	FindCompanyById(c *gin.Context)
 	FindExcCompany(c *gin.Context)
 	InsertCompany(c *gin.Context)
@@ -40,6 +41,21 @@ func (b *companyController) FindCompanys(c *gin.Context) {
 		response helper.Response
 	)
 	companys, err := b.companyService.FindCompanys()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", companys)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyController) FindCompanyApprove(c *gin.Context) {
+	var (
+		companys []model.SelectCompanyParameter
+		response helper.Response
+	)
+	companys, err := b.companyService.FindCompanyApprove()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)

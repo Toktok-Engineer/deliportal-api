@@ -9,6 +9,8 @@ import (
 
 type CompanyLicenseService interface {
 	FindCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	FindCompanyLicenseApp() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	FindExpCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseExpiredParameter, err error)
 	FindCompanyLicenseById(id uint) (companyLicenseOutput model.SelectCompanyLicenseParameter, err error)
 	FindExcCompanyLicense(id uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
 	FindCompanyLicenseByCompanyId(id uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
@@ -33,6 +35,16 @@ func NewCompanyLicenseService(companyLicenseRep repository.CompanyLicenseReposit
 
 func (service *companyLicenseService) FindCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
 	res, err := service.companyLicenseRepository.FindCompanyLicenses()
+	return res, err
+}
+
+func (service *companyLicenseService) FindCompanyLicenseApp() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
+	res, err := service.companyLicenseRepository.FindCompanyLicenseApp()
+	return res, err
+}
+
+func (service *companyLicenseService) FindExpCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseExpiredParameter, err error) {
+	res, err := service.companyLicenseRepository.FindExpCompanyLicenses()
 	return res, err
 }
 

@@ -83,3 +83,23 @@ type CreateCompanyLicenseParameter struct {
 	UpdatedAt             float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt             float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
 }
+
+type SelectCompanyLicenseExpiredParameter struct {
+	ID                  uint    `json:"company_license_id"`
+	LicenseTypeName     string  `gorm:"type:varchar(50);not null;unique" json:"license_type_name"`
+	LicenseNo           string  `gorm:"type:varchar(50);not null" json:"license_no"`
+	CompanyName         string  `gorm:"type:varchar(50);not null;unique" json:"company_name"`
+	ExpiredDate         float64 `gorm:"type:double precision;not null" json:"expired_date"`
+	EarliestRenewalDate float64 `gorm:"type:double precision;not null" json:"earliest_renewal_date"`
+	LastRenewalDate     float64 `gorm:"type:double precision;not null" json:"last_renewal_date"`
+	RenewalStatus       int     `json:"renewal_status"`
+	Status              int     `json:"status"`
+	ReminderCounter     uint    `gorm:"type:bigint;not null" json:"reminder_counter"`
+	Remark              string  `gorm:"type:varchar(200)" json:"remark"`
+	CreatedUserID       uint    `gorm:"type:bigint;not null" json:"created_user_id"`
+	UpdatedUserID       uint    `gorm:"type:bigint;not null" json:"updated_user_id"`
+	DeletedUserID       uint    `gorm:"type:bigint;typedefault:null" json:"deleted_user_id"`
+	CreatedAt           float64 `gorm:"type:double precision;not null" json:"created_at"`
+	UpdatedAt           float64 `gorm:"type:double precision;not null" json:"updated_at"`
+	DeletedAt           float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
+}
