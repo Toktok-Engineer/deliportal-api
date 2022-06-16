@@ -24,6 +24,7 @@ type UserRepository interface {
 	FindExcUser(id uint) (userOutput []model.SelectUserParameter, err error)
 	CheckExisting(user model.User) (userOutput model.User, err error)
 	UpdateDataPassword(user model.User, username string, email string) (userOutput model.User, err error)
+	UpdateDataRequest(user model.User, username string, email string) (userOutput model.User, err error)
 	SendMail(mail model.Mail) (res gin.H, err error)
 }
 
@@ -97,7 +98,7 @@ func (db *userConnection) FindUsers() (userOutput []model.SelectUserParameter, e
 		users []model.SelectUserParameter
 	)
 
-	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.deleted_at = 0").Order("users.username").Find(&users)
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.deleted_at = 0").Order("users.username").Find(&users)
 	return users, res.Error
 }
 
@@ -106,7 +107,7 @@ func (db *userConnection) FindUserById(id uint) (userOutput model.SelectUserPara
 		user model.SelectUserParameter
 	)
 
-	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.id = ? AND users.deleted_at = 0", id).Take(&user)
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.id = ? AND users.deleted_at = 0", id).Take(&user)
 	return user, res.Error
 }
 
@@ -116,7 +117,7 @@ func (db *userConnection) FindUserByUName(uName string) (userOutput model.Select
 		user model.SelectUserParameter
 	)
 
-	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.username = ? AND users.deleted_at = 0", uName).Take(&user)
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.username = ? AND users.deleted_at = 0", uName).Take(&user)
 	return user, res.Error
 }
 
@@ -126,7 +127,7 @@ func (db *userConnection) FindExcUser(id uint) (userOutput []model.SelectUserPar
 		users []model.SelectUserParameter
 	)
 
-	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.id != ? AND users.deleted_at = 0", id).Order("users.username").Find(&users)
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.id != ? AND users.deleted_at = 0", id).Order("users.username").Find(&users)
 	return users, res.Error
 }
 
@@ -144,6 +145,11 @@ func (db *userConnection) UpdateDataPassword(user model.User, username string, e
 		user.Password = tempUser.Password
 	}
 
+	res := db.connection.Where("username = ? AND email = ?", username, email).Updates(&user)
+	return user, res.Error
+}
+
+func (db *userConnection) UpdateDataRequest(user model.User, username string, email string) (userOutput model.User, err error) {
 	res := db.connection.Where("username = ? AND email = ?", username, email).Updates(&user)
 	return user, res.Error
 }

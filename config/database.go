@@ -1,6 +1,7 @@
 package config
 
 import (
+	"deliportal-api/model"
 	"fmt"
 	"log"
 	"os"
@@ -34,6 +35,7 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
+	db.AutoMigrate(&model.UserCompanyRestriction{})
 
 	return db
 }

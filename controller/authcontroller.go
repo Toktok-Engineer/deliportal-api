@@ -17,6 +17,7 @@ type AuthController interface {
 	CheckExisting(c *gin.Context)
 	SendMail(c *gin.Context)
 	UpdateDataPassword(c *gin.Context)
+	UpdateDataRequest(c *gin.Context)
 }
 
 type authController struct {
@@ -279,6 +280,34 @@ func (b *authController) UpdateDataPassword(c *gin.Context) {
 					response = helper.BuildResponse(true, "OK", user)
 					c.JSON(http.StatusOK, response)
 				}
+			}
+		}
+	}
+}
+func (b *authController) UpdateDataRequest(c *gin.Context) {
+	var (
+		Data     model.RequestPasswordChangeParameter
+		response helper.Response
+	)
+
+	username := c.Param("username")
+	if username == "" {
+		response = helper.BuildErrorResponse("No param username was found", "No data with given username", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		email := c.Param("email")
+		if email == "" {
+			response = helper.BuildErrorResponse("No param email was found", "No data with given email", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			err := c.ShouldBindJSON(&Data)
+			user, err := b.authService.UpdateDataRequest(Data, username, email)
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", user)
+				c.JSON(http.StatusOK, response)
 			}
 		}
 	}

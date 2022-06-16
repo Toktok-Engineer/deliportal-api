@@ -36,6 +36,7 @@ var (
 	companyManagementRepository            repository.CompanyManagementRepository            = repository.NewCompanyManagementRepository(db)
 	companyLicenseRepository               repository.CompanyLicenseRepository               = repository.NewCompanyLicenseRepository(db)
 	companyLicenseRenewalTracingRepository repository.CompanyLicenseRenewalTracingRepository = repository.NewCompanyLicenseRenewalTracingRepository(db)
+	userCompanyRestrictionRepository       repository.UserCompanyRestrictionRepository       = repository.NewUserCompanyRestrictionRepository(db)
 	authService                            service.AuthService                               = service.NewAuthService(userRepository)
 	divisionService                        service.DivisionService                           = service.NewDivisionService(divisionRepository)
 	departmentService                      service.DepartmentService                         = service.NewDepartmentService(departmentRepository)
@@ -60,6 +61,7 @@ var (
 	companyShareholderService              service.CompanyShareholderService                 = service.NewCompanyShareholderService(companyShareholderRepository)
 	companyManagementService               service.CompanyManagementService                  = service.NewCompanyManagementService(companyManagementRepository)
 	companyLicenseService                  service.CompanyLicenseService                     = service.NewCompanyLicenseService(companyLicenseRepository)
+	userCompanyRestrictionService          service.UserCompanyRestrictionService             = service.NewUserCompanyRestrictionService(userCompanyRestrictionRepository)
 	jwtService                             service.JWTService                                = service.NewJWTService()
 	authController                         controller.AuthController                         = controller.NewAuthController(authService, jwtService)
 	divisionController                     controller.DivisionController                     = controller.NewDivisionController(divisionService, jwtService)
@@ -85,6 +87,7 @@ var (
 	companyManagementController            controller.CompanyManagementController            = controller.NewCompanyManagementController(companyManagementService, jwtService)
 	companyLicenseController               controller.CompanyLicenseController               = controller.NewCompanyLicenseController(companyLicenseService, jwtService)
 	companyLicenseRenewalTracingController controller.CompanyLicenseRenewalTracingController = controller.NewCompanyLicenseRenewalTracingController(companyLicenseRenewalTracingService, jwtService)
+	userCompanyRestrictionController       controller.UserCompanyRestrictionController       = controller.NewUserCompanyRestrictionController(userCompanyRestrictionService, jwtService)
 )
 
 func main() {
@@ -99,6 +102,7 @@ func main() {
 		authGroup.POST("/checkEx", authController.CheckExisting)
 		authGroup.POST("/sendMail", authController.SendMail)
 		authGroup.POST("/password/:username/:email", authController.UpdateDataPassword)
+		authGroup.POST("/upReq/:username/:email", authController.UpdateDataRequest)
 	}
 
 	divisionGroup := r.Group("/api/division", middleware.AuthorizeJWT(jwtService))
@@ -359,6 +363,17 @@ func main() {
 		companyLicenseRenewalTracingGroup.POST("/", companyLicenseRenewalTracingController.InsertCompanyLicenseRenewalTracing)
 		companyLicenseRenewalTracingGroup.PUT("/:id", companyLicenseRenewalTracingController.UpdateCompanyLicenseRenewalTracing)
 		companyLicenseRenewalTracingGroup.DELETE("/:id", companyLicenseRenewalTracingController.DeleteCompanyLicenseRenewalTracing)
+	}
+
+	usercompanyrestrictionGroup := r.Group("/api/userCompanyRestriction", middleware.AuthorizeJWT(jwtService))
+	{
+		usercompanyrestrictionGroup.GET("/", userCompanyRestrictionController.FindUserCompanyRestrictions)
+		usercompanyrestrictionGroup.GET("/:id", userCompanyRestrictionController.FindUserCompanyRestrictionById)
+		usercompanyrestrictionGroup.GET("/user/:uid", userCompanyRestrictionController.FindUserCompanyRestrictionByUserId)
+		usercompanyrestrictionGroup.GET("/exc/:id", userCompanyRestrictionController.FindExcUserCompanyRestriction)
+		usercompanyrestrictionGroup.POST("/", userCompanyRestrictionController.InsertUserCompanyRestriction)
+		usercompanyrestrictionGroup.PUT("/:id", userCompanyRestrictionController.UpdateUserCompanyRestriction)
+		usercompanyrestrictionGroup.DELETE("/:id", userCompanyRestrictionController.DeleteUserCompanyRestriction)
 	}
 
 	tokenGroup := r.Group("/api/token", middleware.AuthorizeJWTRefreshToken(jwtService))
