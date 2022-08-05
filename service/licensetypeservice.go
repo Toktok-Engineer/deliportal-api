@@ -8,7 +8,11 @@ import (
 )
 
 type LicenseTypeService interface {
+	CountLicenseTypeAll() (count int64, err error)
 	FindLicenseTypes() (licenseTypeOutput []model.LicenseType, err error)
+	FindLicenseTypesOffset(limit int, offset int, order string, dir string) (licenseTypeOutput []model.LicenseType, err error)
+	SearchLicenseType(limit int, offset int, order string, dir string, search string) (licenseTypeOutput []model.LicenseType, err error)
+	CountSearchLicenseType(search string) (count int64, err error)
 	FindLicenseTypeById(id uint) (licenseTypeOutput model.LicenseType, err error)
 	FindExcLicenseType(id uint) (licenseTypeOutput []model.LicenseType, err error)
 	InsertLicenseType(licenseType model.CreateLicenseTypeParameter) (licenseTypeOutput model.LicenseType, err error)
@@ -26,8 +30,28 @@ func NewLicenseTypeService(licenseTypeRep repository.LicenseTypeRepository) Lice
 	}
 }
 
+func (service *licenseTypeService) CountLicenseTypeAll() (count int64, err error) {
+	res, err := service.licenseTypeRepository.CountLicenseTypeAll()
+	return res, err
+}
+
 func (service *licenseTypeService) FindLicenseTypes() (licenseTypeOutput []model.LicenseType, err error) {
 	res, err := service.licenseTypeRepository.FindLicenseTypes()
+	return res, err
+}
+
+func (service *licenseTypeService) FindLicenseTypesOffset(limit int, offset int, order string, dir string) (licenseTypeOutput []model.LicenseType, err error) {
+	res, err := service.licenseTypeRepository.FindLicenseTypesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *licenseTypeService) SearchLicenseType(limit int, offset int, order string, dir string, search string) (licenseTypeOutput []model.LicenseType, err error) {
+	res, err := service.licenseTypeRepository.SearchLicenseType(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *licenseTypeService) CountSearchLicenseType(search string) (count int64, err error) {
+	res, err := service.licenseTypeRepository.CountSearchLicenseType(search)
 	return res, err
 }
 

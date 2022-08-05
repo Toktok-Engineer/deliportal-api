@@ -12,7 +12,11 @@ import (
 )
 
 type FormController interface {
+	CountFormAll(c *gin.Context)
 	FindForms(c *gin.Context)
+	FindFormsOffset(c *gin.Context)
+	SearchForm(c *gin.Context)
+	CountSearchForm(c *gin.Context)
 	FindFormJoinRole(c *gin.Context)
 	FindFormByRole(c *gin.Context)
 	FindFormByType(c *gin.Context)
@@ -41,6 +45,22 @@ func NewFormController(formServ service.FormService, jwtServ service.JWTService)
 	}
 }
 
+func (b *formController) CountFormAll(c *gin.Context) {
+	var (
+		count    int64
+		response helper.Response
+	)
+
+	count, err := b.formService.CountFormAll()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 func (b *formController) FindForms(c *gin.Context) {
 	var (
 		forms    []model.SelectFormParameter
@@ -53,6 +73,112 @@ func (b *formController) FindForms(c *gin.Context) {
 	} else {
 		response = helper.BuildResponse(true, "OK", forms)
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *formController) FindFormsOffset(c *gin.Context) {
+	var (
+		forms    []model.SelectFormParameter
+		response helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					forms, err = b.formService.FindFormsOffset(int(limit), int(offset), order, dir)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", forms)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *formController) SearchForm(c *gin.Context) {
+	var (
+		forms    []model.SelectFormParameter
+		response helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						forms, err = b.formService.SearchForm(int(limit), int(offset), order, dir, search)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", forms)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *formController) CountSearchForm(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.formService.CountSearchForm(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 

@@ -8,7 +8,11 @@ import (
 )
 
 type CompanyShareholderService interface {
-	FindCompanyShareholders() (companyShareholderOutput []model.CompanyShareholder, err error)
+	CountCompanyShareholderAll(companyId int) (count int64, err error)
+	FindCompanyShareholders(companyId int) (companyShareholderOutput []model.CompanyShareholder, err error)
+	FindCompanyShareholdersOffset(limit int, offset int, order string, dir string, companyId int) (companyShareholderOutput []model.SelectCompanyShareholder, err error)
+	SearchCompanyShareholder(limit int, offset int, order string, dir string, search string, companyId int) (companyShareholderOutput []model.SelectCompanyShareholder, err error)
+	CountSearchCompanyShareholder(search string, companyId int) (count int64, err error)
 	FindCompanyShareholderByCompanyId(id uint) (companyShareholderOutput []model.CompanyShareholder, err error)
 	FindCompanyShareholderById(id uint) (companyShareholderOutput model.CompanyShareholder, err error)
 	FindExcCompanyShareholder(id uint) (companyShareholderOutput []model.CompanyShareholder, err error)
@@ -27,8 +31,28 @@ func NewCompanyShareholderService(companyShareholderRep repository.CompanyShareh
 	}
 }
 
-func (service *companyShareholderService) FindCompanyShareholders() (companyShareholderOutput []model.CompanyShareholder, err error) {
-	res, err := service.companyShareholderRepository.FindCompanyShareholders()
+func (service *companyShareholderService) CountCompanyShareholderAll(companyId int) (count int64, err error) {
+	res, err := service.companyShareholderRepository.CountCompanyShareholderAll(companyId)
+	return res, err
+}
+
+func (service *companyShareholderService) FindCompanyShareholders(companyId int) (companyShareholderOutput []model.CompanyShareholder, err error) {
+	res, err := service.companyShareholderRepository.FindCompanyShareholders(companyId)
+	return res, err
+}
+
+func (service *companyShareholderService) FindCompanyShareholdersOffset(limit int, offset int, order string, dir string, companyId int) (companyShareholderOutput []model.SelectCompanyShareholder, err error) {
+	res, err := service.companyShareholderRepository.FindCompanyShareholdersOffset(limit, offset, order, dir, companyId)
+	return res, err
+}
+
+func (service *companyShareholderService) SearchCompanyShareholder(limit int, offset int, order string, dir string, search string, companyId int) (companyShareholderOutput []model.SelectCompanyShareholder, err error) {
+	res, err := service.companyShareholderRepository.SearchCompanyShareholder(limit, offset, order, dir, search, companyId)
+	return res, err
+}
+
+func (service *companyShareholderService) CountSearchCompanyShareholder(search string, companyId int) (count int64, err error) {
+	res, err := service.companyShareholderRepository.CountSearchCompanyShareholder(search, companyId)
 	return res, err
 }
 

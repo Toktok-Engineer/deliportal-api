@@ -2,12 +2,17 @@ package repository
 
 import (
 	"deliportal-api/model"
+	"strings"
 
 	"gorm.io/gorm"
 )
 
 type EmailQueueRepository interface {
+	CountEmailQueueAll() (count int64, err error)
 	FindEmailQueues() (emailQueueOutput []model.SelectEmailQueueParameter, err error)
+	FindEmailQueuesOffset(limit int, offset int, order string, dir string) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
+	SearchEmailQueue(limit int, offset int, order string, dir string, search string) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
+	CountSearchEmailQueue(search string) (count int64, err error)
 	FindEmailQueueById(id uint) (emailQueueOutput model.SelectEmailQueueParameter, err error)
 	FindExcEmailQueue(id uint) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
 	FindEmailQueueByStatus(status uint) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
@@ -25,12 +30,48 @@ func NewEmailQueueRepository(db *gorm.DB) EmailQueueRepository {
 	}
 }
 
+func (db *EmailQueueConnection) CountEmailQueueAll() (count int64, err error) {
+	res := db.connection.Debug().Table("email_queues").Where("deleted_at = 0").Count(&count)
+	return count, res.Error
+}
+
 func (db *EmailQueueConnection) FindEmailQueues() (emailQueueOutput []model.SelectEmailQueueParameter, err error) {
 	var (
 		emailQueues []model.SelectEmailQueueParameter
 	)
-	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, email_queues.created_at, email_queues.updated_at, email_queues.deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.deleted_at = 0").Order("email_queues.id").Find(&emailQueues)
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.deleted_at = 0").Order("email_queue_types.email_queue_type_name").Find(&emailQueues)
 	return emailQueues, res.Error
+}
+
+func (db *EmailQueueConnection) FindEmailQueuesOffset(limit int, offset int, order string, dir string) (emailQueueOutput []model.SelectEmailQueueParameter, err error) {
+	var (
+		orderDirection string
+		emailQueues    []model.SelectEmailQueueParameter
+	)
+	orderDirection = order + " " + dir
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&emailQueues)
+	return emailQueues, res.Error
+}
+
+func (db *EmailQueueConnection) SearchEmailQueue(limit int, offset int, order string, dir string, search string) (emailQueueOutput []model.SelectEmailQueueParameter, err error) {
+	var (
+		orderDirection string
+		final          string
+		emailQueues    []model.SelectEmailQueueParameter
+	)
+	orderDirection = order + " " + dir
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("(lower(email_queue_types.email_queue_type_name) LIKE ? OR lower(email_queues.email_recipient) LIKE ? OR lower(email_queues.email_cc) LIKE ? OR lower(email_queues.email_subject) LIKE ? OR lower(email_queues.email_body) LIKE ? OR lower(email_queues.error_message) LIKE ? OR lower(email_queues.remark) LIKE ?) AND email_queues.deleted_at = 0", final, final, final, final, final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&emailQueues)
+	return emailQueues, res.Error
+}
+
+func (db *EmailQueueConnection) CountSearchEmailQueue(search string) (count int64, err error) {
+	var (
+		final string
+	)
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("(lower(email_queue_types.email_queue_type_name) LIKE ? OR lower(email_queues.email_recipient) LIKE ? OR lower(email_queues.email_cc) LIKE ? OR lower(email_queues.email_subject) LIKE ? OR lower(email_queues.email_body) LIKE ? OR lower(email_queues.error_message) LIKE ? OR lower(email_queues.remark) LIKE ?) AND email_queues.deleted_at = 0", final, final, final, final, final, final, final).Count(&count)
+	return count, res.Error
 }
 
 func (db *EmailQueueConnection) FindEmailQueueById(id uint) (emailQueueOutput model.SelectEmailQueueParameter, err error) {
@@ -38,7 +79,7 @@ func (db *EmailQueueConnection) FindEmailQueueById(id uint) (emailQueueOutput mo
 		emailQueue model.SelectEmailQueueParameter
 	)
 
-	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, email_queues.created_at, email_queues.updated_at, email_queues.deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.id=? AND email_queues.deleted_at = 0", id).Take(&emailQueue)
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.id=? AND email_queues.deleted_at = 0", id).Take(&emailQueue)
 	return emailQueue, res.Error
 }
 
@@ -47,7 +88,7 @@ func (db *EmailQueueConnection) FindExcEmailQueue(id uint) (emailQueueOutput []m
 		emailQueues []model.SelectEmailQueueParameter
 	)
 
-	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, email_queues.created_at, email_queues.updated_at, email_queues.deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.id != ? AND email_queues.deleted_at = 0", id).Order("email_queues.id").Find(&emailQueues)
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.id != ? AND email_queues.deleted_at = 0", id).Order("email_queues.id").Find(&emailQueues)
 	return emailQueues, res.Error
 }
 
@@ -56,7 +97,7 @@ func (db *EmailQueueConnection) FindEmailQueueByStatus(status uint) (emailQueueO
 		emailQueues []model.SelectEmailQueueParameter
 	)
 
-	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, email_queues.created_at, email_queues.updated_at, email_queues.deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.status=? AND email_queues.deleted_at = 0", status).Order("email_queues.id").Find(&emailQueues)
+	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("email_queues.status=? AND email_queues.deleted_at = 0", status).Order("email_queues.id").Find(&emailQueues)
 	return emailQueues, res.Error
 }
 

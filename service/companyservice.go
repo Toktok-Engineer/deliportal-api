@@ -8,8 +8,15 @@ import (
 )
 
 type CompanyService interface {
+	CountCompanyAll() (count int64, err error)
 	FindCompanys() (companyOutput []model.SelectCompanyParameter, err error)
-	FindCompanyApprove() (companyOutput []model.SelectCompanyParameter, err error)
+	FindCompanysOffset(limit int, offset int, order string, dir string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
+	SearchCompany(limit int, offset int, order string, dir string, search string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
+	CountSearchCompany(search string, companyID string) (count int64, err error)
+	CountCompanyApprove(companyID string) (count int64, err error)
+	FindCompanyApprove(limit int, offset int, order string, dir string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
+	SearchCompanyApprove(limit int, offset int, order string, dir string, search string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
+	CountSearchCompanyApprove(search string, companyID string) (count int64, err error)
 	FindCompanyById(id uint) (companyOutput model.SelectCompanyParameter, err error)
 	FindExcCompany(id uint) (companyOutput []model.SelectCompanyParameter, err error)
 	InsertCompany(company model.CreateCompanyParameter) (companyOutput model.Company, err error)
@@ -29,16 +36,49 @@ func NewCompanyService(companyRep repository.CompanyRepository) CompanyService {
 	}
 }
 
+func (service *companyService) CountCompanyAll() (count int64, err error) {
+	res, err := service.companyRepository.CountCompanyAll()
+	return res, err
+}
+
 func (service *companyService) FindCompanys() (companyOutput []model.SelectCompanyParameter, err error) {
 	res, err := service.companyRepository.FindCompanys()
 	return res, err
 }
 
-func (service *companyService) FindCompanyApprove() (companyOutput []model.SelectCompanyParameter, err error) {
-	res, err := service.companyRepository.FindCompanyApprove()
+func (service *companyService) FindCompanysOffset(limit int, offset int, order string, dir string, companyID string) (companyOutput []model.SelectCompanyParameter, err error) {
+	res, err := service.companyRepository.FindCompanysOffset(limit, offset, order, dir, companyID)
 	return res, err
 }
 
+func (service *companyService) SearchCompany(limit int, offset int, order string, dir string, search string, companyID string) (companyOutput []model.SelectCompanyParameter, err error) {
+	res, err := service.companyRepository.SearchCompany(limit, offset, order, dir, search, companyID)
+	return res, err
+}
+
+func (service *companyService) CountSearchCompany(search string, companyID string) (count int64, err error) {
+	res, err := service.companyRepository.CountSearchCompany(search, companyID)
+	return res, err
+}
+
+func (service *companyService) CountCompanyApprove(companyID string) (count int64, err error) {
+	res, err := service.companyRepository.CountCompanyApprove(companyID)
+	return res, err
+}
+func (service *companyService) FindCompanyApprove(limit int, offset int, order string, dir string, companyID string) (companyOutput []model.SelectCompanyParameter, err error) {
+	res, err := service.companyRepository.FindCompanyApprove(limit, offset, order, dir, companyID)
+	return res, err
+}
+
+func (service *companyService) SearchCompanyApprove(limit int, offset int, order string, dir string, search string, companyID string) (companyOutput []model.SelectCompanyParameter, err error) {
+	res, err := service.companyRepository.SearchCompanyApprove(limit, offset, order, dir, search, companyID)
+	return res, err
+}
+
+func (service *companyService) CountSearchCompanyApprove(search string, companyID string) (count int64, err error) {
+	res, err := service.companyRepository.CountSearchCompanyApprove(search, companyID)
+	return res, err
+}
 func (service *companyService) FindCompanyById(id uint) (companyOutput model.SelectCompanyParameter, err error) {
 	res, err := service.companyRepository.FindCompanyById(id)
 	return res, err

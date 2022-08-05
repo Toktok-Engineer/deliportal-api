@@ -8,7 +8,11 @@ import (
 )
 
 type SectionService interface {
+	CountSectionAll() (count int64, err error)
 	FindSections() (sectionOutput []model.SelectSectionParameter, err error)
+	FindSectionsOffset(limit int, offset int, order string, dir string) (sectionOutput []model.SelectSectionParameter, err error)
+	SearchSection(limit int, offset int, order string, dir string, search string) (sectionOutput []model.SelectSectionParameter, err error)
+	CountSearchSection(search string) (count int64, err error)
 	FindSectionById(id uint) (sectionOutput model.SelectSectionParameter, err error)
 	FindExcSection(depId uint, id uint) (sectionOutput []model.SelectSectionParameter, err error)
 	FindSectionByDepId(depId uint) (sectionOutput []model.SelectSectionParameter, err error)
@@ -27,8 +31,28 @@ func NewSectionService(sectionRep repository.SectionRepository) SectionService {
 	}
 }
 
+func (service *sectionService) CountSectionAll() (count int64, err error) {
+	res, err := service.sectionRepository.CountSectionAll()
+	return res, err
+}
+
 func (service *sectionService) FindSections() (sectionOutput []model.SelectSectionParameter, err error) {
 	res, err := service.sectionRepository.FindSections()
+	return res, err
+}
+
+func (service *sectionService) FindSectionsOffset(limit int, offset int, order string, dir string) (sectionOutput []model.SelectSectionParameter, err error) {
+	res, err := service.sectionRepository.FindSectionsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *sectionService) SearchSection(limit int, offset int, order string, dir string, search string) (sectionOutput []model.SelectSectionParameter, err error) {
+	res, err := service.sectionRepository.SearchSection(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *sectionService) CountSearchSection(search string) (count int64, err error) {
+	res, err := service.sectionRepository.CountSearchSection(search)
 	return res, err
 }
 

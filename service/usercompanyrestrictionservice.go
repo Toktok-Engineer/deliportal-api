@@ -8,7 +8,11 @@ import (
 )
 
 type UserCompanyRestrictionService interface {
+	CountUserCompanyRestrictionAll() (count int64, err error)
 	FindUserCompanyRestrictions() (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error)
+	FindUserCompanyRestrictionsOffset(limit int, offset int, order string, dir string) (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error)
+	SearchUserCompanyRestriction(limit int, offset int, order string, dir string, search string) (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error)
+	CountSearchUserCompanyRestriction(search string) (count int64, err error)
 	FindUserCompanyRestrictionById(id uint) (usercompanyrestrictionOutput model.SelectUserCompanyRestrictionParameter, err error)
 	FindUserCompanyRestrictionByUserId(uid uint) (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error)
 	FindExcUserCompanyRestriction(id uint) (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error)
@@ -27,8 +31,28 @@ func NewUserCompanyRestrictionService(usercompanyrestrictionRep repository.UserC
 	}
 }
 
+func (service *usercompanyrestrictionService) CountUserCompanyRestrictionAll() (count int64, err error) {
+	res, err := service.usercompanyrestrictionRepository.CountUserCompanyRestrictionAll()
+	return res, err
+}
+
 func (service *usercompanyrestrictionService) FindUserCompanyRestrictions() (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error) {
 	res, err := service.usercompanyrestrictionRepository.FindUserCompanyRestrictions()
+	return res, err
+}
+
+func (service *usercompanyrestrictionService) FindUserCompanyRestrictionsOffset(limit int, offset int, order string, dir string) (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error) {
+	res, err := service.usercompanyrestrictionRepository.FindUserCompanyRestrictionsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *usercompanyrestrictionService) SearchUserCompanyRestriction(limit int, offset int, order string, dir string, search string) (usercompanyrestrictionOutput []model.SelectUserCompanyRestrictionParameter, err error) {
+	res, err := service.usercompanyrestrictionRepository.SearchUserCompanyRestriction(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *usercompanyrestrictionService) CountSearchUserCompanyRestriction(search string) (count int64, err error) {
+	res, err := service.usercompanyrestrictionRepository.CountSearchUserCompanyRestriction(search)
 	return res, err
 }
 

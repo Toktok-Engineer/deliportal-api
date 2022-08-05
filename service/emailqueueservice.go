@@ -8,7 +8,11 @@ import (
 )
 
 type EmailQueueService interface {
+	CountEmailQueueAll() (count int64, err error)
 	FindEmailQueues() (emailQueueOutput []model.SelectEmailQueueParameter, err error)
+	FindEmailQueuesOffset(limit int, offset int, order string, dir string) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
+	SearchEmailQueue(limit int, offset int, order string, dir string, search string) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
+	CountSearchEmailQueue(search string) (count int64, err error)
 	FindEmailQueueById(id uint) (emailQueueOutput model.SelectEmailQueueParameter, err error)
 	FindExcEmailQueue(id uint) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
 	FindEmailQueueByStatus(status uint) (emailQueueOutput []model.SelectEmailQueueParameter, err error)
@@ -27,8 +31,28 @@ func NewEmailQueueService(emailQueueRep repository.EmailQueueRepository) EmailQu
 	}
 }
 
+func (service *emailQueueService) CountEmailQueueAll() (count int64, err error) {
+	res, err := service.emailQueueRepository.CountEmailQueueAll()
+	return res, err
+}
+
 func (service *emailQueueService) FindEmailQueues() (emailQueueOutput []model.SelectEmailQueueParameter, err error) {
 	res, err := service.emailQueueRepository.FindEmailQueues()
+	return res, err
+}
+
+func (service *emailQueueService) FindEmailQueuesOffset(limit int, offset int, order string, dir string) (emailQueueOutput []model.SelectEmailQueueParameter, err error) {
+	res, err := service.emailQueueRepository.FindEmailQueuesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *emailQueueService) SearchEmailQueue(limit int, offset int, order string, dir string, search string) (emailQueueOutput []model.SelectEmailQueueParameter, err error) {
+	res, err := service.emailQueueRepository.SearchEmailQueue(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *emailQueueService) CountSearchEmailQueue(search string) (count int64, err error) {
+	res, err := service.emailQueueRepository.CountSearchEmailQueue(search)
 	return res, err
 }
 

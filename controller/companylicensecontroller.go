@@ -11,12 +11,26 @@ import (
 )
 
 type CompanyLicenseController interface {
+	FindCompanyLicenseByCompanyId(c *gin.Context)
+	CountCompanyLicenseAll(c *gin.Context)
 	FindCompanyLicenses(c *gin.Context)
-	FindCompanyLicenseApp(c *gin.Context)
+	FindCompanyLicensesOffset(c *gin.Context)
+	SearchCompanyLicense(c *gin.Context)
+	CountSearchCompanyLicense(c *gin.Context)
+	CountCompanyLicenseApp(c *gin.Context)
+	FindCompanyLicensesApp(c *gin.Context)
+	SearchCompanyLicenseApp(c *gin.Context)
+	CountSearchCompanyLicenseApp(c *gin.Context)
+	CountExpCompanyLicense(c *gin.Context)
 	FindExpCompanyLicenses(c *gin.Context)
+	CountSearchExpCompanyLicense(c *gin.Context)
+	SearchExpCompanyLicense(c *gin.Context)
 	FindCompanyLicenseById(c *gin.Context)
 	FindExcCompanyLicense(c *gin.Context)
-	FindCompanyLicenseByCompanyId(c *gin.Context)
+	CountCompanyLicenseFull(c *gin.Context)
+	FindCompanyLicensesOffsetFull(c *gin.Context)
+	SearchCompanyLicenseFull(c *gin.Context)
+	CountSearchCompanyLicenseFull(c *gin.Context)
 	InsertCompanyLicense(c *gin.Context)
 	UpdateCompanyLicense(c *gin.Context)
 	UpdateCompanyLicenseStatus(c *gin.Context)
@@ -38,6 +52,47 @@ func NewCompanyLicenseController(companyLicenseServ service.CompanyLicenseServic
 	}
 }
 
+func (b *companyLicenseController) FindCompanyLicenseByCompanyId(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param company id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		companyLicenses, err = b.companyLicenseService.FindCompanyLicenseByCompanyId(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", companyLicenses)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *companyLicenseController) CountCompanyLicenseAll(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.companyLicenseService.CountCompanyLicenseAll(int(companyId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func (b *companyLicenseController) FindCompanyLicenses(c *gin.Context) {
 	var (
 		companyLicenses []model.SelectCompanyLicenseParameter
@@ -53,33 +108,375 @@ func (b *companyLicenseController) FindCompanyLicenses(c *gin.Context) {
 	}
 }
 
-func (b *companyLicenseController) FindCompanyLicenseApp(c *gin.Context) {
+func (b *companyLicenseController) FindCompanyLicensesOffset(c *gin.Context) {
 	var (
 		companyLicenses []model.SelectCompanyLicenseParameter
 		response        helper.Response
 	)
-	companyLicenses, err := b.companyLicenseService.FindCompanyLicenseApp()
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+					if err != nil {
+						response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyLicenses, err = b.companyLicenseService.FindCompanyLicensesOffset(int(limit), int(offset), order, dir, int(companyId))
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", companyLicenses)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) SearchCompanyLicense(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+						if err != nil {
+							response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+							c.AbortWithStatusJSON(http.StatusBadRequest, response)
+						} else {
+							companyLicenses, err = b.companyLicenseService.SearchCompanyLicense(int(limit), int(offset), order, dir, search, int(companyId))
+							if err != nil {
+								response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+								c.JSON(http.StatusNotFound, response)
+							} else {
+								response = helper.BuildResponse(true, "OK", companyLicenses)
+								c.JSON(http.StatusOK, response)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) CountSearchCompanyLicense(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			count, err := b.companyLicenseService.CountSearchCompanyLicense(search, int(companyId))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", count)
+				c.JSON(http.StatusOK, response)
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) CountCompanyLicenseApp(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	companyId := c.Param("companyId")
+	count, err := b.companyLicenseService.CountCompanyLicenseApp(companyId)
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", companyLicenses)
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyLicenseController) FindCompanyLicensesApp(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					companyId := c.Param("companyId")
+					companyLicenses, err = b.companyLicenseService.FindCompanyLicensesApp(int(limit), int(offset), order, dir, companyId)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", companyLicenses)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) SearchCompanyLicenseApp(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyId := c.Param("companyId")
+						companyLicenses, err = b.companyLicenseService.SearchCompanyLicenseApp(int(limit), int(offset), order, dir, search, companyId)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", companyLicenses)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) CountSearchCompanyLicenseApp(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		companyId := c.Param("companyId")
+		count, err := b.companyLicenseService.CountSearchCompanyLicenseApp(search, companyId)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *companyLicenseController) CountExpCompanyLicense(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	companyId := c.Param("companyId")
+	count, err := b.companyLicenseService.CountExpCompanyLicense(companyId)
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
 func (b *companyLicenseController) FindExpCompanyLicenses(c *gin.Context) {
 	var (
-		companyLicenses []model.SelectCompanyLicenseExpiredParameter
+		companyLicenses []model.SelectCompanyLicenseParameter
 		response        helper.Response
 	)
-	companyLicenses, err := b.companyLicenseService.FindExpCompanyLicenses()
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", companyLicenses)
-		c.JSON(http.StatusOK, response)
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					companyId := c.Param("companyId")
+					companyLicenses, err = b.companyLicenseService.FindExpCompanyLicenses(int(limit), int(offset), order, dir, companyId)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", companyLicenses)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) SearchExpCompanyLicense(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyId := c.Param("companyId")
+						companyLicenses, err = b.companyLicenseService.SearchExpCompanyLicense(int(limit), int(offset), order, dir, search, companyId)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", companyLicenses)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) CountSearchExpCompanyLicense(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		companyId := c.Param("companyId")
+		count, err := b.companyLicenseService.CountSearchExpCompanyLicense(search, companyId)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -125,22 +522,125 @@ func (b *companyLicenseController) FindExcCompanyLicense(c *gin.Context) {
 	}
 }
 
-func (b *companyLicenseController) FindCompanyLicenseByCompanyId(c *gin.Context) {
+func (b *companyLicenseController) CountCompanyLicenseFull(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	companyId := c.Param("companyId")
+	count, err := b.companyLicenseService.CountCompanyLicenseFull(companyId)
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyLicenseController) FindCompanyLicensesOffsetFull(c *gin.Context) {
 	var (
 		companyLicenses []model.SelectCompanyLicenseParameter
 		response        helper.Response
 	)
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("No param company id was found", err.Error(), helper.EmptyObj{})
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		companyLicenses, err = b.companyLicenseService.FindCompanyLicenseByCompanyId(uint(id))
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					companyId := c.Param("companyId")
+					companyLicenses, err = b.companyLicenseService.FindCompanyLicensesOffsetFull(int(limit), int(offset), order, dir, companyId)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", companyLicenses)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) SearchCompanyLicenseFull(c *gin.Context) {
+	var (
+		companyLicenses []model.SelectCompanyLicenseParameter
+		response        helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyId := c.Param("companyId")
+						companyLicenses, err = b.companyLicenseService.SearchCompanyLicenseFull(int(limit), int(offset), order, dir, search, companyId)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", companyLicenses)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyLicenseController) CountSearchCompanyLicenseFull(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		companyId := c.Param("companyId")
+		count, err := b.companyLicenseService.CountSearchCompanyLicenseFull(search, companyId)
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", companyLicenses)
+			response = helper.BuildResponse(true, "OK", count)
 			c.JSON(http.StatusOK, response)
 		}
 	}

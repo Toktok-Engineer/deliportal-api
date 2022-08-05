@@ -8,7 +8,11 @@ import (
 )
 
 type EmployeeService interface {
+	CountEmployeeAll() (count int64, err error)
 	FindEmployees() (employeeOutput []model.SelectEmployeeParameter, err error)
+	FindEmployeesOffset(limit int, offset int, order string, dir string) (employeeOutput []model.SelectEmployeeParameter, err error)
+	SearchEmployee(limit int, offset int, order string, dir string, search string) (employeeOutput []model.SelectEmployeeParameter, err error)
+	CountSearchEmployee(search string) (count int64, err error)
 	FindEmployeeById(id uint) (employeeOutput model.SelectEmployeeParameter, err error)
 	FindEmployeeByNik(nik uint) (employeeOutput model.SelectEmployeeParameter, err error)
 	FindExcEmployee(id uint) (employeeOutput []model.SelectEmployeeParameter, err error)
@@ -27,8 +31,28 @@ func NewEmployeeService(employeeRep repository.EmployeeRepository) EmployeeServi
 	}
 }
 
+func (service *employeeService) CountEmployeeAll() (count int64, err error) {
+	res, err := service.employeeRepository.CountEmployeeAll()
+	return res, err
+}
+
 func (service *employeeService) FindEmployees() (employeeOutput []model.SelectEmployeeParameter, err error) {
 	res, err := service.employeeRepository.FindEmployees()
+	return res, err
+}
+
+func (service *employeeService) FindEmployeesOffset(limit int, offset int, order string, dir string) (employeeOutput []model.SelectEmployeeParameter, err error) {
+	res, err := service.employeeRepository.FindEmployeesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *employeeService) SearchEmployee(limit int, offset int, order string, dir string, search string) (employeeOutput []model.SelectEmployeeParameter, err error) {
+	res, err := service.employeeRepository.SearchEmployee(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *employeeService) CountSearchEmployee(search string) (count int64, err error) {
+	res, err := service.employeeRepository.CountSearchEmployee(search)
 	return res, err
 }
 

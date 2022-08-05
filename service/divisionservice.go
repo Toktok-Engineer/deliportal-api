@@ -8,7 +8,11 @@ import (
 )
 
 type DivisionService interface {
+	CountDivisionAll() (count int64, err error)
 	FindDivisions() (divisionOutput []model.Division, err error)
+	FindDivisionsOffset(limit int, offset int, order string, dir string) (divisionOutput []model.Division, err error)
+	SearchDivision(limit int, offset int, order string, dir string, search string) (divisionOutput []model.Division, err error)
+	CountSearchDivision(search string) (count int64, err error)
 	FindDivisionById(id uint) (divisionOutput model.Division, err error)
 	FindExcDivision(id uint) (divisionOutput []model.Division, err error)
 	InsertDivision(division model.CreateDivisionParameter) (divisionOutput model.Division, err error)
@@ -26,8 +30,28 @@ func NewDivisionService(divisionRep repository.DivisionRepository) DivisionServi
 	}
 }
 
+func (service *divisionService) CountDivisionAll() (count int64, err error) {
+	res, err := service.divisionRepository.CountDivisionAll()
+	return res, err
+}
+
 func (service *divisionService) FindDivisions() (divisionOutput []model.Division, err error) {
 	res, err := service.divisionRepository.FindDivisions()
+	return res, err
+}
+
+func (service *divisionService) FindDivisionsOffset(limit int, offset int, order string, dir string) (divisionOutput []model.Division, err error) {
+	res, err := service.divisionRepository.FindDivisionsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *divisionService) SearchDivision(limit int, offset int, order string, dir string, search string) (divisionOutput []model.Division, err error) {
+	res, err := service.divisionRepository.SearchDivision(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *divisionService) CountSearchDivision(search string) (count int64, err error) {
+	res, err := service.divisionRepository.CountSearchDivision(search)
 	return res, err
 }
 

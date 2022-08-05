@@ -8,7 +8,11 @@ import (
 )
 
 type CompanyManagementService interface {
-	FindCompanyManagements() (companyManagementOutput []model.SelectCompanyManagementParameter, err error)
+	CountCompanyManagementAll(companyId int) (count int64, err error)
+	FindCompanyManagements(companyId int) (companyManagementOutput []model.CompanyManagement, err error)
+	FindCompanyManagementsOffset(limit int, offset int, order string, dir string, companyId int) (companyManagementOutput []model.SelectCompanyManagementParameter, err error)
+	SearchCompanyManagement(limit int, offset int, order string, dir string, search string, companyId int) (companyManagementOutput []model.SelectCompanyManagementParameter, err error)
+	CountSearchCompanyManagement(search string, companyId int) (count int64, err error)
 	FindCompanyManagementById(id uint) (companyManagementOutput model.SelectCompanyManagementParameter, err error)
 	FindExcCompanyManagement(id uint) (companyManagementOutput []model.SelectCompanyManagementParameter, err error)
 	FindCompanyManagementByCompanyId(id uint) (companyManagementOutput []model.SelectCompanyManagementParameter, err error)
@@ -27,8 +31,28 @@ func NewCompanyManagementService(companyManagementRep repository.CompanyManageme
 	}
 }
 
-func (service *companyManagementService) FindCompanyManagements() (companyManagementOutput []model.SelectCompanyManagementParameter, err error) {
-	res, err := service.companyManagementRepository.FindCompanyManagements()
+func (service *companyManagementService) CountCompanyManagementAll(companyId int) (count int64, err error) {
+	res, err := service.companyManagementRepository.CountCompanyManagementAll(companyId)
+	return res, err
+}
+
+func (service *companyManagementService) FindCompanyManagements(companyId int) (companyManagementOutput []model.CompanyManagement, err error) {
+	res, err := service.companyManagementRepository.FindCompanyManagements(companyId)
+	return res, err
+}
+
+func (service *companyManagementService) FindCompanyManagementsOffset(limit int, offset int, order string, dir string, companyId int) (companyManagementOutput []model.SelectCompanyManagementParameter, err error) {
+	res, err := service.companyManagementRepository.FindCompanyManagementsOffset(limit, offset, order, dir, companyId)
+	return res, err
+}
+
+func (service *companyManagementService) SearchCompanyManagement(limit int, offset int, order string, dir string, search string, companyId int) (companyManagementOutput []model.SelectCompanyManagementParameter, err error) {
+	res, err := service.companyManagementRepository.SearchCompanyManagement(limit, offset, order, dir, search, companyId)
+	return res, err
+}
+
+func (service *companyManagementService) CountSearchCompanyManagement(search string, companyId int) (count int64, err error) {
+	res, err := service.companyManagementRepository.CountSearchCompanyManagement(search, companyId)
 	return res, err
 }
 

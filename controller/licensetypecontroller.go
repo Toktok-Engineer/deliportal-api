@@ -11,7 +11,11 @@ import (
 )
 
 type LicenseTypeController interface {
+	CountLicenseTypeAll(c *gin.Context)
 	FindLicenseTypes(c *gin.Context)
+	FindLicenseTypesOffset(c *gin.Context)
+	SearchLicenseType(c *gin.Context)
+	CountSearchLicenseType(c *gin.Context)
 	FindLicenseTypeById(c *gin.Context)
 	FindExcLicenseType(c *gin.Context)
 	InsertLicenseType(c *gin.Context)
@@ -31,6 +35,21 @@ func NewLicenseTypeController(licenseTypeServ service.LicenseTypeService, jwtSer
 	}
 }
 
+func (b *licenseTypeController) CountLicenseTypeAll(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+
+	count, err := b.licenseTypeService.CountLicenseTypeAll()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 func (b *licenseTypeController) FindLicenseTypes(c *gin.Context) {
 	var (
 		licenseTypes []model.LicenseType
@@ -43,6 +62,112 @@ func (b *licenseTypeController) FindLicenseTypes(c *gin.Context) {
 	} else {
 		response = helper.BuildResponse(true, "OK", licenseTypes)
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *licenseTypeController) FindLicenseTypesOffset(c *gin.Context) {
+	var (
+		licenseTypes []model.LicenseType
+		response     helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					licenseTypes, err = b.licenseTypeService.FindLicenseTypesOffset(int(limit), int(offset), order, dir)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", licenseTypes)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *licenseTypeController) SearchLicenseType(c *gin.Context) {
+	var (
+		licenseTypes []model.LicenseType
+		response     helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						licenseTypes, err = b.licenseTypeService.SearchLicenseType(int(limit), int(offset), order, dir, search)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", licenseTypes)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *licenseTypeController) CountSearchLicenseType(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.licenseTypeService.CountSearchLicenseType(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 

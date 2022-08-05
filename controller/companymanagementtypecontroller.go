@@ -11,7 +11,11 @@ import (
 )
 
 type CompanyManagementTypeController interface {
+	CountCompanyManagementTypeAll(c *gin.Context)
 	FindCompanyManagementTypes(c *gin.Context)
+	FindCompanyManagementTypesOffset(c *gin.Context)
+	SearchCompanyManagementType(c *gin.Context)
+	CountSearchCompanyManagementType(c *gin.Context)
 	FindCompanyManagementTypeById(c *gin.Context)
 	FindExcCompanyManagementType(c *gin.Context)
 	InsertCompanyManagementType(c *gin.Context)
@@ -31,6 +35,21 @@ func NewCompanyManagementTypeController(companyManagementTypeServ service.Compan
 	}
 }
 
+func (b *companyManagementTypeController) CountCompanyManagementTypeAll(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+
+	count, err := b.companyManagementTypeService.CountCompanyManagementTypeAll()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 func (b *companyManagementTypeController) FindCompanyManagementTypes(c *gin.Context) {
 	var (
 		companyManagementTypes []model.CompanyManagementType
@@ -43,6 +62,112 @@ func (b *companyManagementTypeController) FindCompanyManagementTypes(c *gin.Cont
 	} else {
 		response = helper.BuildResponse(true, "OK", companyManagementTypes)
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyManagementTypeController) FindCompanyManagementTypesOffset(c *gin.Context) {
+	var (
+		companyManagementTypes []model.CompanyManagementType
+		response               helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					companyManagementTypes, err = b.companyManagementTypeService.FindCompanyManagementTypesOffset(int(limit), int(offset), order, dir)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", companyManagementTypes)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyManagementTypeController) SearchCompanyManagementType(c *gin.Context) {
+	var (
+		companyManagementTypes []model.CompanyManagementType
+		response               helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyManagementTypes, err = b.companyManagementTypeService.SearchCompanyManagementType(int(limit), int(offset), order, dir, search)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", companyManagementTypes)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyManagementTypeController) CountSearchCompanyManagementType(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.companyManagementTypeService.CountSearchCompanyManagementType(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 

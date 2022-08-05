@@ -11,7 +11,11 @@ import (
 )
 
 type DivisionController interface {
+	CountDivisionAll(c *gin.Context)
 	FindDivisions(c *gin.Context)
+	FindDivisionsOffset(c *gin.Context)
+	SearchDivision(c *gin.Context)
+	CountSearchDivision(c *gin.Context)
 	FindDivisionById(c *gin.Context)
 	FindExcDivision(c *gin.Context)
 	InsertDivision(c *gin.Context)
@@ -31,6 +35,21 @@ func NewDivisionController(divisionServ service.DivisionService, jwtServ service
 	}
 }
 
+func (b *divisionController) CountDivisionAll(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+
+	count, err := b.divisionService.CountDivisionAll()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 func (b *divisionController) FindDivisions(c *gin.Context) {
 	var (
 		divisions []model.Division
@@ -43,6 +62,112 @@ func (b *divisionController) FindDivisions(c *gin.Context) {
 	} else {
 		response = helper.BuildResponse(true, "OK", divisions)
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *divisionController) FindDivisionsOffset(c *gin.Context) {
+	var (
+		divisions []model.Division
+		response  helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					divisions, err = b.divisionService.FindDivisionsOffset(int(limit), int(offset), order, dir)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", divisions)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *divisionController) SearchDivision(c *gin.Context) {
+	var (
+		divisions []model.Division
+		response  helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						divisions, err = b.divisionService.SearchDivision(int(limit), int(offset), order, dir, search)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", divisions)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *divisionController) CountSearchDivision(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.divisionService.CountSearchDivision(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 

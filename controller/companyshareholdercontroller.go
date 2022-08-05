@@ -11,7 +11,11 @@ import (
 )
 
 type CompanyShareholderController interface {
+	CountCompanyShareholderAll(c *gin.Context)
 	FindCompanyShareholders(c *gin.Context)
+	FindCompanyShareholdersOffset(c *gin.Context)
+	SearchCompanyShareholder(c *gin.Context)
+	CountSearchCompanyShareholder(c *gin.Context)
 	FindCompanyShareholderByCompanyId(c *gin.Context)
 	FindCompanyShareholderById(c *gin.Context)
 	FindExcCompanyShareholder(c *gin.Context)
@@ -32,18 +36,168 @@ func NewCompanyShareholderController(companyShareholderServ service.CompanyShare
 	}
 }
 
+func (b *companyShareholderController) CountCompanyShareholderAll(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.companyShareholderService.CountCompanyShareholderAll(int(companyId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func (b *companyShareholderController) FindCompanyShareholders(c *gin.Context) {
 	var (
 		companyShareholders []model.CompanyShareholder
 		response            helper.Response
 	)
-	companyShareholders, err := b.companyShareholderService.FindCompanyShareholders()
+	companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", companyShareholders)
-		c.JSON(http.StatusOK, response)
+		companyShareholders, err = b.companyShareholderService.FindCompanyShareholders(int(companyId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", companyShareholders)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *companyShareholderController) FindCompanyShareholdersOffset(c *gin.Context) {
+	var (
+		companyShareholders []model.SelectCompanyShareholder
+		response            helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+					if err != nil {
+						response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyShareholders, err = b.companyShareholderService.FindCompanyShareholdersOffset(int(limit), int(offset), order, dir, int(companyId))
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", companyShareholders)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyShareholderController) SearchCompanyShareholder(c *gin.Context) {
+	var (
+		companyShareholders []model.SelectCompanyShareholder
+		response            helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+						if err != nil {
+							response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+							c.AbortWithStatusJSON(http.StatusBadRequest, response)
+						} else {
+							companyShareholders, err = b.companyShareholderService.SearchCompanyShareholder(int(limit), int(offset), order, dir, search, int(companyId))
+							if err != nil {
+								response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+								c.JSON(http.StatusNotFound, response)
+							} else {
+								response = helper.BuildResponse(true, "OK", companyShareholders)
+								c.JSON(http.StatusOK, response)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *companyShareholderController) CountSearchCompanyShareholder(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		companyId, err := strconv.ParseInt(c.Param("companyId"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param companyId was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			count, err := b.companyShareholderService.CountSearchCompanyShareholder(search, int(companyId))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", count)
+				c.JSON(http.StatusOK, response)
+			}
+		}
 	}
 }
 

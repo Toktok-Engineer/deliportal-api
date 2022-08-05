@@ -8,7 +8,11 @@ import (
 )
 
 type DepartmentService interface {
+	CountDepartmentAll() (count int64, err error)
 	FindDepartments() (departmentOutput []model.SelectDepartmentParameter, err error)
+	FindDepartmentsOffset(limit int, offset int, order string, dir string) (departmentOutput []model.SelectDepartmentParameter, err error)
+	SearchDepartment(limit int, offset int, order string, dir string, search string) (departmentOutput []model.SelectDepartmentParameter, err error)
+	CountSearchDepartment(search string) (count int64, err error)
 	FindDepartmentById(id uint) (departmentOutput model.SelectDepartmentParameter, err error)
 	FindExcDepartment(divId uint, id uint) (departmentOutput []model.SelectDepartmentParameter, err error)
 	FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error)
@@ -27,8 +31,28 @@ func NewDepartmentService(departmentRep repository.DepartmentRepository) Departm
 	}
 }
 
+func (service *departmentService) CountDepartmentAll() (count int64, err error) {
+	res, err := service.departmentRepository.CountDepartmentAll()
+	return res, err
+}
+
 func (service *departmentService) FindDepartments() (departmentOutput []model.SelectDepartmentParameter, err error) {
 	res, err := service.departmentRepository.FindDepartments()
+	return res, err
+}
+
+func (service *departmentService) FindDepartmentsOffset(limit int, offset int, order string, dir string) (departmentOutput []model.SelectDepartmentParameter, err error) {
+	res, err := service.departmentRepository.FindDepartmentsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *departmentService) SearchDepartment(limit int, offset int, order string, dir string, search string) (departmentOutput []model.SelectDepartmentParameter, err error) {
+	res, err := service.departmentRepository.SearchDepartment(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *departmentService) CountSearchDepartment(search string) (count int64, err error) {
+	res, err := service.departmentRepository.CountSearchDepartment(search)
 	return res, err
 }
 

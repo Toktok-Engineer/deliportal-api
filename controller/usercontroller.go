@@ -12,7 +12,12 @@ import (
 )
 
 type UserController interface {
+	CountUserAll(c *gin.Context)
+	FindUsersAll(c *gin.Context)
 	FindUsers(c *gin.Context)
+	FindUsersOffset(c *gin.Context)
+	SearchUser(c *gin.Context)
+	CountSearchUser(c *gin.Context)
 	FindUserById(c *gin.Context)
 	FindUserByUName(c *gin.Context)
 	FindExcUser(c *gin.Context)
@@ -33,6 +38,43 @@ func NewUserController(userServ service.UserService, jwtServ service.JWTService)
 	}
 }
 
+func (b *userController) CountUserAll(c *gin.Context) {
+	var (
+		count    int64
+		response helper.Response
+	)
+
+	count, err := b.userService.CountUserAll()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", count)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *userController) FindUsersAll(c *gin.Context) {
+	var (
+		user     model.SelectUserParameter
+		response helper.Response
+	)
+	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		user, err = b.userService.FindUsersAll(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", user)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func (b *userController) FindUsers(c *gin.Context) {
 	var (
 		users    []model.SelectUserParameter
@@ -45,6 +87,112 @@ func (b *userController) FindUsers(c *gin.Context) {
 	} else {
 		response = helper.BuildResponse(true, "OK", users)
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *userController) FindUsersOffset(c *gin.Context) {
+	var (
+		users    []model.SelectUserParameter
+		response helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					users, err = b.userService.FindUsersOffset(int(limit), int(offset), order, dir)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", users)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *userController) SearchUser(c *gin.Context) {
+	var (
+		users    []model.SelectUserParameter
+		response helper.Response
+	)
+
+	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param limit was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		offset, err := strconv.ParseInt(c.Param("offset"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param offset was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			order := c.Param("order")
+			if order == "" {
+				response = helper.BuildErrorResponse("No param order was found", "No data with given order", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				dir := c.Param("dir")
+				if dir == "" {
+					response = helper.BuildErrorResponse("No param dir was found", "No data with given dir", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					search := c.Param("search")
+					if search == "" {
+						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						users, err = b.userService.SearchUser(int(limit), int(offset), order, dir, search)
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", users)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *userController) CountSearchUser(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.userService.CountSearchUser(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 

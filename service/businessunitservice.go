@@ -8,7 +8,11 @@ import (
 )
 
 type BusinessUnitService interface {
-	FindBusinessUnits() (businessUnitOutput []model.BusinessUnit, err error)
+	CountBusinessUnitAll() (count int64, err error)
+	FindBusinessUnits() (businessunitOutput []model.BusinessUnit, err error)
+	FindBusinessUnitsOffset(limit int, offset int, order string, dir string) (businessunitOutput []model.BusinessUnit, err error)
+	SearchBusinessUnit(limit int, offset int, order string, dir string, search string) (businessunitOutput []model.BusinessUnit, err error)
+	CountSearchBusinessUnit(search string) (count int64, err error)
 	FindBusinessUnitById(id uint) (businessUnitOutput model.BusinessUnit, err error)
 	FindExcBusinessUnit(id uint) (businessUnitOutput []model.BusinessUnit, err error)
 	InsertBusinessUnit(businessUnit model.CreateBusinessUnitParameter) (businessUnitOutput model.BusinessUnit, err error)
@@ -26,8 +30,29 @@ func NewBusinessUnitService(businessUnitRep repository.BusinessUnitRepository) B
 	}
 }
 
-func (service *businessUnitService) FindBusinessUnits() (businessUnitOutput []model.BusinessUnit, err error) {
-	return service.businessUnitRepository.FindBusinessUnits()
+func (service *businessUnitService) CountBusinessUnitAll() (count int64, err error) {
+	res, err := service.businessUnitRepository.CountBusinessUnitAll()
+	return res, err
+}
+
+func (service *businessUnitService) FindBusinessUnits() (businessunitOutput []model.BusinessUnit, err error) {
+	res, err := service.businessUnitRepository.FindBusinessUnits()
+	return res, err
+}
+
+func (service *businessUnitService) FindBusinessUnitsOffset(limit int, offset int, order string, dir string) (businessunitOutput []model.BusinessUnit, err error) {
+	res, err := service.businessUnitRepository.FindBusinessUnitsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *businessUnitService) SearchBusinessUnit(limit int, offset int, order string, dir string, search string) (businessunitOutput []model.BusinessUnit, err error) {
+	res, err := service.businessUnitRepository.SearchBusinessUnit(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *businessUnitService) CountSearchBusinessUnit(search string) (count int64, err error) {
+	res, err := service.businessUnitRepository.CountSearchBusinessUnit(search)
+	return res, err
 }
 
 func (service *businessUnitService) FindBusinessUnitById(id uint) (businessUnitOutput model.BusinessUnit, err error) {

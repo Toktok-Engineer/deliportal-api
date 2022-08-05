@@ -19,6 +19,8 @@ type SelectUserRoleParameter struct {
 	Username        string  `gorm:"type:varchar(50);not null;unique" json:"username"`
 	Password        string  `gorm:"type:varchar(100);typedefault:null" json:"password"`
 	EmployeeID      uint    `gorm:"type:bigint;typedefault:null;index:" json:"employee_id"`
+	Firstname       string  `gorm:"type:varchar(30);not null" json:"first_name"`
+	Lastname        string  `gorm:"type:varchar(30)" json:"last_name"`
 	Email           string  `gorm:"type:varchar(30);not null" json:"email"`
 	RoleID          uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"role_id"`
 	RoleCode        string  `gorm:"type:varchar(50);not null;unique" json:"role_code"`

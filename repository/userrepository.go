@@ -4,6 +4,7 @@ import (
 	"deliportal-api/model"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +19,12 @@ type UserRepository interface {
 	IsDuplicateUsername(username string) (tx *gorm.DB)
 	FindByUsername(username string) model.User
 	IsUserRegistered(id uint64, username string) (tx *gorm.DB)
+	CountUserAll() (count int64, err error)
+	FindUsersAll(id uint) (userOutput model.SelectUserParameter, err error)
 	FindUsers() (userOutput []model.SelectUserParameter, err error)
+	FindUsersOffset(limit int, offset int, order string, dir string) (userOutput []model.SelectUserParameter, err error)
+	SearchUser(limit int, offset int, order string, dir string, search string) (userOutput []model.SelectUserParameter, err error)
+	CountSearchUser(search string) (count int64, err error)
 	FindUserById(id uint) (userOutput model.SelectUserParameter, err error)
 	FindUserByUName(uName string) (userOutput model.SelectUserParameter, err error)
 	FindExcUser(id uint) (userOutput []model.SelectUserParameter, err error)
@@ -93,13 +99,57 @@ func hashAndSalt(pwd []byte) string {
 	return string(hash)
 }
 
+func (db *userConnection) CountUserAll() (count int64, err error) {
+	res := db.connection.Debug().Table("users").Where("deleted_at = 0").Count(&count)
+	return count, res.Error
+}
+
+func (db *userConnection) FindUsersAll(id uint) (userOutput model.SelectUserParameter, err error) {
+	var (
+		user model.SelectUserParameter
+	)
+
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.id = ?", id).Take(&user)
+	return user, res.Error
+}
+
 func (db *userConnection) FindUsers() (userOutput []model.SelectUserParameter, err error) {
 	var (
 		users []model.SelectUserParameter
 	)
-
 	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.deleted_at = 0").Order("users.username").Find(&users)
 	return users, res.Error
+}
+
+func (db *userConnection) FindUsersOffset(limit int, offset int, order string, dir string) (userOutput []model.SelectUserParameter, err error) {
+	var (
+		orderDirection string
+		users          []model.SelectUserParameter
+	)
+	orderDirection = order + " " + dir
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("users.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&users)
+	return users, res.Error
+}
+
+func (db *userConnection) SearchUser(limit int, offset int, order string, dir string, search string) (userOutput []model.SelectUserParameter, err error) {
+	var (
+		orderDirection string
+		final          string
+		users          []model.SelectUserParameter
+	)
+	orderDirection = order + " " + dir
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("(lower(users.username) LIKE ? OR lower(employees.nik) LIKE ? OR lower(employees.firstname) LIKE ? OR lower(employees.lastname) LIKE ? OR lower(employees.email) LIKE ? OR lower(employees.remark) LIKE ?) AND departments.deleted_at = 0", final, final, final, final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&users)
+	return users, res.Error
+}
+
+func (db *userConnection) CountSearchUser(search string) (count int64, err error) {
+	var (
+		final string
+	)
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("(lower(users.username) LIKE ? OR lower(employees.nik) LIKE ? OR lower(employees.firstname) LIKE ? OR lower(employees.lastname) LIKE ? OR lower(employees.email) LIKE ? OR lower(employees.remark) LIKE ?) AND departments.deleted_at = 0", final, final, final, final, final, final).Count(&count)
+	return count, res.Error
 }
 
 func (db *userConnection) FindUserById(id uint) (userOutput model.SelectUserParameter, err error) {

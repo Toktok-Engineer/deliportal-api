@@ -8,7 +8,11 @@ import (
 )
 
 type EmailQueueTypeService interface {
+	CountEmailQueueTypeAll() (count int64, err error)
 	FindEmailQueueTypes() (emailQueueTypeOutput []model.EmailQueueType, err error)
+	FindEmailQueueTypesOffset(limit int, offset int, order string, dir string) (emailQueueTypeOutput []model.EmailQueueType, err error)
+	SearchEmailQueueType(limit int, offset int, order string, dir string, search string) (emailQueueTypeOutput []model.EmailQueueType, err error)
+	CountSearchEmailQueueType(search string) (count int64, err error)
 	FindEmailQueueTypeById(id uint) (emailQueueTypeOutput model.EmailQueueType, err error)
 	FindExcEmailQueueType(id uint) (emailQueueTypeOutput []model.EmailQueueType, err error)
 	InsertEmailQueueType(emailQueueType model.CreateEmailQueueTypeParameter) (emailQueueTypeOutput model.EmailQueueType, err error)
@@ -26,8 +30,28 @@ func NewEmailQueueTypeService(emailQueueTypeRep repository.EmailQueueTypeReposit
 	}
 }
 
+func (service *emailQueueTypeService) CountEmailQueueTypeAll() (count int64, err error) {
+	res, err := service.emailQueueTypeRepository.CountEmailQueueTypeAll()
+	return res, err
+}
+
 func (service *emailQueueTypeService) FindEmailQueueTypes() (emailQueueTypeOutput []model.EmailQueueType, err error) {
 	res, err := service.emailQueueTypeRepository.FindEmailQueueTypes()
+	return res, err
+}
+
+func (service *emailQueueTypeService) FindEmailQueueTypesOffset(limit int, offset int, order string, dir string) (emailQueueTypeOutput []model.EmailQueueType, err error) {
+	res, err := service.emailQueueTypeRepository.FindEmailQueueTypesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *emailQueueTypeService) SearchEmailQueueType(limit int, offset int, order string, dir string, search string) (emailQueueTypeOutput []model.EmailQueueType, err error) {
+	res, err := service.emailQueueTypeRepository.SearchEmailQueueType(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *emailQueueTypeService) CountSearchEmailQueueType(search string) (count int64, err error) {
+	res, err := service.emailQueueTypeRepository.CountSearchEmailQueueType(search)
 	return res, err
 }
 

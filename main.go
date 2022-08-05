@@ -107,7 +107,11 @@ func main() {
 
 	divisionGroup := r.Group("/api/division", middleware.AuthorizeJWT(jwtService))
 	{
-		divisionGroup.GET("/", divisionController.FindDivisions)
+		divisionGroup.GET("/", divisionController.CountDivisionAll)
+		divisionGroup.GET("/all", divisionController.FindDivisions)
+		divisionGroup.GET("/list/:limit/:offset/:order/:dir", divisionController.FindDivisionsOffset)
+		divisionGroup.GET("/search/:limit/:offset/:order/:dir/:search", divisionController.SearchDivision)
+		divisionGroup.GET("/countSearch/:search", divisionController.CountSearchDivision)
 		divisionGroup.GET("/:id", divisionController.FindDivisionById)
 		divisionGroup.GET("/exc/:id", divisionController.FindExcDivision)
 		divisionGroup.POST("/", divisionController.InsertDivision)
@@ -117,7 +121,11 @@ func main() {
 
 	departmentGroup := r.Group("/api/department", middleware.AuthorizeJWT(jwtService))
 	{
-		departmentGroup.GET("/", departmentController.FindDepartments)
+		departmentGroup.GET("/", departmentController.CountDepartmentAll)
+		departmentGroup.GET("/all", departmentController.FindDepartments)
+		departmentGroup.GET("/list/:limit/:offset/:order/:dir", departmentController.FindDepartmentsOffset)
+		departmentGroup.GET("/search/:limit/:offset/:order/:dir/:search", departmentController.SearchDepartment)
+		departmentGroup.GET("/countSearch/:search", departmentController.CountSearchDepartment)
 		departmentGroup.GET("/:id", departmentController.FindDepartmentById)
 		departmentGroup.GET("/exc/:divId/:id", departmentController.FindExcDepartment)
 		departmentGroup.GET("/byDivision/:divId", departmentController.FindDepartmentByDivId)
@@ -128,7 +136,11 @@ func main() {
 
 	sectionGroup := r.Group("/api/section", middleware.AuthorizeJWT(jwtService))
 	{
-		sectionGroup.GET("/", sectionController.FindSections)
+		sectionGroup.GET("/", sectionController.CountSectionAll)
+		sectionGroup.GET("/all", sectionController.FindSections)
+		sectionGroup.GET("/list/:limit/:offset/:order/:dir", sectionController.FindSectionsOffset)
+		sectionGroup.GET("/search/:limit/:offset/:order/:dir/:search", sectionController.SearchSection)
+		sectionGroup.GET("/countSearch/:search", sectionController.CountSearchSection)
 		sectionGroup.GET("/:id", sectionController.FindSectionById)
 		sectionGroup.GET("/exc/:depId/:id", sectionController.FindExcSection)
 		sectionGroup.GET("/byDepartment/:depId", sectionController.FindSectionByDepId)
@@ -139,7 +151,11 @@ func main() {
 
 	positionGroup := r.Group("/api/position", middleware.AuthorizeJWT(jwtService))
 	{
-		positionGroup.GET("/", positionController.FindPositions)
+		positionGroup.GET("/", positionController.CountPositionAll)
+		positionGroup.GET("/all", positionController.FindPositions)
+		positionGroup.GET("/list/:limit/:offset/:order/:dir", positionController.FindPositionsOffset)
+		positionGroup.GET("/search/:limit/:offset/:order/:dir/:search", positionController.SearchPosition)
+		positionGroup.GET("/countSearch/:search", positionController.CountSearchPosition)
 		positionGroup.GET("/:id", positionController.FindPositionById)
 		positionGroup.GET("/exc/:id", positionController.FindExcPosition)
 		positionGroup.POST("/", positionController.InsertPosition)
@@ -149,7 +165,11 @@ func main() {
 
 	locationGroup := r.Group("/api/location", middleware.AuthorizeJWT(jwtService))
 	{
-		locationGroup.GET("/", locationController.FindLocations)
+		locationGroup.GET("/", locationController.CountLocationAll)
+		locationGroup.GET("/all", locationController.FindLocations)
+		locationGroup.GET("/list/:limit/:offset/:order/:dir", locationController.FindLocationsOffset)
+		locationGroup.GET("/search/:limit/:offset/:order/:dir/:search", locationController.SearchLocation)
+		locationGroup.GET("/countSearch/:search", locationController.CountSearchLocation)
 		locationGroup.GET("/:id", locationController.FindLocationById)
 		locationGroup.GET("/exc/:id", locationController.FindExcLocation)
 		locationGroup.POST("/", locationController.InsertLocation)
@@ -159,7 +179,11 @@ func main() {
 
 	employeeGroup := r.Group("/api/employee", middleware.AuthorizeJWT(jwtService))
 	{
-		employeeGroup.GET("/", employeeController.FindEmployees)
+		employeeGroup.GET("/", employeeController.CountEmployeeAll)
+		employeeGroup.GET("/all", employeeController.FindEmployees)
+		employeeGroup.GET("/list/:limit/:offset/:order/:dir", employeeController.FindEmployeesOffset)
+		employeeGroup.GET("/search/:limit/:offset/:order/:dir/:search", employeeController.SearchEmployee)
+		employeeGroup.GET("/countSearch/:search", employeeController.CountSearchEmployee)
 		employeeGroup.GET("/:id", employeeController.FindEmployeeById)
 		employeeGroup.GET("/byNik/:nik", employeeController.FindEmployeeByNik)
 		employeeGroup.GET("/exc/:id", employeeController.FindExcEmployee)
@@ -170,8 +194,14 @@ func main() {
 
 	userGroup := r.Group("/api/user", middleware.AuthorizeJWT(jwtService))
 	{
-		userGroup.GET("/", userController.FindUsers)
+		userGroup.GET("/", userController.CountUserAll)
+		userGroup.GET("/full", userController.FindUsersAll)
+		userGroup.GET("/all", userController.FindUsers)
+		userGroup.GET("/list/:limit/:offset/:order/:dir", userController.FindUsersOffset)
+		userGroup.GET("/search/:limit/:offset/:order/:dir/:search", userController.SearchUser)
+		userGroup.GET("/countSearch/:search", userController.CountSearchUser)
 		userGroup.GET("/:id", userController.FindUserById)
+		userGroup.GET("/full/:id", userController.FindUsersAll)
 		userGroup.GET("/byNUName/:uName", userController.FindUserByUName)
 		userGroup.GET("/exc/:id", userController.FindExcUser)
 		userGroup.POST("/", userController.InsertUser)
@@ -181,7 +211,11 @@ func main() {
 
 	formGroup := r.Group("/api/form", middleware.AuthorizeJWT(jwtService))
 	{
-		formGroup.GET("/", formController.FindForms)
+		formGroup.GET("/", formController.CountFormAll)
+		formGroup.GET("/all", formController.FindForms)
+		formGroup.GET("/list/:limit/:offset/:order/:dir", formController.FindFormsOffset)
+		formGroup.GET("/search/:limit/:offset/:order/:dir/:search", formController.SearchForm)
+		formGroup.GET("/countSearch/:search", formController.CountSearchForm)
 		formGroup.GET("/formJoinRole/:uId/:fpId", formController.FindFormJoinRole)
 		formGroup.GET("/formByRole/:uId", formController.FindFormByRole)
 		formGroup.GET("/formByType/:tyId", formController.FindFormByType)
@@ -200,7 +234,11 @@ func main() {
 
 	formTypeGroup := r.Group("/api/FormType", middleware.AuthorizeJWT(jwtService))
 	{
-		formTypeGroup.GET("/", formTypeController.FindFormTypes)
+		formTypeGroup.GET("/", formTypeController.CountFormTypeAll)
+		formTypeGroup.GET("/all", formTypeController.FindFormTypes)
+		formTypeGroup.GET("/list/:limit/:offset/:order/:dir", formTypeController.FindFormTypesOffset)
+		formTypeGroup.GET("/search/:limit/:offset/:order/:dir/:search", formTypeController.SearchFormType)
+		formTypeGroup.GET("/countSearch/:search", formTypeController.CountSearchFormType)
 		formTypeGroup.GET("/:id", formTypeController.FindFormTypeById)
 		formTypeGroup.GET("/exc/:id", formTypeController.FindExcFormType)
 		formTypeGroup.POST("/", formTypeController.InsertFormType)
@@ -210,7 +248,11 @@ func main() {
 
 	roleGroup := r.Group("/api/role", middleware.AuthorizeJWT(jwtService))
 	{
-		roleGroup.GET("/", roleController.FindRoles)
+		roleGroup.GET("/", roleController.CountRoleAll)
+		roleGroup.GET("/all", roleController.FindRoles)
+		roleGroup.GET("/list/:limit/:offset/:order/:dir", roleController.FindRolesOffset)
+		roleGroup.GET("/search/:limit/:offset/:order/:dir/:search", roleController.SearchRole)
+		roleGroup.GET("/countSearch/:search", roleController.CountSearchRole)
 		roleGroup.GET("/:id", roleController.FindRoleById)
 		roleGroup.GET("/exc/:id", roleController.FindExcRole)
 		roleGroup.POST("/", roleController.InsertRole)
@@ -220,7 +262,11 @@ func main() {
 
 	userRoleGroup := r.Group("/api/UserRole", middleware.AuthorizeJWT(jwtService))
 	{
-		userRoleGroup.GET("/", userRoleController.FindUserRoles)
+		userRoleGroup.GET("/", userRoleController.CountUserRoleAll)
+		userRoleGroup.GET("/all", userRoleController.FindUserRoles)
+		userRoleGroup.GET("/list/:limit/:offset/:order/:dir", userRoleController.FindUserRolesOffset)
+		userRoleGroup.GET("/search/:limit/:offset/:order/:dir/:search", userRoleController.SearchUserRole)
+		userRoleGroup.GET("/countSearch/:search", userRoleController.CountSearchUserRole)
 		userRoleGroup.GET("/:id", userRoleController.FindUserRoleById)
 		userRoleGroup.GET("/byUserId/:uid", userRoleController.FindUserRoleByUserId)
 		userRoleGroup.GET("/exc/:id/:uid", userRoleController.FindExcUserRole)
@@ -232,7 +278,11 @@ func main() {
 
 	roleFormGroup := r.Group("/api/RoleForm", middleware.AuthorizeJWT(jwtService))
 	{
-		roleFormGroup.GET("/", roleFormController.FindRoleForms)
+		roleFormGroup.GET("/", roleFormController.CountRoleFormAll)
+		roleFormGroup.GET("/all", roleFormController.FindRoleForms)
+		roleFormGroup.GET("/list/:limit/:offset/:order/:dir", roleFormController.FindRoleFormsOffset)
+		roleFormGroup.GET("/search/:limit/:offset/:order/:dir/:search", roleFormController.SearchRoleForm)
+		roleFormGroup.GET("/countSearch/:search", roleFormController.CountSearchRoleForm)
 		roleFormGroup.GET("/:id", roleFormController.FindRoleFormById)
 		roleFormGroup.GET("/byFormId/:fid/:rid", roleFormController.FindRoleFormByFormId)
 		roleFormGroup.GET("/exc/:id/:rid", roleFormController.FindExcRoleForm)
@@ -244,7 +294,11 @@ func main() {
 
 	businessUnitGroup := r.Group("/api/BusinessUnit", middleware.AuthorizeJWT(jwtService))
 	{
-		businessUnitGroup.GET("/", businessUnitController.FindBusinessUnits)
+		businessUnitGroup.GET("/", businessUnitController.CountBusinessUnitAll)
+		businessUnitGroup.GET("/all", businessUnitController.FindBusinessUnits)
+		businessUnitGroup.GET("/list/:limit/:offset/:order/:dir", businessUnitController.FindBusinessUnitsOffset)
+		businessUnitGroup.GET("/search/:limit/:offset/:order/:dir/:search", businessUnitController.SearchBusinessUnit)
+		businessUnitGroup.GET("/countSearch/:search", businessUnitController.CountSearchBusinessUnit)
 		businessUnitGroup.GET("/:id", businessUnitController.FindBusinessUnitById)
 		businessUnitGroup.GET("/exc/:id", businessUnitController.FindExcBusinessUnit)
 		businessUnitGroup.POST("/", businessUnitController.InsertBusinessUnit)
@@ -254,7 +308,11 @@ func main() {
 
 	companyManagementTypeGroup := r.Group("/api/CompanyManagementType", middleware.AuthorizeJWT(jwtService))
 	{
-		companyManagementTypeGroup.GET("/", companyManagementTypeController.FindCompanyManagementTypes)
+		companyManagementTypeGroup.GET("/", companyManagementTypeController.CountCompanyManagementTypeAll)
+		companyManagementTypeGroup.GET("/all", companyManagementTypeController.FindCompanyManagementTypes)
+		companyManagementTypeGroup.GET("/list/:limit/:offset/:order/:dir", companyManagementTypeController.FindCompanyManagementTypesOffset)
+		companyManagementTypeGroup.GET("/search/:limit/:offset/:order/:dir/:search", companyManagementTypeController.SearchCompanyManagementType)
+		companyManagementTypeGroup.GET("/countSearch/:search", companyManagementTypeController.CountSearchCompanyManagementType)
 		companyManagementTypeGroup.GET("/:id", companyManagementTypeController.FindCompanyManagementTypeById)
 		companyManagementTypeGroup.GET("/exc/:id", companyManagementTypeController.FindExcCompanyManagementType)
 		companyManagementTypeGroup.POST("/", companyManagementTypeController.InsertCompanyManagementType)
@@ -264,7 +322,11 @@ func main() {
 
 	licenseTypeGroup := r.Group("/api/LicenseType", middleware.AuthorizeJWT(jwtService))
 	{
-		licenseTypeGroup.GET("/", licenseTypeController.FindLicenseTypes)
+		licenseTypeGroup.GET("/", licenseTypeController.CountLicenseTypeAll)
+		licenseTypeGroup.GET("/all", licenseTypeController.FindLicenseTypes)
+		licenseTypeGroup.GET("/list/:limit/:offset/:order/:dir", licenseTypeController.FindLicenseTypesOffset)
+		licenseTypeGroup.GET("/search/:limit/:offset/:order/:dir/:search", licenseTypeController.SearchLicenseType)
+		licenseTypeGroup.GET("/countSearch/:search", licenseTypeController.CountSearchLicenseType)
 		licenseTypeGroup.GET("/:id", licenseTypeController.FindLicenseTypeById)
 		licenseTypeGroup.GET("/exc/:id", licenseTypeController.FindExcLicenseType)
 		licenseTypeGroup.POST("/", licenseTypeController.InsertLicenseType)
@@ -274,7 +336,11 @@ func main() {
 
 	emailQueueTypeGroup := r.Group("/api/EmailQueueType", middleware.AuthorizeJWT(jwtService))
 	{
-		emailQueueTypeGroup.GET("/", emailQueueTypeController.FindEmailQueueTypes)
+		emailQueueTypeGroup.GET("/", emailQueueTypeController.CountEmailQueueTypeAll)
+		emailQueueTypeGroup.GET("/all", emailQueueTypeController.FindEmailQueueTypes)
+		emailQueueTypeGroup.GET("/list/:limit/:offset/:order/:dir", emailQueueTypeController.FindEmailQueueTypesOffset)
+		emailQueueTypeGroup.GET("/search/:limit/:offset/:order/:dir/:search", emailQueueTypeController.SearchEmailQueueType)
+		emailQueueTypeGroup.GET("/countSearch/:search", emailQueueTypeController.CountSearchEmailQueueType)
 		emailQueueTypeGroup.GET("/:id", emailQueueTypeController.FindEmailQueueTypeById)
 		emailQueueTypeGroup.GET("/exc/:id", emailQueueTypeController.FindExcEmailQueueType)
 		emailQueueTypeGroup.POST("/", emailQueueTypeController.InsertEmailQueueType)
@@ -284,7 +350,11 @@ func main() {
 
 	emailQueueGroup := r.Group("/api/EmailQueue", middleware.AuthorizeJWT(jwtService))
 	{
-		emailQueueGroup.GET("/", emailQueueController.FindEmailQueues)
+		emailQueueGroup.GET("/", emailQueueController.CountEmailQueueAll)
+		emailQueueGroup.GET("/all", emailQueueController.FindEmailQueues)
+		emailQueueGroup.GET("/list/:limit/:offset/:order/:dir", emailQueueController.FindEmailQueuesOffset)
+		emailQueueGroup.GET("/search/:limit/:offset/:order/:dir/:search", emailQueueController.SearchEmailQueue)
+		emailQueueGroup.GET("/countSearch/:search", emailQueueController.CountSearchEmailQueue)
 		emailQueueGroup.GET("/:id", emailQueueController.FindEmailQueueById)
 		emailQueueGroup.GET("/byStatus/:status", emailQueueController.FindEmailQueueByStatus)
 		emailQueueGroup.GET("/exc/:id", emailQueueController.FindExcEmailQueue)
@@ -295,7 +365,11 @@ func main() {
 
 	emailQueueReferenceGroup := r.Group("/api/EmailQueueReference", middleware.AuthorizeJWT(jwtService))
 	{
-		emailQueueReferenceGroup.GET("/", emailQueueReferenceController.FindEmailQueueReferences)
+		emailQueueReferenceGroup.GET("/", emailQueueReferenceController.CountEmailQueueReferenceAll)
+		emailQueueReferenceGroup.GET("/all", emailQueueReferenceController.FindEmailQueueReferences)
+		emailQueueReferenceGroup.GET("/list/:limit/:offset/:order/:dir", emailQueueReferenceController.FindEmailQueueReferencesOffset)
+		emailQueueReferenceGroup.GET("/search/:limit/:offset/:order/:dir/:search", emailQueueReferenceController.SearchEmailQueueReference)
+		emailQueueReferenceGroup.GET("/countSearch/:search", emailQueueReferenceController.CountSearchEmailQueueReference)
 		emailQueueReferenceGroup.GET("/:id", emailQueueReferenceController.FindEmailQueueReferenceById)
 		emailQueueReferenceGroup.GET("/exc/:id", emailQueueReferenceController.FindExcEmailQueueReference)
 		emailQueueReferenceGroup.POST("/", emailQueueReferenceController.InsertEmailQueueReference)
@@ -305,8 +379,15 @@ func main() {
 
 	companyGroup := r.Group("/api/company", middleware.AuthorizeJWT(jwtService))
 	{
-		companyGroup.GET("/", companyController.FindCompanys)
-		companyGroup.GET("/app/", companyController.FindCompanyApprove)
+		companyGroup.GET("/", companyController.CountCompanyAll)
+		companyGroup.GET("/all", companyController.FindCompanys)
+		companyGroup.GET("/list/:limit/:offset/:order/:dir/:companyID", companyController.FindCompanysOffset)
+		companyGroup.GET("/search/:limit/:offset/:order/:dir/:search/:companyID", companyController.SearchCompany)
+		companyGroup.GET("/countSearch/:search/:companyID", companyController.CountSearchCompany)
+		companyGroup.GET("/app/count/:companyId", companyController.CountCompanyApprove)
+		companyGroup.GET("/app/:limit/:offset/:order/:dir/:companyId", companyController.FindCompanyApprove)
+		companyGroup.GET("/app/search/:limit/:offset/:order/:dir/:search/:companyId", companyController.SearchCompanyApprove)
+		companyGroup.GET("/app/countSearch/:search/:companyId", companyController.CountSearchCompanyApprove)
 		companyGroup.GET("/:id", companyController.FindCompanyById)
 		companyGroup.GET("/exc/:id", companyController.FindExcCompany)
 		companyGroup.POST("/", companyController.InsertCompany)
@@ -318,7 +399,11 @@ func main() {
 
 	companyShareholderGroup := r.Group("/api/companyShareholder", middleware.AuthorizeJWT(jwtService))
 	{
-		companyShareholderGroup.GET("/", companyShareholderController.FindCompanyShareholders)
+		companyShareholderGroup.GET("/count/:companyId", companyShareholderController.CountCompanyShareholderAll)
+		companyShareholderGroup.GET("/all/:companyId", companyShareholderController.FindCompanyShareholders)
+		companyShareholderGroup.GET("/list/:limit/:offset/:order/:dir/:companyId", companyShareholderController.FindCompanyShareholdersOffset)
+		companyShareholderGroup.GET("/search/:limit/:offset/:order/:dir/:search/:companyId", companyShareholderController.SearchCompanyShareholder)
+		companyShareholderGroup.GET("/countSearch/:search/:companyId", companyShareholderController.CountSearchCompanyShareholder)
 		companyShareholderGroup.GET("/byCompany/:id", companyShareholderController.FindCompanyShareholderByCompanyId)
 		companyShareholderGroup.GET("/:id", companyShareholderController.FindCompanyShareholderById)
 		companyShareholderGroup.GET("/exc/:id", companyShareholderController.FindExcCompanyShareholder)
@@ -329,7 +414,11 @@ func main() {
 
 	companyManagementGroup := r.Group("/api/companyManagement", middleware.AuthorizeJWT(jwtService))
 	{
-		companyManagementGroup.GET("/", companyManagementController.FindCompanyManagements)
+		companyManagementGroup.GET("/count/:companyId", companyManagementController.CountCompanyManagementAll)
+		companyManagementGroup.GET("/all/:companyId", companyManagementController.FindCompanyManagements)
+		companyManagementGroup.GET("/list/:limit/:offset/:order/:dir/:companyId", companyManagementController.FindCompanyManagementsOffset)
+		companyManagementGroup.GET("/search/:limit/:offset/:order/:dir/:search/:companyId", companyManagementController.SearchCompanyManagement)
+		companyManagementGroup.GET("/countSearch/:search/:companyId", companyManagementController.CountSearchCompanyManagement)
 		companyManagementGroup.GET("/:id", companyManagementController.FindCompanyManagementById)
 		companyManagementGroup.GET("/exc/:id", companyManagementController.FindExcCompanyManagement)
 		companyManagementGroup.GET("/byCompany/:id", companyManagementController.FindCompanyManagementByCompanyId)
@@ -340,12 +429,26 @@ func main() {
 
 	companyLicenseGroup := r.Group("/api/companyLicense", middleware.AuthorizeJWT(jwtService))
 	{
-		companyLicenseGroup.GET("/", companyLicenseController.FindCompanyLicenses)
-		companyLicenseGroup.GET("/app/", companyLicenseController.FindCompanyLicenseApp)
-		companyLicenseGroup.GET("/exp/", companyLicenseController.FindExpCompanyLicenses)
+		companyLicenseGroup.GET("/byCompany/:id", companyLicenseController.FindCompanyLicenseByCompanyId)
+		companyLicenseGroup.GET("/count/:companyId", companyLicenseController.CountCompanyLicenseAll)
+		companyLicenseGroup.GET("/all", companyLicenseController.FindCompanyLicenses)
+		companyLicenseGroup.GET("/list/:limit/:offset/:order/:dir/:companyId", companyLicenseController.FindCompanyLicensesOffset)
+		companyLicenseGroup.GET("/search/:limit/:offset/:order/:dir/:search/:companyId", companyLicenseController.SearchCompanyLicense)
+		companyLicenseGroup.GET("/countSearch/:search/:companyId", companyLicenseController.CountSearchCompanyLicense)
+		companyLicenseGroup.GET("/app/count/:companyId", companyLicenseController.CountCompanyLicenseApp)
+		companyLicenseGroup.GET("/app/:limit/:offset/:order/:dir/:companyId", companyLicenseController.FindCompanyLicensesApp)
+		companyLicenseGroup.GET("/app/search/:limit/:offset/:order/:dir/:search/:companyId", companyLicenseController.SearchCompanyLicenseApp)
+		companyLicenseGroup.GET("/app/countSearch/:search/:companyId", companyLicenseController.CountSearchCompanyLicenseApp)
+		companyLicenseGroup.GET("/exp/count/:companyId", companyLicenseController.CountExpCompanyLicense)
+		companyLicenseGroup.GET("/exp/:limit/:offset/:order/:dir/:companyId", companyLicenseController.FindExpCompanyLicenses)
+		companyLicenseGroup.GET("/exp/search/:limit/:offset/:order/:dir/:search/:companyId", companyLicenseController.SearchExpCompanyLicense)
+		companyLicenseGroup.GET("/exp/countSearch/:search/:companyId", companyLicenseController.CountSearchExpCompanyLicense)
 		companyLicenseGroup.GET("/:id", companyLicenseController.FindCompanyLicenseById)
 		companyLicenseGroup.GET("/exc/:id", companyLicenseController.FindExcCompanyLicense)
-		companyLicenseGroup.GET("/byCompany/:id", companyLicenseController.FindCompanyLicenseByCompanyId)
+		companyLicenseGroup.GET("/countFull/:companyId", companyLicenseController.CountCompanyLicenseFull)
+		companyLicenseGroup.GET("/listFull/:limit/:offset/:order/:dir/:companyId", companyLicenseController.FindCompanyLicensesOffsetFull)
+		companyLicenseGroup.GET("/searchFull/:limit/:offset/:order/:dir/:search/:companyId", companyLicenseController.SearchCompanyLicenseFull)
+		companyLicenseGroup.GET("/countSearchFull/:search/:companyId", companyLicenseController.CountSearchCompanyLicenseFull)
 		companyLicenseGroup.POST("/", companyLicenseController.InsertCompanyLicense)
 		companyLicenseGroup.PUT("/:id", companyLicenseController.UpdateCompanyLicense)
 		companyLicenseGroup.PUT("/status/:id", companyLicenseController.UpdateCompanyLicenseStatus)
@@ -367,7 +470,11 @@ func main() {
 
 	usercompanyrestrictionGroup := r.Group("/api/userCompanyRestriction", middleware.AuthorizeJWT(jwtService))
 	{
-		usercompanyrestrictionGroup.GET("/", userCompanyRestrictionController.FindUserCompanyRestrictions)
+		usercompanyrestrictionGroup.GET("/", userCompanyRestrictionController.CountUserCompanyRestrictionAll)
+		usercompanyrestrictionGroup.GET("/all", userCompanyRestrictionController.FindUserCompanyRestrictions)
+		usercompanyrestrictionGroup.GET("/list/:limit/:offset/:order/:dir", userCompanyRestrictionController.FindUserCompanyRestrictionsOffset)
+		usercompanyrestrictionGroup.GET("/search/:limit/:offset/:order/:dir/:search", userCompanyRestrictionController.SearchUserCompanyRestriction)
+		usercompanyrestrictionGroup.GET("/countSearch/:search", userCompanyRestrictionController.CountSearchUserCompanyRestriction)
 		usercompanyrestrictionGroup.GET("/:id", userCompanyRestrictionController.FindUserCompanyRestrictionById)
 		usercompanyrestrictionGroup.GET("/user/:uid", userCompanyRestrictionController.FindUserCompanyRestrictionByUserId)
 		usercompanyrestrictionGroup.GET("/exc/:id", userCompanyRestrictionController.FindExcUserCompanyRestriction)

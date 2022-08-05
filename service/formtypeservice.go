@@ -8,7 +8,11 @@ import (
 )
 
 type FormTypeService interface {
+	CountFormTypeAll() (count int64, err error)
 	FindFormTypes() (formTypeOutput []model.FormType, err error)
+	FindFormTypesOffset(limit int, offset int, order string, dir string) (formTypeOutput []model.FormType, err error)
+	SearchFormType(limit int, offset int, order string, dir string, search string) (formTypeOutput []model.FormType, err error)
+	CountSearchFormType(search string) (count int64, err error)
 	FindFormTypeById(id uint) (formTypeOutput model.FormType, err error)
 	FindExcFormType(id uint) (formTypeOutput []model.FormType, err error)
 	InsertFormType(formType model.CreateFormTypeParameter) (formTypeOutput model.FormType, err error)
@@ -26,8 +30,28 @@ func NewFormTypeService(formTypeRep repository.FormTypeRepository) FormTypeServi
 	}
 }
 
+func (service *formTypeService) CountFormTypeAll() (count int64, err error) {
+	res, err := service.formTypeRepository.CountFormTypeAll()
+	return res, err
+}
+
 func (service *formTypeService) FindFormTypes() (formTypeOutput []model.FormType, err error) {
 	res, err := service.formTypeRepository.FindFormTypes()
+	return res, err
+}
+
+func (service *formTypeService) FindFormTypesOffset(limit int, offset int, order string, dir string) (formTypeOutput []model.FormType, err error) {
+	res, err := service.formTypeRepository.FindFormTypesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *formTypeService) SearchFormType(limit int, offset int, order string, dir string, search string) (formTypeOutput []model.FormType, err error) {
+	res, err := service.formTypeRepository.SearchFormType(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *formTypeService) CountSearchFormType(search string) (count int64, err error) {
+	res, err := service.formTypeRepository.CountSearchFormType(search)
 	return res, err
 }
 

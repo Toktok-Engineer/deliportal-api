@@ -8,7 +8,11 @@ import (
 )
 
 type CompanyManagementTypeService interface {
+	CountCompanyManagementTypeAll() (count int64, err error)
 	FindCompanyManagementTypes() (companyManagementTypeOutput []model.CompanyManagementType, err error)
+	FindCompanyManagementTypesOffset(limit int, offset int, order string, dir string) (companyManagementTypeOutput []model.CompanyManagementType, err error)
+	SearchCompanyManagementType(limit int, offset int, order string, dir string, search string) (companyManagementTypeOutput []model.CompanyManagementType, err error)
+	CountSearchCompanyManagementType(search string) (count int64, err error)
 	FindCompanyManagementTypeById(id uint) (companyManagementTypeOutput model.CompanyManagementType, err error)
 	FindExcCompanyManagementType(id uint) (companyManagementTypeOutput []model.CompanyManagementType, err error)
 	InsertCompanyManagementType(companyManagementType model.CreateCompanyManagementTypeParameter) (companyManagementTypeOutput model.CompanyManagementType, err error)
@@ -26,11 +30,30 @@ func NewCompanyManagementTypeService(companyManagementTypeRep repository.Company
 	}
 }
 
+func (service *companyManagementTypeService) CountCompanyManagementTypeAll() (count int64, err error) {
+	res, err := service.companyManagementTypeRepository.CountCompanyManagementTypeAll()
+	return res, err
+}
+
 func (service *companyManagementTypeService) FindCompanyManagementTypes() (companyManagementTypeOutput []model.CompanyManagementType, err error) {
 	res, err := service.companyManagementTypeRepository.FindCompanyManagementTypes()
 	return res, err
 }
 
+func (service *companyManagementTypeService) FindCompanyManagementTypesOffset(limit int, offset int, order string, dir string) (companyManagementTypeOutput []model.CompanyManagementType, err error) {
+	res, err := service.companyManagementTypeRepository.FindCompanyManagementTypesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *companyManagementTypeService) SearchCompanyManagementType(limit int, offset int, order string, dir string, search string) (companyManagementTypeOutput []model.CompanyManagementType, err error) {
+	res, err := service.companyManagementTypeRepository.SearchCompanyManagementType(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *companyManagementTypeService) CountSearchCompanyManagementType(search string) (count int64, err error) {
+	res, err := service.companyManagementTypeRepository.CountSearchCompanyManagementType(search)
+	return res, err
+}
 func (service *companyManagementTypeService) FindCompanyManagementTypeById(id uint) (companyManagementTypeOutput model.CompanyManagementType, err error) {
 	res, err := service.companyManagementTypeRepository.FindCompanyManagementTypeById(id)
 	return res, err

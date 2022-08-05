@@ -8,7 +8,12 @@ import (
 )
 
 type UserService interface {
+	CountUserAll() (count int64, err error)
+	FindUsersAll(id uint) (userOutput model.SelectUserParameter, err error)
 	FindUsers() (userOutput []model.SelectUserParameter, err error)
+	FindUsersOffset(limit int, offset int, order string, dir string) (userOutput []model.SelectUserParameter, err error)
+	SearchUser(limit int, offset int, order string, dir string, search string) (userOutput []model.SelectUserParameter, err error)
+	CountSearchUser(search string) (count int64, err error)
 	FindUserById(id uint) (userOutput model.SelectUserParameter, err error)
 	FindUserByUName(uName string) (userOutput model.SelectUserParameter, err error)
 	FindExcUser(id uint) (userOutput []model.SelectUserParameter, err error)
@@ -27,8 +32,33 @@ func NewUserService(userRep repository.UserRepository) UserService {
 	}
 }
 
+func (service *userService) CountUserAll() (count int64, err error) {
+	res, err := service.userRepository.CountUserAll()
+	return res, err
+}
+
+func (service *userService) FindUsersAll(id uint) (userOutput model.SelectUserParameter, err error) {
+	res, err := service.userRepository.FindUsersAll(id)
+	return res, err
+}
+
 func (service *userService) FindUsers() (userOutput []model.SelectUserParameter, err error) {
 	res, err := service.userRepository.FindUsers()
+	return res, err
+}
+
+func (service *userService) FindUsersOffset(limit int, offset int, order string, dir string) (userOutput []model.SelectUserParameter, err error) {
+	res, err := service.userRepository.FindUsersOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *userService) SearchUser(limit int, offset int, order string, dir string, search string) (userOutput []model.SelectUserParameter, err error) {
+	res, err := service.userRepository.SearchUser(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *userService) CountSearchUser(search string) (count int64, err error) {
+	res, err := service.userRepository.CountSearchUser(search)
 	return res, err
 }
 

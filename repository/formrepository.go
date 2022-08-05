@@ -2,12 +2,17 @@ package repository
 
 import (
 	"deliportal-api/model"
+	"strings"
 
 	"gorm.io/gorm"
 )
 
 type FormRepository interface {
+	CountFormAll() (count int64, err error)
 	FindForms() (formOutput []model.SelectFormParameter, err error)
+	FindFormsOffset(limit int, offset int, order string, dir string) (formOutput []model.SelectFormParameter, err error)
+	SearchForm(limit int, offset int, order string, dir string, search string) (formOutput []model.SelectFormParameter, err error)
+	CountSearchForm(search string) (count int64, err error)
 	FindFormJoinRole(uId uint, fpId uint) (formOutput []model.SelectFormCRUDParameter, err error)
 	FindFormByRole(uId uint) (formOutput []model.SelectFormCRUDParameter, err error)
 	FindFormByType(tyId uint) (formOutput []model.SelectFormParameter, err error)
@@ -33,13 +38,48 @@ func NewFormRepository(db *gorm.DB) FormRepository {
 	}
 }
 
+func (db *FormConnection) CountFormAll() (count int64, err error) {
+	res := db.connection.Debug().Table("forms").Where("deleted_at = 0").Count(&count)
+	return count, res.Error
+}
+
 func (db *FormConnection) FindForms() (formOutput []model.SelectFormParameter, err error) {
 	var (
 		forms []model.SelectFormParameter
 	)
-
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order("forms.id").Find(&forms)
+	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order("forms.form_code").Find(&forms)
 	return forms, res.Error
+}
+
+func (db *FormConnection) FindFormsOffset(limit int, offset int, order string, dir string) (formOutput []model.SelectFormParameter, err error) {
+	var (
+		orderDirection string
+		forms          []model.SelectFormParameter
+	)
+	orderDirection = order + " " + dir
+	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&forms)
+	return forms, res.Error
+}
+
+func (db *FormConnection) SearchForm(limit int, offset int, order string, dir string, search string) (formOutput []model.SelectFormParameter, err error) {
+	var (
+		orderDirection string
+		final          string
+		forms          []model.SelectFormParameter
+	)
+	orderDirection = order + " " + dir
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&forms)
+	return forms, res.Error
+}
+
+func (db *FormConnection) CountSearchForm(search string) (count int64, err error) {
+	var (
+		final string
+	)
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Count(&count)
+	return count, res.Error
 }
 
 func (db *FormConnection) FindFormJoinRole(uId uint, fpId uint) (formOutput []model.SelectFormCRUDParameter, err error) {

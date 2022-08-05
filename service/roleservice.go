@@ -8,7 +8,11 @@ import (
 )
 
 type RoleService interface {
+	CountRoleAll() (count int64, err error)
 	FindRoles() (roleOutput []model.Role, err error)
+	FindRolesOffset(limit int, offset int, order string, dir string) (roleOutput []model.Role, err error)
+	SearchRole(limit int, offset int, order string, dir string, search string) (roleOutput []model.Role, err error)
+	CountSearchRole(search string) (count int64, err error)
 	FindRoleById(id uint) (roleOutput model.Role, err error)
 	FindExcRole(id uint) (roleOutput []model.Role, err error)
 	InsertRole(role model.CreateRoleParameter) (roleOutput model.Role, err error)
@@ -26,8 +30,28 @@ func NewRoleService(roleRep repository.RoleRepository) RoleService {
 	}
 }
 
+func (service *roleService) CountRoleAll() (count int64, err error) {
+	res, err := service.roleRepository.CountRoleAll()
+	return res, err
+}
+
 func (service *roleService) FindRoles() (roleOutput []model.Role, err error) {
 	res, err := service.roleRepository.FindRoles()
+	return res, err
+}
+
+func (service *roleService) FindRolesOffset(limit int, offset int, order string, dir string) (roleOutput []model.Role, err error) {
+	res, err := service.roleRepository.FindRolesOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *roleService) SearchRole(limit int, offset int, order string, dir string, search string) (roleOutput []model.Role, err error) {
+	res, err := service.roleRepository.SearchRole(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *roleService) CountSearchRole(search string) (count int64, err error) {
+	res, err := service.roleRepository.CountSearchRole(search)
 	return res, err
 }
 

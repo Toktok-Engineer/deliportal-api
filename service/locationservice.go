@@ -8,7 +8,11 @@ import (
 )
 
 type LocationService interface {
+	CountLocationAll() (count int64, err error)
 	FindLocations() (locationOutput []model.Location, err error)
+	FindLocationsOffset(limit int, offset int, order string, dir string) (locationOutput []model.Location, err error)
+	SearchLocation(limit int, offset int, order string, dir string, search string) (locationOutput []model.Location, err error)
+	CountSearchLocation(search string) (count int64, err error)
 	FindLocationById(id uint) (locationOutput model.Location, err error)
 	FindExcLocation(id uint) (locationOutput []model.Location, err error)
 	InsertLocation(location model.CreateLocationParameter) (locationOutput model.Location, err error)
@@ -26,8 +30,28 @@ func NewLocationService(locationRep repository.LocationRepository) LocationServi
 	}
 }
 
+func (service *locationService) CountLocationAll() (count int64, err error) {
+	res, err := service.locationRepository.CountLocationAll()
+	return res, err
+}
+
 func (service *locationService) FindLocations() (locationOutput []model.Location, err error) {
 	res, err := service.locationRepository.FindLocations()
+	return res, err
+}
+
+func (service *locationService) FindLocationsOffset(limit int, offset int, order string, dir string) (locationOutput []model.Location, err error) {
+	res, err := service.locationRepository.FindLocationsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *locationService) SearchLocation(limit int, offset int, order string, dir string, search string) (locationOutput []model.Location, err error) {
+	res, err := service.locationRepository.SearchLocation(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *locationService) CountSearchLocation(search string) (count int64, err error) {
+	res, err := service.locationRepository.CountSearchLocation(search)
 	return res, err
 }
 

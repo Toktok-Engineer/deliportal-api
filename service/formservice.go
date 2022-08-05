@@ -8,7 +8,11 @@ import (
 )
 
 type FormService interface {
+	CountFormAll() (count int64, err error)
 	FindForms() (formOutput []model.SelectFormParameter, err error)
+	FindFormsOffset(limit int, offset int, order string, dir string) (formOutput []model.SelectFormParameter, err error)
+	SearchForm(limit int, offset int, order string, dir string, search string) (formOutput []model.SelectFormParameter, err error)
+	CountSearchForm(search string) (count int64, err error)
 	FindFormJoinRole(uId uint, fpId uint) (formOutput []model.SelectFormCRUDParameter, err error)
 	FindFormByRole(uId uint) (formOutput []model.SelectFormCRUDParameter, err error)
 	FindFormByType(tyId uint) (formOutput []model.SelectFormParameter, err error)
@@ -35,8 +39,28 @@ func NewFormService(formRep repository.FormRepository) FormService {
 	}
 }
 
+func (service *formService) CountFormAll() (count int64, err error) {
+	res, err := service.formRepository.CountFormAll()
+	return res, err
+}
+
 func (service *formService) FindForms() (formOutput []model.SelectFormParameter, err error) {
 	res, err := service.formRepository.FindForms()
+	return res, err
+}
+
+func (service *formService) FindFormsOffset(limit int, offset int, order string, dir string) (formOutput []model.SelectFormParameter, err error) {
+	res, err := service.formRepository.FindFormsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *formService) SearchForm(limit int, offset int, order string, dir string, search string) (formOutput []model.SelectFormParameter, err error) {
+	res, err := service.formRepository.SearchForm(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *formService) CountSearchForm(search string) (count int64, err error) {
+	res, err := service.formRepository.CountSearchForm(search)
 	return res, err
 }
 

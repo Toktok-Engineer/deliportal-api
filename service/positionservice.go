@@ -8,7 +8,11 @@ import (
 )
 
 type PositionService interface {
+	CountPositionAll() (count int64, err error)
 	FindPositions() (positionOutput []model.Position, err error)
+	FindPositionsOffset(limit int, offset int, order string, dir string) (positionOutput []model.Position, err error)
+	SearchPosition(limit int, offset int, order string, dir string, search string) (positionOutput []model.Position, err error)
+	CountSearchPosition(search string) (count int64, err error)
 	FindPositionById(id uint) (positionOutput model.Position, err error)
 	FindExcPosition(id uint) (positionOutput []model.Position, err error)
 	InsertPosition(position model.CreatePositionParameter) (positionOutput model.Position, err error)
@@ -26,8 +30,28 @@ func NewPositionService(positionRep repository.PositionRepository) PositionServi
 	}
 }
 
+func (service *positionService) CountPositionAll() (count int64, err error) {
+	res, err := service.positionRepository.CountPositionAll()
+	return res, err
+}
+
 func (service *positionService) FindPositions() (positionOutput []model.Position, err error) {
 	res, err := service.positionRepository.FindPositions()
+	return res, err
+}
+
+func (service *positionService) FindPositionsOffset(limit int, offset int, order string, dir string) (positionOutput []model.Position, err error) {
+	res, err := service.positionRepository.FindPositionsOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *positionService) SearchPosition(limit int, offset int, order string, dir string, search string) (positionOutput []model.Position, err error) {
+	res, err := service.positionRepository.SearchPosition(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *positionService) CountSearchPosition(search string) (count int64, err error) {
+	res, err := service.positionRepository.CountSearchPosition(search)
 	return res, err
 }
 
