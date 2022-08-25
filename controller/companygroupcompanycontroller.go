@@ -8,48 +8,44 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/go-cmp/cmp"
 )
 
-type UserRoleController interface {
-	CountUserRoleAll(c *gin.Context)
-	FindUserRoles(c *gin.Context)
-	FindUserRolesOffset(c *gin.Context)
-	SearchUserRole(c *gin.Context)
-	CountSearchUserRole(c *gin.Context)
-	FindUserRoleById(c *gin.Context)
-	FindUserRoleByUserId(c *gin.Context)
-	FindExcUserRole(c *gin.Context)
-	FindExcUserRoleOnly(c *gin.Context)
-	InsertUserRole(c *gin.Context)
-	UpdateUserRole(c *gin.Context)
-	DeleteUserRole(c *gin.Context)
+type CompanyGroupCompanyController interface {
+	CountCompanyGroupCompanyAll(c *gin.Context)
+	FindCompanyGroupCompanys(c *gin.Context)
+	FindCompanyGroupCompanysOffset(c *gin.Context)
+	SearchCompanyGroupCompany(c *gin.Context)
+	CountSearchCompanyGroupCompany(c *gin.Context)
+	FindCompanyGroupCompanyById(c *gin.Context)
+	InsertCompanyGroupCompany(c *gin.Context)
+	UpdateCompanyGroupCompany(c *gin.Context)
+	DeleteCompanyGroupCompany(c *gin.Context)
 }
 
-type userRoleController struct {
-	userRoleService service.UserRoleService
-	jwtService      service.JWTService
+type companyGroupCompanyController struct {
+	companyGroupCompanyService service.CompanyGroupCompanyService
+	jwtService                 service.JWTService
 }
 
-func NewUserRoleController(userRoleServ service.UserRoleService, jwtServ service.JWTService) UserRoleController {
-	return &userRoleController{
-		userRoleService: userRoleServ,
-		jwtService:      jwtServ,
+func NewCompanyGroupCompanyController(companyGroupCompanyServ service.CompanyGroupCompanyService, jwtServ service.JWTService) CompanyGroupCompanyController {
+	return &companyGroupCompanyController{
+		companyGroupCompanyService: companyGroupCompanyServ,
+		jwtService:                 jwtServ,
 	}
 }
 
-func (b *userRoleController) CountUserRoleAll(c *gin.Context) {
+func (b *companyGroupCompanyController) CountCompanyGroupCompanyAll(c *gin.Context) {
 	var (
 		count    int64
 		response helper.Response
 	)
 
-	usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
+	companyGroupID, err := strconv.ParseInt(c.Param("companyGroupID"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+		response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		count, err = b.userRoleService.CountUserRoleAll(int(usernameID))
+		count, err = b.companyGroupCompanyService.CountCompanyGroupCompanyAll(int(companyGroupID))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
@@ -60,25 +56,25 @@ func (b *userRoleController) CountUserRoleAll(c *gin.Context) {
 	}
 }
 
-func (b *userRoleController) FindUserRoles(c *gin.Context) {
+func (b *companyGroupCompanyController) FindCompanyGroupCompanys(c *gin.Context) {
 	var (
-		userRoles []model.SelectUserRoleParameter
-		response  helper.Response
+		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
+		response             helper.Response
 	)
-	userRoles, err := b.userRoleService.FindUserRoles()
+	companyGroupCompanys, err := b.companyGroupCompanyService.FindCompanyGroupCompanys()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", userRoles)
+		response = helper.BuildResponse(true, "OK", companyGroupCompanys)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *userRoleController) FindUserRolesOffset(c *gin.Context) {
+func (b *companyGroupCompanyController) FindCompanyGroupCompanysOffset(c *gin.Context) {
 	var (
-		userRoles []model.SelectUserRoleParameter
-		response  helper.Response
+		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
+		response             helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -101,17 +97,17 @@ func (b *userRoleController) FindUserRolesOffset(c *gin.Context) {
 					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
+					companyGroupID, err := strconv.ParseInt(c.Param("companyGroupID"), 0, 0)
 					if err != nil {
-						response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+						response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						userRoles, err = b.userRoleService.FindUserRolesOffset(int(limit), int(offset), order, dir, int(usernameID))
+						companyGroupCompanys, err = b.companyGroupCompanyService.FindCompanyGroupCompanysOffset(int(limit), int(offset), order, dir, int(companyGroupID))
 						if err != nil {
 							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 							c.JSON(http.StatusNotFound, response)
 						} else {
-							response = helper.BuildResponse(true, "OK", userRoles)
+							response = helper.BuildResponse(true, "OK", companyGroupCompanys)
 							c.JSON(http.StatusOK, response)
 						}
 					}
@@ -121,10 +117,10 @@ func (b *userRoleController) FindUserRolesOffset(c *gin.Context) {
 	}
 }
 
-func (b *userRoleController) SearchUserRole(c *gin.Context) {
+func (b *companyGroupCompanyController) SearchCompanyGroupCompany(c *gin.Context) {
 	var (
-		userRoles []model.SelectUserRoleParameter
-		response  helper.Response
+		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
+		response             helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -152,17 +148,17 @@ func (b *userRoleController) SearchUserRole(c *gin.Context) {
 						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
+						companyGroupID, err := strconv.ParseInt(c.Param("companyGroupID"), 0, 0)
 						if err != nil {
-							response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+							response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 							c.AbortWithStatusJSON(http.StatusBadRequest, response)
 						} else {
-							userRoles, err = b.userRoleService.SearchUserRole(int(limit), int(offset), order, dir, search, int(usernameID))
+							companyGroupCompanys, err = b.companyGroupCompanyService.SearchCompanyGroupCompany(int(limit), int(offset), order, dir, search, int(companyGroupID))
 							if err != nil {
 								response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 								c.JSON(http.StatusNotFound, response)
 							} else {
-								response = helper.BuildResponse(true, "OK", userRoles)
+								response = helper.BuildResponse(true, "OK", companyGroupCompanys)
 								c.JSON(http.StatusOK, response)
 							}
 						}
@@ -173,7 +169,7 @@ func (b *userRoleController) SearchUserRole(c *gin.Context) {
 	}
 }
 
-func (b *userRoleController) CountSearchUserRole(c *gin.Context) {
+func (b *companyGroupCompanyController) CountSearchCompanyGroupCompany(c *gin.Context) {
 	var (
 		response helper.Response
 	)
@@ -182,12 +178,12 @@ func (b *userRoleController) CountSearchUserRole(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
+		companyGroupID, err := strconv.ParseInt(c.Param("companyGroupID"), 0, 0)
 		if err != nil {
-			response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			count, err := b.userRoleService.CountSearchUserRole(search, int(usernameID))
+			count, err := b.companyGroupCompanyService.CountSearchCompanyGroupCompany(search, int(companyGroupID))
 			if err != nil {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
@@ -199,124 +195,55 @@ func (b *userRoleController) CountSearchUserRole(c *gin.Context) {
 	}
 }
 
-func (b *userRoleController) FindUserRoleById(c *gin.Context) {
+func (b *companyGroupCompanyController) FindCompanyGroupCompanyById(c *gin.Context) {
 	var (
-		userRole model.SelectUserRoleParameter
-		response helper.Response
+		companyGroupCompany model.SelectCompanyGroupCompanyParameter
+		response            helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		userRole, err = b.userRoleService.FindUserRoleById(uint(id))
+		companyGroupCompany, err = b.companyGroupCompanyService.FindCompanyGroupCompanyById(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", userRole)
+			response = helper.BuildResponse(true, "OK", companyGroupCompany)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *userRoleController) FindUserRoleByUserId(c *gin.Context) {
+func (b *companyGroupCompanyController) InsertCompanyGroupCompany(c *gin.Context) {
 	var (
-		response helper.Response
+		companyGroupCompany                model.CompanyGroupCompany
+		response                           helper.Response
+		CreateCompanyGroupCompanyParameter model.CreateCompanyGroupCompanyParameter
 	)
-	uid, err := strconv.ParseUint(c.Param("uid"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param uid was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		userRole, err := b.userRoleService.FindUserRoleByUserId(uint(uid))
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", userRole)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *userRoleController) FindExcUserRole(c *gin.Context) {
-	var (
-		userRoles []model.SelectUserRoleParameter
-		response  helper.Response
-	)
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		uid, err := strconv.ParseUint(c.Param("uid"), 0, 0)
-		if err != nil {
-			response = helper.BuildErrorResponse("No param uid was found", err.Error(), helper.EmptyObj{})
-			c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		} else {
-			userRoles, err = b.userRoleService.FindExcUserRole(uint(id), uint(uid))
-			if err != nil {
-				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else {
-				response = helper.BuildResponse(true, "OK", userRoles)
-				c.JSON(http.StatusOK, response)
-			}
-		}
-	}
-}
-
-func (b *userRoleController) FindExcUserRoleOnly(c *gin.Context) {
-	var (
-		userRoles []model.SelectUserRoleParameter
-		response  helper.Response
-	)
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		userRoles, err = b.userRoleService.FindExcUserRoleOnly(uint(id))
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", userRoles)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *userRoleController) InsertUserRole(c *gin.Context) {
-	var (
-		userRole                model.UserRole
-		response                helper.Response
-		CreateUserRoleParameter model.CreateUserRoleParameter
-	)
-	err := c.ShouldBindJSON(&CreateUserRoleParameter)
+	err := c.ShouldBindJSON(&CreateCompanyGroupCompanyParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		userRole, err = b.userRoleService.InsertUserRole(CreateUserRoleParameter)
+		companyGroupCompany, err = b.companyGroupCompanyService.InsertCompanyGroupCompany(CreateCompanyGroupCompanyParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register userRole", err.Error(), helper.EmptyObj{})
+			response = helper.BuildErrorResponse("Failed to register companyGroupCompany", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", userRole)
+			response = helper.BuildResponse(true, "OK", companyGroupCompany)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *userRoleController) UpdateUserRole(c *gin.Context) {
+func (b *companyGroupCompanyController) UpdateCompanyGroupCompany(c *gin.Context) {
 	var (
-		newData  model.UserRole
-		oldData  model.SelectUserRoleParameter
+		newData  model.CompanyGroupCompany
+		oldData  model.SelectCompanyGroupCompanyParameter
 		response helper.Response
 	)
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
@@ -327,30 +254,31 @@ func (b *userRoleController) UpdateUserRole(c *gin.Context) {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.userRoleService.FindUserRoleById(uint(id))
+			oldData, err = b.companyGroupCompanyService.FindCompanyGroupCompanyById(uint(id))
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+			} else if (oldData == model.SelectCompanyGroupCompanyParameter{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				userRole, err := b.userRoleService.UpdateUserRole(newData, uint(id))
+				companyGroupCompany, err := b.companyGroupCompanyService.UpdateCompanyGroupCompany(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to update userRole", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to update companyGroupCompany", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", userRole)
+					response = helper.BuildResponse(true, "OK", companyGroupCompany)
 					c.JSON(http.StatusOK, response)
 				}
 			}
 		}
 	}
 }
-func (b *userRoleController) DeleteUserRole(c *gin.Context) {
+
+func (b *companyGroupCompanyController) DeleteCompanyGroupCompany(c *gin.Context) {
 	var (
-		newData  model.UserRole
-		oldData  model.SelectUserRoleParameter
+		newData  model.CompanyGroupCompany
+		oldData  model.SelectCompanyGroupCompanyParameter
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -363,20 +291,20 @@ func (b *userRoleController) DeleteUserRole(c *gin.Context) {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.userRoleService.FindUserRoleById(uint(id))
+			oldData, err = b.companyGroupCompanyService.FindCompanyGroupCompanyById(uint(id))
 			if err != nil {
 				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+			} else if (oldData == model.SelectCompanyGroupCompanyParameter{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				userRole, err := b.userRoleService.DeleteUserRole(newData, uint(id))
+				companyGroupCompany, err := b.companyGroupCompanyService.DeleteCompanyGroupCompany(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to delete userRole", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to delete companyGroupCompany", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", userRole)
+					response = helper.BuildResponse(true, "OK", companyGroupCompany)
 					c.JSON(http.StatusOK, response)
 				}
 			}

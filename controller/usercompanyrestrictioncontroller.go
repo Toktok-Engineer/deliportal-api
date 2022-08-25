@@ -42,13 +42,19 @@ func (b *usercompanyrestrictionController) CountUserCompanyRestrictionAll(c *gin
 		response helper.Response
 	)
 
-	count, err := b.usercompanyrestrictionService.CountUserCompanyRestrictionAll()
+	usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", count)
-		c.JSON(http.StatusOK, response)
+		count, err = b.usercompanyrestrictionService.CountUserCompanyRestrictionAll(int(usernameID))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -93,13 +99,19 @@ func (b *usercompanyrestrictionController) FindUserCompanyRestrictionsOffset(c *
 					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					usercompanyrestrictions, err = b.usercompanyrestrictionService.FindUserCompanyRestrictionsOffset(int(limit), int(offset), order, dir)
+					usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
 					if err != nil {
-						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-						c.JSON(http.StatusNotFound, response)
+						response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						response = helper.BuildResponse(true, "OK", usercompanyrestrictions)
-						c.JSON(http.StatusOK, response)
+						usercompanyrestrictions, err = b.usercompanyrestrictionService.FindUserCompanyRestrictionsOffset(int(limit), int(offset), order, dir, int(usernameID))
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", usercompanyrestrictions)
+							c.JSON(http.StatusOK, response)
+						}
 					}
 				}
 			}
@@ -138,13 +150,19 @@ func (b *usercompanyrestrictionController) SearchUserCompanyRestriction(c *gin.C
 						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						usercompanyrestrictions, err = b.usercompanyrestrictionService.SearchUserCompanyRestriction(int(limit), int(offset), order, dir, search)
+						usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
 						if err != nil {
-							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-							c.JSON(http.StatusNotFound, response)
+							response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+							c.AbortWithStatusJSON(http.StatusBadRequest, response)
 						} else {
-							response = helper.BuildResponse(true, "OK", usercompanyrestrictions)
-							c.JSON(http.StatusOK, response)
+							usercompanyrestrictions, err = b.usercompanyrestrictionService.SearchUserCompanyRestriction(int(limit), int(offset), order, dir, search, int(usernameID))
+							if err != nil {
+								response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+								c.JSON(http.StatusNotFound, response)
+							} else {
+								response = helper.BuildResponse(true, "OK", usercompanyrestrictions)
+								c.JSON(http.StatusOK, response)
+							}
 						}
 					}
 				}
@@ -162,13 +180,19 @@ func (b *usercompanyrestrictionController) CountSearchUserCompanyRestriction(c *
 		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		count, err := b.usercompanyrestrictionService.CountSearchUserCompanyRestriction(search)
+		usernameID, err := strconv.ParseInt(c.Param("usernameID"), 0, 0)
 		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
+			response = helper.BuildErrorResponse("No param usernameID was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", count)
-			c.JSON(http.StatusOK, response)
+			count, err := b.usercompanyrestrictionService.CountSearchUserCompanyRestriction(search, int(usernameID))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", count)
+				c.JSON(http.StatusOK, response)
+			}
 		}
 	}
 }

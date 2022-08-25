@@ -8,11 +8,11 @@ import (
 )
 
 type RoleFormService interface {
-	CountRoleFormAll() (count int64, err error)
+	CountRoleFormAll(roleID int) (count int64, err error)
 	FindRoleForms() (roleFormOutput []model.SelectRoleFormParameter, err error)
-	FindRoleFormsOffset(limit int, offset int, order string, dir string) (roleFormOutput []model.SelectRoleFormParameter, err error)
-	SearchRoleForm(limit int, offset int, order string, dir string, search string) (roleFormOutput []model.SelectRoleFormParameter, err error)
-	CountSearchRoleForm(search string) (count int64, err error)
+	FindRoleFormsOffset(limit int, offset int, order string, dir string, roleID int) (roleFormOutput []model.SelectRoleFormParameter, err error)
+	SearchRoleForm(limit int, offset int, order string, dir string, search string, roleID int) (roleFormOutput []model.SelectRoleFormParameter, err error)
+	CountSearchRoleForm(search string, roleID int) (count int64, err error)
 	FindRoleFormById(id uint) (roleFormOutput model.SelectRoleFormParameter, err error)
 	FindRoleFormByFormId(fid uint, rid uint) (roleFormOutput model.SelectRoleFormParameter, err error)
 	FindExcRoleForm(id uint, rid uint) (roleFormOutput []model.SelectRoleFormParameter, err error)
@@ -32,8 +32,8 @@ func NewRoleFormService(roleFormRep repository.RoleFormRepository) RoleFormServi
 	}
 }
 
-func (service *roleFormService) CountRoleFormAll() (count int64, err error) {
-	res, err := service.roleFormRepository.CountRoleFormAll()
+func (service *roleFormService) CountRoleFormAll(roleID int) (count int64, err error) {
+	res, err := service.roleFormRepository.CountRoleFormAll(roleID)
 	return res, err
 }
 
@@ -42,18 +42,18 @@ func (service *roleFormService) FindRoleForms() (roleFormOutput []model.SelectRo
 	return res, err
 }
 
-func (service *roleFormService) FindRoleFormsOffset(limit int, offset int, order string, dir string) (roleFormOutput []model.SelectRoleFormParameter, err error) {
-	res, err := service.roleFormRepository.FindRoleFormsOffset(limit, offset, order, dir)
+func (service *roleFormService) FindRoleFormsOffset(limit int, offset int, order string, dir string, roleID int) (roleFormOutput []model.SelectRoleFormParameter, err error) {
+	res, err := service.roleFormRepository.FindRoleFormsOffset(limit, offset, order, dir, roleID)
 	return res, err
 }
 
-func (service *roleFormService) SearchRoleForm(limit int, offset int, order string, dir string, search string) (roleFormOutput []model.SelectRoleFormParameter, err error) {
-	res, err := service.roleFormRepository.SearchRoleForm(limit, offset, order, dir, search)
+func (service *roleFormService) SearchRoleForm(limit int, offset int, order string, dir string, search string, roleID int) (roleFormOutput []model.SelectRoleFormParameter, err error) {
+	res, err := service.roleFormRepository.SearchRoleForm(limit, offset, order, dir, search, roleID)
 	return res, err
 }
 
-func (service *roleFormService) CountSearchRoleForm(search string) (count int64, err error) {
-	res, err := service.roleFormRepository.CountSearchRoleForm(search)
+func (service *roleFormService) CountSearchRoleForm(search string, roleID int) (count int64, err error) {
+	res, err := service.roleFormRepository.CountSearchRoleForm(search, roleID)
 	return res, err
 }
 

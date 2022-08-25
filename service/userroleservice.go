@@ -8,11 +8,11 @@ import (
 )
 
 type UserRoleService interface {
-	CountUserRoleAll() (count int64, err error)
+	CountUserRoleAll(usernameID int) (count int64, err error)
 	FindUserRoles() (userRoleOutput []model.SelectUserRoleParameter, err error)
-	FindUserRolesOffset(limit int, offset int, order string, dir string) (userRoleOutput []model.SelectUserRoleParameter, err error)
-	SearchUserRole(limit int, offset int, order string, dir string, search string) (userRoleOutput []model.SelectUserRoleParameter, err error)
-	CountSearchUserRole(search string) (count int64, err error)
+	FindUserRolesOffset(limit int, offset int, order string, dir string, usernameID int) (userRoleOutput []model.SelectUserRoleParameter, err error)
+	SearchUserRole(limit int, offset int, order string, dir string, search string, usernameID int) (userRoleOutput []model.SelectUserRoleParameter, err error)
+	CountSearchUserRole(search string, usernameID int) (count int64, err error)
 	FindUserRoleById(id uint) (userRoleOutput model.SelectUserRoleParameter, err error)
 	FindUserRoleByUserId(uid uint) (userRoleOutput model.SelectUserRoleParameter, err error)
 	FindExcUserRole(id uint, uid uint) (userRoleOutput []model.SelectUserRoleParameter, err error)
@@ -32,8 +32,8 @@ func NewUserRoleService(userRoleRep repository.UserRoleRepository) UserRoleServi
 	}
 }
 
-func (service *userRoleService) CountUserRoleAll() (count int64, err error) {
-	res, err := service.userRoleRepository.CountUserRoleAll()
+func (service *userRoleService) CountUserRoleAll(usernameID int) (count int64, err error) {
+	res, err := service.userRoleRepository.CountUserRoleAll(usernameID)
 	return res, err
 }
 
@@ -42,18 +42,18 @@ func (service *userRoleService) FindUserRoles() (userRoleOutput []model.SelectUs
 	return res, err
 }
 
-func (service *userRoleService) FindUserRolesOffset(limit int, offset int, order string, dir string) (userRoleOutput []model.SelectUserRoleParameter, err error) {
-	res, err := service.userRoleRepository.FindUserRolesOffset(limit, offset, order, dir)
+func (service *userRoleService) FindUserRolesOffset(limit int, offset int, order string, dir string, usernameID int) (userRoleOutput []model.SelectUserRoleParameter, err error) {
+	res, err := service.userRoleRepository.FindUserRolesOffset(limit, offset, order, dir, usernameID)
 	return res, err
 }
 
-func (service *userRoleService) SearchUserRole(limit int, offset int, order string, dir string, search string) (userRoleOutput []model.SelectUserRoleParameter, err error) {
-	res, err := service.userRoleRepository.SearchUserRole(limit, offset, order, dir, search)
+func (service *userRoleService) SearchUserRole(limit int, offset int, order string, dir string, search string, usernameID int) (userRoleOutput []model.SelectUserRoleParameter, err error) {
+	res, err := service.userRoleRepository.SearchUserRole(limit, offset, order, dir, search, usernameID)
 	return res, err
 }
 
-func (service *userRoleService) CountSearchUserRole(search string) (count int64, err error) {
-	res, err := service.userRoleRepository.CountSearchUserRole(search)
+func (service *userRoleService) CountSearchUserRole(search string, usernameID int) (count int64, err error) {
+	res, err := service.userRoleRepository.CountSearchUserRole(search, usernameID)
 	return res, err
 }
 

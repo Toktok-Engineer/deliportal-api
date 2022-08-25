@@ -44,13 +44,19 @@ func (b *roleFormController) CountRoleFormAll(c *gin.Context) {
 		response helper.Response
 	)
 
-	count, err := b.roleFormService.CountRoleFormAll()
+	roleID, err := strconv.ParseInt(c.Param("roleID"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusNotFound, response)
+		response = helper.BuildErrorResponse("No param roleID was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", count)
-		c.JSON(http.StatusOK, response)
+		count, err = b.roleFormService.CountRoleFormAll(int(roleID))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
+			c.JSON(http.StatusOK, response)
+		}
 	}
 }
 
@@ -95,13 +101,19 @@ func (b *roleFormController) FindRoleFormsOffset(c *gin.Context) {
 					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					roleForms, err = b.roleFormService.FindRoleFormsOffset(int(limit), int(offset), order, dir)
+					roleID, err := strconv.ParseInt(c.Param("roleID"), 0, 0)
 					if err != nil {
-						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-						c.JSON(http.StatusNotFound, response)
+						response = helper.BuildErrorResponse("No param roleID was found", err.Error(), helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						response = helper.BuildResponse(true, "OK", roleForms)
-						c.JSON(http.StatusOK, response)
+						roleForms, err = b.roleFormService.FindRoleFormsOffset(int(limit), int(offset), order, dir, int(roleID))
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", roleForms)
+							c.JSON(http.StatusOK, response)
+						}
 					}
 				}
 			}
@@ -140,13 +152,19 @@ func (b *roleFormController) SearchRoleForm(c *gin.Context) {
 						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						roleForms, err = b.roleFormService.SearchRoleForm(int(limit), int(offset), order, dir, search)
+						roleID, err := strconv.ParseInt(c.Param("roleID"), 0, 0)
 						if err != nil {
-							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-							c.JSON(http.StatusNotFound, response)
+							response = helper.BuildErrorResponse("No param roleID was found", err.Error(), helper.EmptyObj{})
+							c.AbortWithStatusJSON(http.StatusBadRequest, response)
 						} else {
-							response = helper.BuildResponse(true, "OK", roleForms)
-							c.JSON(http.StatusOK, response)
+							roleForms, err = b.roleFormService.SearchRoleForm(int(limit), int(offset), order, dir, search, int(roleID))
+							if err != nil {
+								response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+								c.JSON(http.StatusNotFound, response)
+							} else {
+								response = helper.BuildResponse(true, "OK", roleForms)
+								c.JSON(http.StatusOK, response)
+							}
 						}
 					}
 				}
@@ -164,13 +182,19 @@ func (b *roleFormController) CountSearchRoleForm(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		count, err := b.roleFormService.CountSearchRoleForm(search)
+		roleID, err := strconv.ParseInt(c.Param("roleID"), 0, 0)
 		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
+			response = helper.BuildErrorResponse("No param roleID was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", count)
-			c.JSON(http.StatusOK, response)
+			count, err := b.roleFormService.CountSearchRoleForm(search, int(roleID))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", count)
+				c.JSON(http.StatusOK, response)
+			}
 		}
 	}
 }

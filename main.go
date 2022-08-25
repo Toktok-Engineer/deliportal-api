@@ -37,6 +37,9 @@ var (
 	companyLicenseRepository               repository.CompanyLicenseRepository               = repository.NewCompanyLicenseRepository(db)
 	companyLicenseRenewalTracingRepository repository.CompanyLicenseRenewalTracingRepository = repository.NewCompanyLicenseRenewalTracingRepository(db)
 	userCompanyRestrictionRepository       repository.UserCompanyRestrictionRepository       = repository.NewUserCompanyRestrictionRepository(db)
+	companyGroupRepository                 repository.CompanyGroupRepository                 = repository.NewCompanyGroupRepository(db)
+	companyGroupCompanyRepository          repository.CompanyGroupCompanyRepository          = repository.NewCompanyGroupCompanyRepository(db)
+	groupLicenseTypeRepository             repository.GroupLicenseTypeRepository             = repository.NewGroupLicenseTypeRepository(db)
 	authService                            service.AuthService                               = service.NewAuthService(userRepository)
 	divisionService                        service.DivisionService                           = service.NewDivisionService(divisionRepository)
 	departmentService                      service.DepartmentService                         = service.NewDepartmentService(departmentRepository)
@@ -62,6 +65,9 @@ var (
 	companyManagementService               service.CompanyManagementService                  = service.NewCompanyManagementService(companyManagementRepository)
 	companyLicenseService                  service.CompanyLicenseService                     = service.NewCompanyLicenseService(companyLicenseRepository)
 	userCompanyRestrictionService          service.UserCompanyRestrictionService             = service.NewUserCompanyRestrictionService(userCompanyRestrictionRepository)
+	companyGroupService                    service.CompanyGroupService                       = service.NewCompanyGroupService(companyGroupRepository)
+	companyGroupCompanyService             service.CompanyGroupCompanyService                = service.NewCompanyGroupCompanyService(companyGroupCompanyRepository)
+	groupLicenseTypeService                service.GroupLicenseTypeService                   = service.NewGroupLicenseTypeService(groupLicenseTypeRepository)
 	jwtService                             service.JWTService                                = service.NewJWTService()
 	authController                         controller.AuthController                         = controller.NewAuthController(authService, jwtService)
 	divisionController                     controller.DivisionController                     = controller.NewDivisionController(divisionService, jwtService)
@@ -88,6 +94,9 @@ var (
 	companyLicenseController               controller.CompanyLicenseController               = controller.NewCompanyLicenseController(companyLicenseService, jwtService)
 	companyLicenseRenewalTracingController controller.CompanyLicenseRenewalTracingController = controller.NewCompanyLicenseRenewalTracingController(companyLicenseRenewalTracingService, jwtService)
 	userCompanyRestrictionController       controller.UserCompanyRestrictionController       = controller.NewUserCompanyRestrictionController(userCompanyRestrictionService, jwtService)
+	companyGroupController                 controller.CompanyGroupController                 = controller.NewCompanyGroupController(companyGroupService, jwtService)
+	companyGroupCompanyController          controller.CompanyGroupCompanyController          = controller.NewCompanyGroupCompanyController(companyGroupCompanyService, jwtService)
+	groupLicenseTypeController             controller.GroupLicenseTypeController             = controller.NewGroupLicenseTypeController(groupLicenseTypeService, jwtService)
 )
 
 func main() {
@@ -262,11 +271,11 @@ func main() {
 
 	userRoleGroup := r.Group("/api/UserRole", middleware.AuthorizeJWT(jwtService))
 	{
-		userRoleGroup.GET("/", userRoleController.CountUserRoleAll)
+		userRoleGroup.GET("/count/:usernameID", userRoleController.CountUserRoleAll)
 		userRoleGroup.GET("/all", userRoleController.FindUserRoles)
-		userRoleGroup.GET("/list/:limit/:offset/:order/:dir", userRoleController.FindUserRolesOffset)
-		userRoleGroup.GET("/search/:limit/:offset/:order/:dir/:search", userRoleController.SearchUserRole)
-		userRoleGroup.GET("/countSearch/:search", userRoleController.CountSearchUserRole)
+		userRoleGroup.GET("/list/:limit/:offset/:order/:dir/:usernameID", userRoleController.FindUserRolesOffset)
+		userRoleGroup.GET("/search/:limit/:offset/:order/:dir/:search/:usernameID", userRoleController.SearchUserRole)
+		userRoleGroup.GET("/countSearch/:search/:usernameID", userRoleController.CountSearchUserRole)
 		userRoleGroup.GET("/:id", userRoleController.FindUserRoleById)
 		userRoleGroup.GET("/byUserId/:uid", userRoleController.FindUserRoleByUserId)
 		userRoleGroup.GET("/exc/:id/:uid", userRoleController.FindExcUserRole)
@@ -278,11 +287,11 @@ func main() {
 
 	roleFormGroup := r.Group("/api/RoleForm", middleware.AuthorizeJWT(jwtService))
 	{
-		roleFormGroup.GET("/", roleFormController.CountRoleFormAll)
+		roleFormGroup.GET("/count/:roleID", roleFormController.CountRoleFormAll)
 		roleFormGroup.GET("/all", roleFormController.FindRoleForms)
-		roleFormGroup.GET("/list/:limit/:offset/:order/:dir", roleFormController.FindRoleFormsOffset)
-		roleFormGroup.GET("/search/:limit/:offset/:order/:dir/:search", roleFormController.SearchRoleForm)
-		roleFormGroup.GET("/countSearch/:search", roleFormController.CountSearchRoleForm)
+		roleFormGroup.GET("/list/:limit/:offset/:order/:dir/:roleID", roleFormController.FindRoleFormsOffset)
+		roleFormGroup.GET("/search/:limit/:offset/:order/:dir/:search/:roleID", roleFormController.SearchRoleForm)
+		roleFormGroup.GET("/countSearch/:search/:roleID", roleFormController.CountSearchRoleForm)
 		roleFormGroup.GET("/:id", roleFormController.FindRoleFormById)
 		roleFormGroup.GET("/byFormId/:fid/:rid", roleFormController.FindRoleFormByFormId)
 		roleFormGroup.GET("/exc/:id/:rid", roleFormController.FindExcRoleForm)
@@ -470,17 +479,58 @@ func main() {
 
 	usercompanyrestrictionGroup := r.Group("/api/userCompanyRestriction", middleware.AuthorizeJWT(jwtService))
 	{
-		usercompanyrestrictionGroup.GET("/", userCompanyRestrictionController.CountUserCompanyRestrictionAll)
+		usercompanyrestrictionGroup.GET("/count/:usernameID", userCompanyRestrictionController.CountUserCompanyRestrictionAll)
 		usercompanyrestrictionGroup.GET("/all", userCompanyRestrictionController.FindUserCompanyRestrictions)
-		usercompanyrestrictionGroup.GET("/list/:limit/:offset/:order/:dir", userCompanyRestrictionController.FindUserCompanyRestrictionsOffset)
-		usercompanyrestrictionGroup.GET("/search/:limit/:offset/:order/:dir/:search", userCompanyRestrictionController.SearchUserCompanyRestriction)
-		usercompanyrestrictionGroup.GET("/countSearch/:search", userCompanyRestrictionController.CountSearchUserCompanyRestriction)
+		usercompanyrestrictionGroup.GET("/list/:limit/:offset/:order/:dir/:usernameID", userCompanyRestrictionController.FindUserCompanyRestrictionsOffset)
+		usercompanyrestrictionGroup.GET("/search/:limit/:offset/:order/:dir/:search/:usernameID", userCompanyRestrictionController.SearchUserCompanyRestriction)
+		usercompanyrestrictionGroup.GET("/countSearch/:search/:usernameID", userCompanyRestrictionController.CountSearchUserCompanyRestriction)
 		usercompanyrestrictionGroup.GET("/:id", userCompanyRestrictionController.FindUserCompanyRestrictionById)
 		usercompanyrestrictionGroup.GET("/user/:uid", userCompanyRestrictionController.FindUserCompanyRestrictionByUserId)
 		usercompanyrestrictionGroup.GET("/exc/:id", userCompanyRestrictionController.FindExcUserCompanyRestriction)
 		usercompanyrestrictionGroup.POST("/", userCompanyRestrictionController.InsertUserCompanyRestriction)
 		usercompanyrestrictionGroup.PUT("/:id", userCompanyRestrictionController.UpdateUserCompanyRestriction)
 		usercompanyrestrictionGroup.DELETE("/:id", userCompanyRestrictionController.DeleteUserCompanyRestriction)
+	}
+
+	companyGroupGroup := r.Group("/api/CompanyGroup", middleware.AuthorizeJWT(jwtService))
+	{
+		companyGroupGroup.GET("/", companyGroupController.CountCompanyGroupAll)
+		companyGroupGroup.GET("/all", companyGroupController.FindCompanyGroups)
+		companyGroupGroup.GET("/list/:limit/:offset/:order/:dir", companyGroupController.FindCompanyGroupsOffset)
+		companyGroupGroup.GET("/search/:limit/:offset/:order/:dir/:search", companyGroupController.SearchCompanyGroup)
+		companyGroupGroup.GET("/countSearch/:search", companyGroupController.CountSearchCompanyGroup)
+		companyGroupGroup.GET("/:id", companyGroupController.FindCompanyGroupById)
+		companyGroupGroup.GET("/exc/:id", companyGroupController.FindExcCompanyGroup)
+		companyGroupGroup.POST("/", companyGroupController.InsertCompanyGroup)
+		companyGroupGroup.PUT("/:id", companyGroupController.UpdateCompanyGroup)
+		companyGroupGroup.DELETE("/:id", companyGroupController.DeleteCompanyGroup)
+	}
+
+	companyGroupCompanyGroup := r.Group("/api/companyGroupCompany", middleware.AuthorizeJWT(jwtService))
+	{
+		companyGroupCompanyGroup.GET("/count/:companyGroupID", companyGroupCompanyController.CountCompanyGroupCompanyAll)
+		companyGroupCompanyGroup.GET("/all", companyGroupCompanyController.FindCompanyGroupCompanys)
+		companyGroupCompanyGroup.GET("/list/:limit/:offset/:order/:dir/:companyGroupID", companyGroupCompanyController.FindCompanyGroupCompanysOffset)
+		companyGroupCompanyGroup.GET("/search/:limit/:offset/:order/:dir/:search/:companyGroupID", companyGroupCompanyController.SearchCompanyGroupCompany)
+		companyGroupCompanyGroup.GET("/countSearch/:search/:companyGroupID", companyGroupCompanyController.CountSearchCompanyGroupCompany)
+		companyGroupCompanyGroup.GET("/:id", companyGroupCompanyController.FindCompanyGroupCompanyById)
+		companyGroupCompanyGroup.POST("/", companyGroupCompanyController.InsertCompanyGroupCompany)
+		companyGroupCompanyGroup.PUT("/:id", companyGroupCompanyController.UpdateCompanyGroupCompany)
+		companyGroupCompanyGroup.DELETE("/:id", companyGroupCompanyController.DeleteCompanyGroupCompany)
+	}
+
+	groupLicenseTypeGroup := r.Group("/api/GroupLicenseType", middleware.AuthorizeJWT(jwtService))
+	{
+		groupLicenseTypeGroup.GET("/", groupLicenseTypeController.CountGroupLicenseTypeAll)
+		groupLicenseTypeGroup.GET("/all", groupLicenseTypeController.FindGroupLicenseTypes)
+		groupLicenseTypeGroup.GET("/list/:limit/:offset/:order/:dir", groupLicenseTypeController.FindGroupLicenseTypesOffset)
+		groupLicenseTypeGroup.GET("/search/:limit/:offset/:order/:dir/:search", groupLicenseTypeController.SearchGroupLicenseType)
+		groupLicenseTypeGroup.GET("/countSearch/:search", groupLicenseTypeController.CountSearchGroupLicenseType)
+		groupLicenseTypeGroup.GET("/:id", groupLicenseTypeController.FindGroupLicenseTypeById)
+		groupLicenseTypeGroup.GET("/exc/:id", groupLicenseTypeController.FindExcGroupLicenseType)
+		groupLicenseTypeGroup.POST("/", groupLicenseTypeController.InsertGroupLicenseType)
+		groupLicenseTypeGroup.PUT("/:id", groupLicenseTypeController.UpdateGroupLicenseType)
+		groupLicenseTypeGroup.DELETE("/:id", groupLicenseTypeController.DeleteGroupLicenseType)
 	}
 
 	tokenGroup := r.Group("/api/token", middleware.AuthorizeJWTRefreshToken(jwtService))
