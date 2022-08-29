@@ -3,12 +3,12 @@ package model
 type CompanyLicense struct {
 	ID                    uint    `json:"company_license_id"`
 	ParentLicenseID       uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"parent_license_id"`
-	LicenseNo             string  `gorm:"type:varchar(50);not null" json:"license_no"`
+	LicenseNo             string  `gorm:"type:varchar(100);not null" json:"license_no"`
 	LicenseTypeID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"license_type_id"`
 	CompanyID             uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
 	Renewable             bool    `gorm:"not null;typedefault:null" json:"renewable"`
 	ReminderCounter       uint    `gorm:"type:bigint;not null" json:"reminder_counter"`
-	IssuedBy              string  `gorm:"type:varchar(50);not null" json:"issued_by"`
+	IssuedBy              string  `gorm:"type:varchar(150);not null" json:"issued_by"`
 	IssuedDate            float64 `gorm:"type:double precision;not null" json:"issued_date"`
 	ExpiredDate           float64 `gorm:"type:double precision;not null" json:"expired_date"`
 	EarliestRenewalDate   float64 `gorm:"type:double precision;not null" json:"earliest_renewal_date"`
@@ -26,6 +26,7 @@ type CompanyLicense struct {
 	CreatedAt             float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt             float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt             float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
+	GroupLicenseTypeID    uint    `gorm:"type:bigint;typedefault:null;index:" json:"group_license_type_id"`
 }
 
 type SelectCompanyLicenseParameter struct {
@@ -33,7 +34,7 @@ type SelectCompanyLicenseParameter struct {
 	CompanyName           string `gorm:"type:varchar(50);not null" json:"company_name"`
 	BusinessUnitName      string `gorm:"type:varchar(100);not null" json:"business_unit_name"`
 	ParentLicenseID       uint   `gorm:"type:bigint;foreign_key;not null;index:" json:"parent_license_id"`
-	LicenseNo             string `gorm:"type:varchar(50);not null" json:"license_no"`
+	LicenseNo             string `gorm:"type:varchar(100);not null" json:"license_no"`
 	LicenseParentNo       string `gorm:"type:varchar(50)" json:"license_parent_no"`
 	LicenseTypeID         uint   `gorm:"type:bigint;foreign_key;not null;index:" json:"license_type_id"`
 	LicenseTypeName       string `gorm:"type:varchar(50);not null;unique" json:"license_type_name"`
@@ -66,11 +67,13 @@ type SelectCompanyLicenseParameter struct {
 	CreatedAt             string `gorm:"type:varchar(100);not null" json:"created_at"`
 	UpdatedAt             string `gorm:"type:varchar(100);not null" json:"updated_at"`
 	DeletedAt             string `gorm:"type:varchar(100);typedefault:null" json:"deleted_at"`
+	GroupLicenseTypeID    uint   `gorm:"type:bigint;typedefault:null;index:" json:"group_license_type_id"`
+	GroupLicenseTypeName  string `gorm:"type:varchar(150);not null;unique" json:"group_license_type_name" binding:"required"`
 }
 
 type CreateCompanyLicenseParameter struct {
 	ParentLicenseID       uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"parent_license_id"`
-	LicenseNo             string  `gorm:"type:varchar(50);not null" json:"license_no"`
+	LicenseNo             string  `gorm:"type:varchar(100);not null" json:"license_no"`
 	LicenseTypeID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"license_type_id"`
 	CompanyID             uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
 	Renewable             bool    `gorm:"not null;typedefault:null" json:"renewable"`
@@ -93,4 +96,5 @@ type CreateCompanyLicenseParameter struct {
 	CreatedAt             float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt             float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt             float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
+	GroupLicenseTypeID    uint    `gorm:"type:bigint;typedefault:null;index:" json:"group_license_type_id"`
 }

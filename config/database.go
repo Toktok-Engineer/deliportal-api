@@ -36,6 +36,8 @@ func ConnectDataBase() *gorm.DB {
 
 	db.AutoMigrate()
 	db.AutoMigrate(&model.GroupLicenseType{})
+	db.AutoMigrate(&model.LicenseType{})
+	db.AutoMigrate(&model.CompanyLicense{})
 
 	return db
 }

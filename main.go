@@ -338,6 +338,8 @@ func main() {
 		licenseTypeGroup.GET("/countSearch/:search", licenseTypeController.CountSearchLicenseType)
 		licenseTypeGroup.GET("/:id", licenseTypeController.FindLicenseTypeById)
 		licenseTypeGroup.GET("/exc/:id", licenseTypeController.FindExcLicenseType)
+		licenseTypeGroup.GET("/excComplete/:groupLT/:id", licenseTypeController.FindExcCompleteLicenseType)
+		licenseTypeGroup.GET("/byGroupLicenseType/:groupLT", licenseTypeController.FindLicenseTypeByGroupLT)
 		licenseTypeGroup.POST("/", licenseTypeController.InsertLicenseType)
 		licenseTypeGroup.PUT("/:id", licenseTypeController.UpdateLicenseType)
 		licenseTypeGroup.DELETE("/:id", licenseTypeController.DeleteLicenseType)
