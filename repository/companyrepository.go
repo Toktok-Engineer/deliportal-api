@@ -10,6 +10,7 @@ import (
 type CompanyRepository interface {
 	CountCompanyAll() (count int64, err error)
 	FindCompanys() (companyOutput []model.SelectCompanyParameter, err error)
+	FindCompanyFilters(companyID string) (companyOutput []model.SelectCompanyParameter, err error)
 	FindCompanysOffset(limit int, offset int, order string, dir string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
 	SearchCompany(limit int, offset int, order string, dir string, search string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
 	CountSearchCompany(search string, companyID string) (count int64, err error)
@@ -45,6 +46,15 @@ func (db *CompanyConnection) FindCompanys() (companyOutput []model.SelectCompany
 		companys []model.SelectCompanyParameter
 	)
 	res := db.connection.Debug().Table("companies").Select("companies.id, companies.company_name, companies.business_unit_id, business_units.business_unit_name, companies.address, companies.legal_license_file_url, companies.status, CASE WHEN companies.status = 1 THEN 'Draft' WHEN companies.status = 2 THEN 'Need Approval' WHEN companies.status = 3 THEN 'Active' WHEN companies.status = 4 THEN 'Not Active' END AS status_name, companies.approved_user_id, appUID.username AS approved_user, companies.deactived_user_id, deactiveUID.username AS deactivate_user, to_char(to_timestamp(companies.approved_date::numeric), 'DD-Mon-YYYY') AS approved_date, to_char(to_timestamp(companies.deactived_date::numeric), 'DD-Mon-YYYY') AS deactived_date, companies.remark, companies.created_user_id, createdUID.username AS created_user, companies.updated_user_id, updatedUID.username AS updated_user, companies.deleted_user_id, deletedUID.username AS deleted_user, to_char(to_timestamp(companies.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(companies.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(companies.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join business_units ON companies.business_unit_id = business_units.id").Joins("left join users appUID on companies.approved_user_id = appUID.id").Joins("left join users deactiveUID on companies.deactived_user_id = deactiveUID.id").Joins("left join users createdUID on companies.created_user_id = createdUID.id").Joins("left join users updatedUID on companies.updated_user_id = updatedUID.id").Joins("left join users deletedUID on companies.deleted_user_id = deletedUID.id").Where("companies.deleted_at = 0").Order("companies.company_name").Find(&companys)
+	return companys, res.Error
+}
+
+func (db *CompanyConnection) FindCompanyFilters(companyID string) (companyOutput []model.SelectCompanyParameter, err error) {
+	var (
+		companys []model.SelectCompanyParameter
+	)
+	compId := strings.Split(companyID, ",")
+	res := db.connection.Debug().Table("companies").Select("companies.id, companies.company_name, companies.business_unit_id, business_units.business_unit_name, companies.address, companies.legal_license_file_url, companies.status, CASE WHEN companies.status = 1 THEN 'Draft' WHEN companies.status = 2 THEN 'Need Approval' WHEN companies.status = 3 THEN 'Active' WHEN companies.status = 4 THEN 'Not Active' END AS status_name, companies.approved_user_id, appUID.username AS approved_user, companies.deactived_user_id, deactiveUID.username AS deactivate_user, to_char(to_timestamp(companies.approved_date::numeric), 'DD-Mon-YYYY') AS approved_date, to_char(to_timestamp(companies.deactived_date::numeric), 'DD-Mon-YYYY') AS deactived_date, companies.remark, companies.created_user_id, createdUID.username AS created_user, companies.updated_user_id, updatedUID.username AS updated_user, companies.deleted_user_id, deletedUID.username AS deleted_user, to_char(to_timestamp(companies.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(companies.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(companies.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join business_units ON companies.business_unit_id = business_units.id").Joins("left join users appUID on companies.approved_user_id = appUID.id").Joins("left join users deactiveUID on companies.deactived_user_id = deactiveUID.id").Joins("left join users createdUID on companies.created_user_id = createdUID.id").Joins("left join users updatedUID on companies.updated_user_id = updatedUID.id").Joins("left join users deletedUID on companies.deleted_user_id = deletedUID.id").Where("companies.id NOT IN (?) AND companies.deleted_at = 0", compId).Order("companies.company_name").Find(&companys)
 	return companys, res.Error
 }
 

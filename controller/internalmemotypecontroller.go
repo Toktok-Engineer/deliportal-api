@@ -10,40 +10,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DepartmentController interface {
-	CountDepartmentAll(c *gin.Context)
-	FindDepartments(c *gin.Context)
-	FindDepartmentsOffset(c *gin.Context)
-	SearchDepartment(c *gin.Context)
-	CountSearchDepartment(c *gin.Context)
-	FindDepartmentById(c *gin.Context)
-	FindExcDepartment(c *gin.Context)
-	FindDepartmentByDivId(c *gin.Context)
-	CountDepartmentName(c *gin.Context)
-	InsertDepartment(c *gin.Context)
-	UpdateDepartment(c *gin.Context)
-	DeleteDepartment(c *gin.Context)
+type InternalMemoTypeController interface {
+	CountInternalMemoTypeAll(c *gin.Context)
+	FindInternalMemoTypes(c *gin.Context)
+	FindInternalMemoTypesOffset(c *gin.Context)
+	SearchInternalMemoType(c *gin.Context)
+	CountSearchInternalMemoType(c *gin.Context)
+	FindInternalMemoTypeById(c *gin.Context)
+	FindExcInternalMemoType(c *gin.Context)
+	InsertInternalMemoType(c *gin.Context)
+	UpdateInternalMemoType(c *gin.Context)
+	DeleteInternalMemoType(c *gin.Context)
 }
 
-type departmentController struct {
-	departmentService service.DepartmentService
-	jwtService        service.JWTService
+type internalMemoTypeController struct {
+	internalMemoTypeService service.InternalMemoTypeService
+	jwtService              service.JWTService
 }
 
-func NewDepartmentController(departmentServ service.DepartmentService, jwtServ service.JWTService) DepartmentController {
-	return &departmentController{
-		departmentService: departmentServ,
-		jwtService:        jwtServ,
+func NewInternalMemoTypeController(internalMemoTypeServ service.InternalMemoTypeService, jwtServ service.JWTService) InternalMemoTypeController {
+	return &internalMemoTypeController{
+		internalMemoTypeService: internalMemoTypeServ,
+		jwtService:              jwtServ,
 	}
 }
 
-func (b *departmentController) CountDepartmentAll(c *gin.Context) {
+func (b *internalMemoTypeController) CountInternalMemoTypeAll(c *gin.Context) {
 	var (
-		count    int64
 		response helper.Response
 	)
 
-	count, err := b.departmentService.CountDepartmentAll()
+	count, err := b.internalMemoTypeService.CountInternalMemoTypeAll()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
@@ -53,25 +50,25 @@ func (b *departmentController) CountDepartmentAll(c *gin.Context) {
 	}
 }
 
-func (b *departmentController) FindDepartments(c *gin.Context) {
+func (b *internalMemoTypeController) FindInternalMemoTypes(c *gin.Context) {
 	var (
-		departments []model.SelectDepartmentParameter
-		response    helper.Response
+		internalmemotypes []model.InternalMemoType
+		response          helper.Response
 	)
-	departments, err := b.departmentService.FindDepartments()
+	internalmemotypes, err := b.internalMemoTypeService.FindInternalMemoTypes()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", departments)
+		response = helper.BuildResponse(true, "OK", internalmemotypes)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *departmentController) FindDepartmentsOffset(c *gin.Context) {
+func (b *internalMemoTypeController) FindInternalMemoTypesOffset(c *gin.Context) {
 	var (
-		departments []model.SelectDepartmentParameter
-		response    helper.Response
+		internalmemotypes []model.InternalMemoType
+		response          helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -94,12 +91,12 @@ func (b *departmentController) FindDepartmentsOffset(c *gin.Context) {
 					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					departments, err = b.departmentService.FindDepartmentsOffset(int(limit), int(offset), order, dir)
+					internalmemotypes, err = b.internalMemoTypeService.FindInternalMemoTypesOffset(int(limit), int(offset), order, dir)
 					if err != nil {
 						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 						c.JSON(http.StatusNotFound, response)
 					} else {
-						response = helper.BuildResponse(true, "OK", departments)
+						response = helper.BuildResponse(true, "OK", internalmemotypes)
 						c.JSON(http.StatusOK, response)
 					}
 				}
@@ -108,10 +105,10 @@ func (b *departmentController) FindDepartmentsOffset(c *gin.Context) {
 	}
 }
 
-func (b *departmentController) SearchDepartment(c *gin.Context) {
+func (b *internalMemoTypeController) SearchInternalMemoType(c *gin.Context) {
 	var (
-		departments []model.SelectDepartmentParameter
-		response    helper.Response
+		internalmemotypes []model.InternalMemoType
+		response          helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -139,12 +136,12 @@ func (b *departmentController) SearchDepartment(c *gin.Context) {
 						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						departments, err = b.departmentService.SearchDepartment(int(limit), int(offset), order, dir, search)
+						internalmemotypes, err = b.internalMemoTypeService.SearchInternalMemoType(int(limit), int(offset), order, dir, search)
 						if err != nil {
 							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 							c.JSON(http.StatusNotFound, response)
 						} else {
-							response = helper.BuildResponse(true, "OK", departments)
+							response = helper.BuildResponse(true, "OK", internalmemotypes)
 							c.JSON(http.StatusOK, response)
 						}
 					}
@@ -154,7 +151,7 @@ func (b *departmentController) SearchDepartment(c *gin.Context) {
 	}
 }
 
-func (b *departmentController) CountSearchDepartment(c *gin.Context) {
+func (b *internalMemoTypeController) CountSearchInternalMemoType(c *gin.Context) {
 	var (
 		response helper.Response
 	)
@@ -163,7 +160,7 @@ func (b *departmentController) CountSearchDepartment(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		count, err := b.departmentService.CountSearchDepartment(search)
+		count, err := b.internalMemoTypeService.CountSearchInternalMemoType(search)
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
@@ -174,121 +171,74 @@ func (b *departmentController) CountSearchDepartment(c *gin.Context) {
 	}
 }
 
-func (b *departmentController) FindDepartmentById(c *gin.Context) {
+func (b *internalMemoTypeController) FindInternalMemoTypeById(c *gin.Context) {
 	var (
-		department model.SelectDepartmentParameter
-		response   helper.Response
+		internalMemoType model.InternalMemoType
+		response         helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		department, err = b.departmentService.FindDepartmentById(uint(id))
+		internalMemoType, err = b.internalMemoTypeService.FindInternalMemoTypeById(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", department)
+			response = helper.BuildResponse(true, "OK", internalMemoType)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *departmentController) FindExcDepartment(c *gin.Context) {
+func (b *internalMemoTypeController) FindExcInternalMemoType(c *gin.Context) {
 	var (
-		departments []model.SelectDepartmentParameter
-		response    helper.Response
+		internalMemoTypes []model.InternalMemoType
+		response          helper.Response
 	)
-	divId, err := strconv.ParseUint(c.Param("divId"), 0, 0)
+	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
-		response = helper.BuildErrorResponse("No param divId was found", err.Error(), helper.EmptyObj{})
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		id, err := strconv.ParseUint(c.Param("id"), 0, 0)
-		if err != nil {
-			response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-			c.AbortWithStatusJSON(http.StatusBadRequest, response)
-		} else {
-			departments, err = b.departmentService.FindExcDepartment(uint(divId), uint(id))
-			if err != nil {
-				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else {
-				response = helper.BuildResponse(true, "OK", departments)
-				c.JSON(http.StatusOK, response)
-			}
-		}
-	}
-}
-
-func (b *departmentController) FindDepartmentByDivId(c *gin.Context) {
-	var (
-		departments []model.SelectDepartmentParameter
-		response    helper.Response
-	)
-	divId, err := strconv.ParseUint(c.Param("divId"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param division id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		departments, err = b.departmentService.FindDepartmentByDivId(uint(divId))
+		internalMemoTypes, err = b.internalMemoTypeService.FindExcInternalMemoType(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", departments)
+			response = helper.BuildResponse(true, "OK", internalMemoTypes)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *departmentController) CountDepartmentName(c *gin.Context) {
+func (b *internalMemoTypeController) InsertInternalMemoType(c *gin.Context) {
 	var (
-		response helper.Response
+		internalMemoType                model.InternalMemoType
+		response                        helper.Response
+		CreateInternalMemoTypeParameter model.CreateInternalMemoTypeParameter
 	)
-	search := c.Param("search")
-	if search == "" {
-		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		count, err := b.departmentService.CountDepartmentName(search)
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", count)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *departmentController) InsertDepartment(c *gin.Context) {
-	var (
-		department                model.Department
-		response                  helper.Response
-		CreateDepartmentParameter model.CreateDepartmentParameter
-	)
-	err := c.ShouldBindJSON(&CreateDepartmentParameter)
+	err := c.ShouldBindJSON(&CreateInternalMemoTypeParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		department, err = b.departmentService.InsertDepartment(CreateDepartmentParameter)
+		internalMemoType, err = b.internalMemoTypeService.InsertInternalMemoType(CreateInternalMemoTypeParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register department", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusBadRequest, response)
+			response = helper.BuildErrorResponse("Failed to register internal memo type", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", department)
+			response = helper.BuildResponse(true, "OK", internalMemoType)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *departmentController) UpdateDepartment(c *gin.Context) {
+func (b *internalMemoTypeController) UpdateInternalMemoType(c *gin.Context) {
 	var (
-		newData  model.Department
-		oldData  model.SelectDepartmentParameter
+		newData  model.InternalMemoType
+		oldData  model.InternalMemoType
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -296,25 +246,25 @@ func (b *departmentController) UpdateDepartment(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		err := c.ShouldBindJSON(&newData)
+		err = c.ShouldBindJSON(&newData)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.departmentService.FindDepartmentById(uint(id))
+			oldData, err = b.internalMemoTypeService.FindInternalMemoTypeById(uint(id))
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else if (oldData == model.SelectDepartmentParameter{}) {
+				res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, res)
+			} else if (oldData == model.InternalMemoType{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				department, err := b.departmentService.UpdateDepartment(newData, uint(id))
+				internalMemoType, err := b.internalMemoTypeService.UpdateInternalMemoType(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to update department", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to update internal memo type", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", department)
+					response = helper.BuildResponse(true, "OK", internalMemoType)
 					c.JSON(http.StatusOK, response)
 				}
 			}
@@ -322,10 +272,10 @@ func (b *departmentController) UpdateDepartment(c *gin.Context) {
 	}
 }
 
-func (b *departmentController) DeleteDepartment(c *gin.Context) {
+func (b *internalMemoTypeController) DeleteInternalMemoType(c *gin.Context) {
 	var (
-		newData  model.Department
-		oldData  model.SelectDepartmentParameter
+		newData  model.InternalMemoType
+		oldData  model.InternalMemoType
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -333,25 +283,25 @@ func (b *departmentController) DeleteDepartment(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		err := c.ShouldBindJSON(&newData)
+		err = c.ShouldBindJSON(&newData)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.departmentService.FindDepartmentById(uint(id))
+			oldData, err = b.internalMemoTypeService.FindInternalMemoTypeById(uint(id))
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else if (oldData == model.SelectDepartmentParameter{}) {
+				res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, res)
+			} else if (oldData == model.InternalMemoType{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				department, err := b.departmentService.DeleteDepartment(newData, uint(id))
+				internalMemoType, err := b.internalMemoTypeService.DeleteInternalMemoType(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to delete department", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to delete internal memo type", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", department)
+					response = helper.BuildResponse(true, "OK", internalMemoType)
 					c.JSON(http.StatusOK, response)
 				}
 			}

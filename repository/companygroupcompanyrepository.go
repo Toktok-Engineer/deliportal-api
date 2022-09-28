@@ -9,7 +9,8 @@ import (
 
 type CompanyGroupCompanyRepository interface {
 	CountCompanyGroupCompanyAll(companyGroupID int) (count int64, err error)
-	FindCompanyGroupCompanys() (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
+	FindCompanyGroupCompanysByCompanyID(companyID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
+	FindCompanyGroupCompanys(companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
 	FindCompanyGroupCompanysOffset(limit int, offset int, order string, dir string, companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
 	SearchCompanyGroupCompany(limit int, offset int, order string, dir string, search string, companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
 	CountSearchCompanyGroupCompany(search string, companyGroupID int) (count int64, err error)
@@ -33,11 +34,19 @@ func (db *CompanyGroupCompanyConnection) CountCompanyGroupCompanyAll(companyGrou
 	return count, res.Error
 }
 
-func (db *CompanyGroupCompanyConnection) FindCompanyGroupCompanys() (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error) {
+func (db *CompanyGroupCompanyConnection) FindCompanyGroupCompanysByCompanyID(companyID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error) {
 	var (
 		company_group_companies []model.SelectCompanyGroupCompanyParameter
 	)
-	res := db.connection.Debug().Table("company_group_companies").Select("company_group_companies.id, company_group_companies.company_group_id, company_groups.company_group_name, company_group_companies.company_id, companies.company_name, company_group_companies.remark, company_group_companies.created_user_id, company_group_companies.updated_user_id, company_group_companies.deleted_user_id, company_group_companies.created_at, company_group_companies.updated_at, company_group_companies.deleted_at").Joins("left join company_groups ON company_group_companies.company_group_id = company_groups.id").Joins("left join companies ON company_group_companies.company_id = companies.id").Where("company_group_companies.deleted_at = 0").Order("companies.company_name").Find(&company_group_companies)
+	res := db.connection.Debug().Table("company_group_companies").Select("company_group_companies.id, company_group_companies.company_group_id, company_groups.company_group_name, company_group_companies.company_id, companies.company_name, company_group_companies.remark, company_group_companies.created_user_id, company_group_companies.updated_user_id, company_group_companies.deleted_user_id, company_group_companies.created_at, company_group_companies.updated_at, company_group_companies.deleted_at").Joins("left join company_groups ON company_group_companies.company_group_id = company_groups.id").Joins("left join companies ON company_group_companies.company_id = companies.id").Where("company_group_companies.company_id = ? AND company_group_companies.deleted_at = 0", companyID).Order("companies.company_name").Find(&company_group_companies)
+	return company_group_companies, res.Error
+}
+
+func (db *CompanyGroupCompanyConnection) FindCompanyGroupCompanys(companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error) {
+	var (
+		company_group_companies []model.SelectCompanyGroupCompanyParameter
+	)
+	res := db.connection.Debug().Table("company_group_companies").Select("company_group_companies.id, company_group_companies.company_group_id, company_groups.company_group_name, company_group_companies.company_id, companies.company_name, company_group_companies.remark, company_group_companies.created_user_id, company_group_companies.updated_user_id, company_group_companies.deleted_user_id, company_group_companies.created_at, company_group_companies.updated_at, company_group_companies.deleted_at").Joins("left join company_groups ON company_group_companies.company_group_id = company_groups.id").Joins("left join companies ON company_group_companies.company_id = companies.id").Where("company_group_companies.company_group_id = ? AND company_group_companies.deleted_at = 0", companyGroupID).Order("companies.company_name").Find(&company_group_companies)
 	return company_group_companies, res.Error
 }
 

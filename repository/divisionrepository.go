@@ -14,6 +14,7 @@ type DivisionRepository interface {
 	SearchDivision(limit int, offset int, order string, dir string, search string) (divisionOutput []model.Division, err error)
 	CountSearchDivision(search string) (count int64, err error)
 	FindDivisionById(id uint) (divisionOutput model.Division, err error)
+	CountDivisionName(search string) (count int64, err error)
 	FindExcDivision(id uint) (divisionOutput []model.Division, err error)
 	InsertDivision(division model.Division) (divisionOutput model.Division, err error)
 	UpdateDivision(division model.Division, id uint) (divisionOutput model.Division, err error)
@@ -79,6 +80,15 @@ func (db *DivisionConnection) FindDivisionById(id uint) (divisionOutput model.Di
 	)
 	res := db.connection.Where("id=? AND deleted_at = 0", id).Take(&division)
 	return division, res.Error
+}
+
+func (db *DivisionConnection) CountDivisionName(search string) (count int64, err error) {
+	var (
+		final string
+	)
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("divisions").Where("lower(division_name) LIKE ?", final).Count(&count)
+	return count, res.Error
 }
 
 func (db *DivisionConnection) FindExcDivision(id uint) (divisionOutput []model.Division, err error) {

@@ -16,6 +16,8 @@ type SectionRepository interface {
 	FindSectionById(id uint) (sectionOutput model.SelectSectionParameter, err error)
 	FindExcSection(depId uint, id uint) (sectionOutput []model.SelectSectionParameter, err error)
 	FindSectionByDepId(depId uint) (sectionOutput []model.SelectSectionParameter, err error)
+	FindSectionByDivisionID(divId uint) (sectionOutput []model.SelectSectionParameter, err error)
+	CountSectionName(search string) (count int64, err error)
 	InsertSection(section model.Section) (sectionOutput model.Section, err error)
 	UpdateSection(section model.Section, id uint) (sectionOutput model.Section, err error)
 }
@@ -99,6 +101,24 @@ func (db *SectionConnection) FindSectionByDepId(depId uint) (sectionOutput []mod
 
 	res := db.connection.Debug().Table("sections").Select("sections.id, sections.section_name, sections.division_id, divisions.division_name, sections.department_id, departments.department_name, sections.remark, sections.created_user_id, sections.updated_user_id, sections.deleted_user_id, sections.created_at, sections.updated_at, sections.deleted_at").Joins("left join departments ON sections.department_id = departments.id").Joins("left join divisions ON sections.division_id = divisions.id").Where("sections.department_id=? AND sections.deleted_at = 0", depId).Order("sections.section_name").Find(&sections)
 	return sections, res.Error
+}
+
+func (db *SectionConnection) FindSectionByDivisionID(divId uint) (sectionOutput []model.SelectSectionParameter, err error) {
+	var (
+		sections []model.SelectSectionParameter
+	)
+
+	res := db.connection.Debug().Table("sections").Select("sections.id, sections.section_name, sections.division_id, divisions.division_name, sections.department_id, departments.department_name, sections.remark, sections.created_user_id, sections.updated_user_id, sections.deleted_user_id, sections.created_at, sections.updated_at, sections.deleted_at").Joins("left join departments ON sections.department_id = departments.id").Joins("left join divisions ON sections.division_id = divisions.id").Where("sections.division_id=? AND sections.deleted_at = 0", divId).Find(&sections)
+	return sections, res.Error
+}
+
+func (db *SectionConnection) CountSectionName(search string) (count int64, err error) {
+	var (
+		final string
+	)
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("sections").Select("sections.id, sections.section_name, sections.division_id, divisions.division_name, sections.department_id, departments.department_name, sections.remark, sections.created_user_id, sections.updated_user_id, sections.deleted_user_id, sections.created_at, sections.updated_at, sections.deleted_at").Joins("left join departments ON sections.department_id = departments.id").Joins("left join divisions ON sections.division_id = divisions.id").Where("lower(sections.section_name) LIKE ?", final).Count(&count)
+	return count, res.Error
 }
 
 func (db *SectionConnection) InsertSection(section model.Section) (sectionOutput model.Section, err error) {

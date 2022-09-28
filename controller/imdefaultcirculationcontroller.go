@@ -10,34 +10,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CompanyGroupCompanyController interface {
-	CountCompanyGroupCompanyAll(c *gin.Context)
-	FindCompanyGroupCompanysByCompanyID(c *gin.Context)
-	FindCompanyGroupCompanys(c *gin.Context)
-	FindCompanyGroupCompanysOffset(c *gin.Context)
-	SearchCompanyGroupCompany(c *gin.Context)
-	CountSearchCompanyGroupCompany(c *gin.Context)
-	FindCompanyGroupCompanyById(c *gin.Context)
-	InsertCompanyGroupCompany(c *gin.Context)
-	UpdateCompanyGroupCompany(c *gin.Context)
-	DeleteCompanyGroupCompany(c *gin.Context)
+type ImDefaultCirculationController interface {
+	CountImDefaultCirculationAll(c *gin.Context)
+	FindImDefaultCirculations(c *gin.Context)
+	FindImDefaultCirculationsOffset(c *gin.Context)
+	SearchImDefaultCirculation(c *gin.Context)
+	CountSearchImDefaultCirculation(c *gin.Context)
+	FindImDefaultCirculationById(c *gin.Context)
+	FindExcImDefaultCirculation(c *gin.Context)
+	InsertImDefaultCirculation(c *gin.Context)
+	UpdateImDefaultCirculation(c *gin.Context)
+	DeleteImDefaultCirculation(c *gin.Context)
 }
 
-type companyGroupCompanyController struct {
-	companyGroupCompanyService service.CompanyGroupCompanyService
-	jwtService                 service.JWTService
+type imDefaultCirculationController struct {
+	imDefaultCirculationService service.ImDefaultCirculationService
+	jwtService                  service.JWTService
 }
 
-func NewCompanyGroupCompanyController(companyGroupCompanyServ service.CompanyGroupCompanyService, jwtServ service.JWTService) CompanyGroupCompanyController {
-	return &companyGroupCompanyController{
-		companyGroupCompanyService: companyGroupCompanyServ,
-		jwtService:                 jwtServ,
+func NewImDefaultCirculationController(imDefaultCirculationServ service.ImDefaultCirculationService, jwtServ service.JWTService) ImDefaultCirculationController {
+	return &imDefaultCirculationController{
+		imDefaultCirculationService: imDefaultCirculationServ,
+		jwtService:                  jwtServ,
 	}
 }
 
-func (b *companyGroupCompanyController) CountCompanyGroupCompanyAll(c *gin.Context) {
+func (b *imDefaultCirculationController) CountImDefaultCirculationAll(c *gin.Context) {
 	var (
-		count    int64
 		response helper.Response
 	)
 
@@ -46,7 +45,7 @@ func (b *companyGroupCompanyController) CountCompanyGroupCompanyAll(c *gin.Conte
 		response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		count, err = b.companyGroupCompanyService.CountCompanyGroupCompanyAll(int(companyGroupID))
+		count, err := b.imDefaultCirculationService.CountImDefaultCirculationAll(int(companyGroupID))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
@@ -57,52 +56,32 @@ func (b *companyGroupCompanyController) CountCompanyGroupCompanyAll(c *gin.Conte
 	}
 }
 
-func (b *companyGroupCompanyController) FindCompanyGroupCompanysByCompanyID(c *gin.Context) {
+func (b *imDefaultCirculationController) FindImDefaultCirculations(c *gin.Context) {
 	var (
-		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
-		response             helper.Response
-	)
-	companyID, err := strconv.ParseInt(c.Param("companyID"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param companyID was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		companyGroupCompanys, err = b.companyGroupCompanyService.FindCompanyGroupCompanysByCompanyID(int(companyID))
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", companyGroupCompanys)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *companyGroupCompanyController) FindCompanyGroupCompanys(c *gin.Context) {
-	var (
-		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
-		response             helper.Response
+		imdefaultcirculations []model.ImDefaultCirculation
+		response              helper.Response
 	)
 	companyGroupID, err := strconv.ParseInt(c.Param("companyGroupID"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		companyGroupCompanys, err = b.companyGroupCompanyService.FindCompanyGroupCompanys(int(companyGroupID))
+		imdefaultcirculations, err = b.imDefaultCirculationService.FindImDefaultCirculations(int(companyGroupID))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", companyGroupCompanys)
+			response = helper.BuildResponse(true, "OK", imdefaultcirculations)
 			c.JSON(http.StatusOK, response)
+
 		}
 	}
 }
 
-func (b *companyGroupCompanyController) FindCompanyGroupCompanysOffset(c *gin.Context) {
+func (b *imDefaultCirculationController) FindImDefaultCirculationsOffset(c *gin.Context) {
 	var (
-		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
-		response             helper.Response
+		imdefaultcirculations []model.SelectImDefaultCirculationParameter
+		response              helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -130,12 +109,12 @@ func (b *companyGroupCompanyController) FindCompanyGroupCompanysOffset(c *gin.Co
 						response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						companyGroupCompanys, err = b.companyGroupCompanyService.FindCompanyGroupCompanysOffset(int(limit), int(offset), order, dir, int(companyGroupID))
+						imdefaultcirculations, err = b.imDefaultCirculationService.FindImDefaultCirculationsOffset(int(limit), int(offset), order, dir, int(companyGroupID))
 						if err != nil {
 							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 							c.JSON(http.StatusNotFound, response)
 						} else {
-							response = helper.BuildResponse(true, "OK", companyGroupCompanys)
+							response = helper.BuildResponse(true, "OK", imdefaultcirculations)
 							c.JSON(http.StatusOK, response)
 						}
 					}
@@ -145,10 +124,10 @@ func (b *companyGroupCompanyController) FindCompanyGroupCompanysOffset(c *gin.Co
 	}
 }
 
-func (b *companyGroupCompanyController) SearchCompanyGroupCompany(c *gin.Context) {
+func (b *imDefaultCirculationController) SearchImDefaultCirculation(c *gin.Context) {
 	var (
-		companyGroupCompanys []model.SelectCompanyGroupCompanyParameter
-		response             helper.Response
+		imdefaultcirculations []model.SelectImDefaultCirculationParameter
+		response              helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -181,12 +160,12 @@ func (b *companyGroupCompanyController) SearchCompanyGroupCompany(c *gin.Context
 							response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 							c.AbortWithStatusJSON(http.StatusBadRequest, response)
 						} else {
-							companyGroupCompanys, err = b.companyGroupCompanyService.SearchCompanyGroupCompany(int(limit), int(offset), order, dir, search, int(companyGroupID))
+							imdefaultcirculations, err = b.imDefaultCirculationService.SearchImDefaultCirculation(int(limit), int(offset), order, dir, search, int(companyGroupID))
 							if err != nil {
 								response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 								c.JSON(http.StatusNotFound, response)
 							} else {
-								response = helper.BuildResponse(true, "OK", companyGroupCompanys)
+								response = helper.BuildResponse(true, "OK", imdefaultcirculations)
 								c.JSON(http.StatusOK, response)
 							}
 						}
@@ -197,7 +176,7 @@ func (b *companyGroupCompanyController) SearchCompanyGroupCompany(c *gin.Context
 	}
 }
 
-func (b *companyGroupCompanyController) CountSearchCompanyGroupCompany(c *gin.Context) {
+func (b *imDefaultCirculationController) CountSearchImDefaultCirculation(c *gin.Context) {
 	var (
 		response helper.Response
 	)
@@ -211,7 +190,7 @@ func (b *companyGroupCompanyController) CountSearchCompanyGroupCompany(c *gin.Co
 			response = helper.BuildErrorResponse("No param companyGroupID was found", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			count, err := b.companyGroupCompanyService.CountSearchCompanyGroupCompany(search, int(companyGroupID))
+			count, err := b.imDefaultCirculationService.CountSearchImDefaultCirculation(search, int(companyGroupID))
 			if err != nil {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
@@ -223,53 +202,74 @@ func (b *companyGroupCompanyController) CountSearchCompanyGroupCompany(c *gin.Co
 	}
 }
 
-func (b *companyGroupCompanyController) FindCompanyGroupCompanyById(c *gin.Context) {
+func (b *imDefaultCirculationController) FindImDefaultCirculationById(c *gin.Context) {
 	var (
-		companyGroupCompany model.SelectCompanyGroupCompanyParameter
-		response            helper.Response
+		imDefaultCirculation model.ImDefaultCirculation
+		response             helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		companyGroupCompany, err = b.companyGroupCompanyService.FindCompanyGroupCompanyById(uint(id))
+		imDefaultCirculation, err = b.imDefaultCirculationService.FindImDefaultCirculationById(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", companyGroupCompany)
+			response = helper.BuildResponse(true, "OK", imDefaultCirculation)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *companyGroupCompanyController) InsertCompanyGroupCompany(c *gin.Context) {
+func (b *imDefaultCirculationController) FindExcImDefaultCirculation(c *gin.Context) {
 	var (
-		companyGroupCompany                model.CompanyGroupCompany
-		response                           helper.Response
-		CreateCompanyGroupCompanyParameter model.CreateCompanyGroupCompanyParameter
+		imDefaultCirculations []model.ImDefaultCirculation
+		response              helper.Response
 	)
-	err := c.ShouldBindJSON(&CreateCompanyGroupCompanyParameter)
+	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		imDefaultCirculations, err = b.imDefaultCirculationService.FindExcImDefaultCirculation(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", imDefaultCirculations)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *imDefaultCirculationController) InsertImDefaultCirculation(c *gin.Context) {
+	var (
+		imDefaultCirculation                model.ImDefaultCirculation
+		response                            helper.Response
+		CreateImDefaultCirculationParameter model.CreateImDefaultCirculationParameter
+	)
+	err := c.ShouldBindJSON(&CreateImDefaultCirculationParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		companyGroupCompany, err = b.companyGroupCompanyService.InsertCompanyGroupCompany(CreateCompanyGroupCompanyParameter)
+		imDefaultCirculation, err = b.imDefaultCirculationService.InsertImDefaultCirculation(CreateImDefaultCirculationParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register companyGroupCompany", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusBadRequest, response)
+			response = helper.BuildErrorResponse("Failed to register im default circulation", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", companyGroupCompany)
+			response = helper.BuildResponse(true, "OK", imDefaultCirculation)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *companyGroupCompanyController) UpdateCompanyGroupCompany(c *gin.Context) {
+func (b *imDefaultCirculationController) UpdateImDefaultCirculation(c *gin.Context) {
 	var (
-		newData  model.CompanyGroupCompany
-		oldData  model.SelectCompanyGroupCompanyParameter
+		newData  model.ImDefaultCirculation
+		oldData  model.ImDefaultCirculation
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -277,25 +277,25 @@ func (b *companyGroupCompanyController) UpdateCompanyGroupCompany(c *gin.Context
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		err := c.ShouldBindJSON(&newData)
+		err = c.ShouldBindJSON(&newData)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.companyGroupCompanyService.FindCompanyGroupCompanyById(uint(id))
+			oldData, err = b.imDefaultCirculationService.FindImDefaultCirculationById(uint(id))
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else if (oldData == model.SelectCompanyGroupCompanyParameter{}) {
+				res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, res)
+			} else if (oldData == model.ImDefaultCirculation{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				companyGroupCompany, err := b.companyGroupCompanyService.UpdateCompanyGroupCompany(newData, uint(id))
+				imDefaultCirculation, err := b.imDefaultCirculationService.UpdateImDefaultCirculation(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to update companyGroupCompany", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to update im default circulation", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", companyGroupCompany)
+					response = helper.BuildResponse(true, "OK", imDefaultCirculation)
 					c.JSON(http.StatusOK, response)
 				}
 			}
@@ -303,10 +303,10 @@ func (b *companyGroupCompanyController) UpdateCompanyGroupCompany(c *gin.Context
 	}
 }
 
-func (b *companyGroupCompanyController) DeleteCompanyGroupCompany(c *gin.Context) {
+func (b *imDefaultCirculationController) DeleteImDefaultCirculation(c *gin.Context) {
 	var (
-		newData  model.CompanyGroupCompany
-		oldData  model.SelectCompanyGroupCompanyParameter
+		newData  model.ImDefaultCirculation
+		oldData  model.ImDefaultCirculation
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -314,25 +314,25 @@ func (b *companyGroupCompanyController) DeleteCompanyGroupCompany(c *gin.Context
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		err := c.ShouldBindJSON(&newData)
+		err = c.ShouldBindJSON(&newData)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.companyGroupCompanyService.FindCompanyGroupCompanyById(uint(id))
+			oldData, err = b.imDefaultCirculationService.FindImDefaultCirculationById(uint(id))
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else if (oldData == model.SelectCompanyGroupCompanyParameter{}) {
+				res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, res)
+			} else if (oldData == model.ImDefaultCirculation{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				companyGroupCompany, err := b.companyGroupCompanyService.DeleteCompanyGroupCompany(newData, uint(id))
+				imDefaultCirculation, err := b.imDefaultCirculationService.DeleteImDefaultCirculation(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to delete companyGroupCompany", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to delete im default circulation", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", companyGroupCompany)
+					response = helper.BuildResponse(true, "OK", imDefaultCirculation)
 					c.JSON(http.StatusOK, response)
 				}
 			}

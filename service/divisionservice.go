@@ -15,6 +15,7 @@ type DivisionService interface {
 	CountSearchDivision(search string) (count int64, err error)
 	FindDivisionById(id uint) (divisionOutput model.Division, err error)
 	FindExcDivision(id uint) (divisionOutput []model.Division, err error)
+	CountDivisionName(search string) (count int64, err error)
 	InsertDivision(division model.CreateDivisionParameter) (divisionOutput model.Division, err error)
 	UpdateDivision(division model.Division, id uint) (divisionOutput model.Division, err error)
 	DeleteDivision(division model.Division, id uint) (divisionOutput model.Division, err error)
@@ -57,6 +58,11 @@ func (service *divisionService) CountSearchDivision(search string) (count int64,
 
 func (service *divisionService) FindDivisionById(id uint) (divisionOutput model.Division, err error) {
 	res, err := service.divisionRepository.FindDivisionById(id)
+	return res, err
+}
+
+func (service *divisionService) CountDivisionName(search string) (count int64, err error) {
+	res, err := service.divisionRepository.CountDivisionName(search)
 	return res, err
 }
 

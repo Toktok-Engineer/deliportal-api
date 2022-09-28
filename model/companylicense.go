@@ -27,6 +27,8 @@ type CompanyLicense struct {
 	UpdatedAt             float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt             float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
 	GroupLicenseTypeID    uint    `gorm:"type:bigint;typedefault:null;index:" json:"group_license_type_id"`
+	FileName              string  `gorm:"type:varchar(200)" json:"file_name"`
+	FileUrl               string  `gorm:"type:varchar(200)" json:"file_url"`
 }
 
 type SelectCompanyLicenseParameter struct {
@@ -69,6 +71,8 @@ type SelectCompanyLicenseParameter struct {
 	DeletedAt             string `gorm:"type:varchar(100);typedefault:null" json:"deleted_at"`
 	GroupLicenseTypeID    uint   `gorm:"type:bigint;typedefault:null;index:" json:"group_license_type_id"`
 	GroupLicenseTypeName  string `gorm:"type:varchar(150);not null;unique" json:"group_license_type_name" binding:"required"`
+	FileName              string `gorm:"type:varchar(200)" json:"file_name"`
+	FileUrl               string `gorm:"type:varchar(200)" json:"file_url"`
 }
 
 type CreateCompanyLicenseParameter struct {
@@ -97,4 +101,6 @@ type CreateCompanyLicenseParameter struct {
 	UpdatedAt             float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt             float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
 	GroupLicenseTypeID    uint    `gorm:"type:bigint;typedefault:null;index:" json:"group_license_type_id"`
+	FileName              string  `gorm:"type:varchar(200)" json:"file_name"`
+	FileUrl               string  `gorm:"type:varchar(200)" json:"file_url"`
 }

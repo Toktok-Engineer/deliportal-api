@@ -16,6 +16,7 @@ type DepartmentRepository interface {
 	FindDepartmentById(id uint) (departmentOutput model.SelectDepartmentParameter, err error)
 	FindExcDepartment(divId uint, id uint) (departmentOutput []model.SelectDepartmentParameter, err error)
 	FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error)
+	CountDepartmentName(search string) (count int64, err error)
 	InsertDepartment(department model.Department) (departmentOutput model.Department, err error)
 	UpdateDepartment(department model.Department, id uint) (departmentOutput model.Department, err error)
 }
@@ -99,6 +100,15 @@ func (db *DepartmentConnection) FindDepartmentByDivId(divId uint) (departmentOut
 
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("departments.division_id=? AND departments.deleted_at = 0", divId).Order("departments.department_name").Find(&departments)
 	return departments, res.Error
+}
+
+func (db *DepartmentConnection) CountDepartmentName(search string) (count int64, err error) {
+	var (
+		final string
+	)
+	final = "%" + strings.ToLower(search) + "%"
+	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("lower(departments.department_name) LIKE ?", final).Count(&count)
+	return count, res.Error
 }
 
 func (db *DepartmentConnection) InsertDepartment(department model.Department) (departmentOutput model.Department, err error) {

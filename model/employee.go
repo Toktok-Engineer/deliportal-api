@@ -27,7 +27,7 @@ type SelectEmployeeParameter struct {
 	NIK            string  `gorm:"type:varchar(20);not null" json:"nik"`
 	Firstname      string  `gorm:"type:varchar(30);not null" json:"first_name"`
 	Lastname       string  `gorm:"type:varchar(30)" json:"last_name"`
-	Email          string  `gorm:"type:varchar(30);not null" json:"email"`
+	Email          string  `gorm:"type:varchar(50);not null" json:"email"`
 	Initials       []byte  `json:"initials"`
 	Signature      []byte  `json:"signature"`
 	DivisionID     uint    `gorm:"type:bigint;foreign_key;index:" json:"division_id"`

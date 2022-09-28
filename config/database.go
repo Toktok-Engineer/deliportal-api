@@ -35,8 +35,12 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
-	db.AutoMigrate(&model.GroupLicenseType{})
-	db.AutoMigrate(&model.LicenseType{})
+	db.AutoMigrate(&model.InternalMemoType{})
+	db.AutoMigrate(&model.InternalMemo{})
+	db.AutoMigrate(&model.InternalMemoCirculation{})
+	db.AutoMigrate(&model.InternalMemoAttachment{})
+	db.AutoMigrate(&model.InternalMemoTracing{})
+	db.AutoMigrate(&model.ImDefaultCirculation{})
 	db.AutoMigrate(&model.CompanyLicense{})
 
 	return db

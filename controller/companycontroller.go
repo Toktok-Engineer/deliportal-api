@@ -14,6 +14,7 @@ import (
 type CompanyController interface {
 	CountCompanyAll(c *gin.Context)
 	FindCompanys(c *gin.Context)
+	FindCompanyFilters(c *gin.Context)
 	FindCompanysOffset(c *gin.Context)
 	SearchCompany(c *gin.Context)
 	CountSearchCompany(c *gin.Context)
@@ -64,6 +65,22 @@ func (b *companyController) FindCompanys(c *gin.Context) {
 		response helper.Response
 	)
 	companys, err := b.companyService.FindCompanys()
+	if err != nil {
+		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", companys)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *companyController) FindCompanyFilters(c *gin.Context) {
+	var (
+		companys []model.SelectCompanyParameter
+		response helper.Response
+	)
+	companyID := c.Param("companyID")
+	companys, err := b.companyService.FindCompanyFilters(companyID)
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)

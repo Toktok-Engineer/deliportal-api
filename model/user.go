@@ -5,7 +5,7 @@ type User struct {
 	Username        string  `gorm:"type:varchar(50);not null;unique" json:"username" binding:"required"`
 	Password        string  `gorm:"type:varchar(100);typedefault:null" json:"password"`
 	EmployeeID      uint    `gorm:"type:bigint;typedefault:null;index:" json:"employee_id"`
-	Email           string  `gorm:"type:varchar(30);not null" json:"email" binding:"required"`
+	Email           string  `gorm:"type:varchar(50);not null" json:"email" binding:"required"`
 	RequestChangeAt float64 `gorm:"type:double precision;typedefault:null" json:"request_change_at"`
 	Remark          string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserId   uint    `gorm:"type:bigint;not null" json:"created_user_id"`
@@ -37,7 +37,7 @@ type SelectUserParameter struct {
 	PositionName     string  `gorm:"type:varchar(50);not null;unique" json:"position_name"`
 	LocationID       uint    `gorm:"type:bigint;foreign_key;index:" json:"location_id"`
 	LocationName     string  `gorm:"type:varchar(50);not null;unique" json:"location_name"`
-	Email            string  `gorm:"type:varchar(30);not null" json:"email" binding:"required"`
+	Email            string  `gorm:"type:varchar(50);not null" json:"email" binding:"required"`
 	RequestChangeAt  float64 `gorm:"type:double precision;typedefault:null" json:"request_change_at"`
 	Remark           string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserId    uint    `gorm:"type:bigint;not null" json:"created_user_id"`
@@ -54,7 +54,7 @@ type CreateUserParameter struct {
 	Username        string  `gorm:"type:varchar(50);not null;unique" json:"username" binding:"required"`
 	Password        string  `gorm:"type:varchar(100);typedefault:null" json:"password"`
 	EmployeeID      uint    `gorm:"type:bigint;typedefault:null;index:" json:"employee_id"`
-	Email           string  `gorm:"type:varchar(30);not null" json:"email" binding:"required"`
+	Email           string  `gorm:"type:varchar(50);not null" json:"email" binding:"required"`
 	RequestChangeAt float64 `gorm:"type:double precision;typedefault:null" json:"request_change_at"`
 	Remark          string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserId   uint    `gorm:"type:bigint;not null" json:"created_user_id"`
@@ -68,6 +68,13 @@ type CreateUserParameter struct {
 
 type Mail struct {
 	To      string `json:"to" binding:"required"`
+	Subject string `json:"subject" binding:"required"`
+	Body    string `json:"body" binding:"required"`
+}
+
+type Mail2 struct {
+	To      string `json:"to" binding:"required"`
+	Cc      string `json:"cc" binding:"required"`
 	Subject string `json:"subject" binding:"required"`
 	Body    string `json:"body" binding:"required"`
 }

@@ -16,6 +16,7 @@ type AuthController interface {
 	RenewToken(c *gin.Context)
 	CheckExisting(c *gin.Context)
 	SendMail(c *gin.Context)
+	SendMail2(c *gin.Context)
 	UpdateDataPassword(c *gin.Context)
 	UpdateDataRequest(c *gin.Context)
 }
@@ -224,6 +225,49 @@ func (b *authController) SendMail(c *gin.Context) {
 		}
 	}
 	mail, err := b.authService.SendMail(Data)
+	if err != nil {
+		response = helper.BuildErrorResponse("Email Sent Failed", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		response = helper.BuildResponse(true, "OK", mail)
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (b *authController) SendMail2(c *gin.Context) {
+	var (
+		Data     model.Mail2
+		response helper.Response
+	)
+	err := c.ShouldBindJSON(&Data)
+	if err != nil {
+		if Data.To == "" && Data.Cc == "" && Data.Subject == "" && Data.Body == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Recipient, Cc, Subject, and Body are missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.To == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Recipient is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.Cc == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "CC is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.Subject == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Subject is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if Data.Body == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Body is missing", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+	}
+	mail, err := b.authService.SendMail2(Data)
 	if err != nil {
 		response = helper.BuildErrorResponse("Email Sent Failed", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)

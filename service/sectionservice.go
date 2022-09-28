@@ -16,6 +16,8 @@ type SectionService interface {
 	FindSectionById(id uint) (sectionOutput model.SelectSectionParameter, err error)
 	FindExcSection(depId uint, id uint) (sectionOutput []model.SelectSectionParameter, err error)
 	FindSectionByDepId(depId uint) (sectionOutput []model.SelectSectionParameter, err error)
+	FindSectionByDivisionID(divId uint) (sectionOutput []model.SelectSectionParameter, err error)
+	CountSectionName(search string) (count int64, err error)
 	InsertSection(section model.CreateSectionParameter) (sectionOutput model.Section, err error)
 	UpdateSection(section model.Section, id uint) (sectionOutput model.Section, err error)
 	DeleteSection(section model.Section, id uint) (sectionOutput model.Section, err error)
@@ -68,6 +70,16 @@ func (service *sectionService) FindExcSection(depId uint, id uint) (sectionOutpu
 
 func (service *sectionService) FindSectionByDepId(depId uint) (sectionOutput []model.SelectSectionParameter, err error) {
 	res, err := service.sectionRepository.FindSectionByDepId(depId)
+	return res, err
+}
+
+func (service *sectionService) FindSectionByDivisionID(divId uint) (sectionOutput []model.SelectSectionParameter, err error) {
+	res, err := service.sectionRepository.FindSectionByDivisionID(divId)
+	return res, err
+}
+
+func (service *sectionService) CountSectionName(search string) (count int64, err error) {
+	res, err := service.sectionRepository.CountSectionName(search)
 	return res, err
 }
 

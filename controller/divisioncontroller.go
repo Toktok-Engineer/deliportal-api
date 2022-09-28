@@ -17,6 +17,7 @@ type DivisionController interface {
 	SearchDivision(c *gin.Context)
 	CountSearchDivision(c *gin.Context)
 	FindDivisionById(c *gin.Context)
+	CountDivisionName(c *gin.Context)
 	FindExcDivision(c *gin.Context)
 	InsertDivision(c *gin.Context)
 	UpdateDivision(c *gin.Context)
@@ -187,6 +188,26 @@ func (b *divisionController) FindDivisionById(c *gin.Context) {
 			c.JSON(http.StatusNotFound, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", division)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *divisionController) CountDivisionName(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.divisionService.CountDivisionName(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
 			c.JSON(http.StatusOK, response)
 		}
 	}

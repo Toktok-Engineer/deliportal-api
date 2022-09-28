@@ -19,6 +19,8 @@ type SectionController interface {
 	FindSectionById(c *gin.Context)
 	FindExcSection(c *gin.Context)
 	FindSectionByDepId(c *gin.Context)
+	FindSectionByDivisionID(c *gin.Context)
+	CountSectionName(c *gin.Context)
 	InsertSection(c *gin.Context)
 	UpdateSection(c *gin.Context)
 	DeleteSection(c *gin.Context)
@@ -237,6 +239,47 @@ func (b *sectionController) FindSectionByDepId(c *gin.Context) {
 			c.JSON(http.StatusNotFound, response)
 		} else {
 			response = helper.BuildResponse(true, "OK", sections)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *sectionController) FindSectionByDivisionID(c *gin.Context) {
+	var (
+		sections []model.SelectSectionParameter
+		response helper.Response
+	)
+	divId, err := strconv.ParseUint(c.Param("divId"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param divId was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		sections, err = b.sectionService.FindSectionByDivisionID(uint(divId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", sections)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *sectionController) CountSectionName(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	search := c.Param("search")
+	if search == "" {
+		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		count, err := b.sectionService.CountSectionName(search)
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", count)
 			c.JSON(http.StatusOK, response)
 		}
 	}

@@ -9,7 +9,8 @@ import (
 
 type CompanyGroupCompanyService interface {
 	CountCompanyGroupCompanyAll(companyGroupID int) (count int64, err error)
-	FindCompanyGroupCompanys() (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
+	FindCompanyGroupCompanysByCompanyID(companyID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
+	FindCompanyGroupCompanys(companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
 	FindCompanyGroupCompanysOffset(limit int, offset int, order string, dir string, companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
 	SearchCompanyGroupCompany(limit int, offset int, order string, dir string, search string, companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error)
 	CountSearchCompanyGroupCompany(search string, companyGroupID int) (count int64, err error)
@@ -34,8 +35,13 @@ func (service *companyGroupCompanyService) CountCompanyGroupCompanyAll(companyGr
 	return res, err
 }
 
-func (service *companyGroupCompanyService) FindCompanyGroupCompanys() (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error) {
-	res, err := service.companyGroupCompanyRepository.FindCompanyGroupCompanys()
+func (service *companyGroupCompanyService) FindCompanyGroupCompanysByCompanyID(companyID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error) {
+	res, err := service.companyGroupCompanyRepository.FindCompanyGroupCompanysByCompanyID(companyID)
+	return res, err
+}
+
+func (service *companyGroupCompanyService) FindCompanyGroupCompanys(companyGroupID int) (companyGroupCompanyOutput []model.SelectCompanyGroupCompanyParameter, err error) {
+	res, err := service.companyGroupCompanyRepository.FindCompanyGroupCompanys(companyGroupID)
 	return res, err
 }
 

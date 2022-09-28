@@ -10,6 +10,7 @@ import (
 type CompanyService interface {
 	CountCompanyAll() (count int64, err error)
 	FindCompanys() (companyOutput []model.SelectCompanyParameter, err error)
+	FindCompanyFilters(companyID string) (companyOutput []model.SelectCompanyParameter, err error)
 	FindCompanysOffset(limit int, offset int, order string, dir string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
 	SearchCompany(limit int, offset int, order string, dir string, search string, companyID string) (companyOutput []model.SelectCompanyParameter, err error)
 	CountSearchCompany(search string, companyID string) (count int64, err error)
@@ -43,6 +44,11 @@ func (service *companyService) CountCompanyAll() (count int64, err error) {
 
 func (service *companyService) FindCompanys() (companyOutput []model.SelectCompanyParameter, err error) {
 	res, err := service.companyRepository.FindCompanys()
+	return res, err
+}
+
+func (service *companyService) FindCompanyFilters(companyID string) (companyOutput []model.SelectCompanyParameter, err error) {
+	res, err := service.companyRepository.FindCompanyFilters(companyID)
 	return res, err
 }
 

@@ -16,6 +16,7 @@ type DepartmentService interface {
 	FindDepartmentById(id uint) (departmentOutput model.SelectDepartmentParameter, err error)
 	FindExcDepartment(divId uint, id uint) (departmentOutput []model.SelectDepartmentParameter, err error)
 	FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error)
+	CountDepartmentName(search string) (count int64, err error)
 	InsertDepartment(department model.CreateDepartmentParameter) (departmentOutput model.Department, err error)
 	UpdateDepartment(department model.Department, id uint) (departmentOutput model.Department, err error)
 	DeleteDepartment(department model.Department, id uint) (departmentOutput model.Department, err error)
@@ -68,6 +69,11 @@ func (service *departmentService) FindExcDepartment(divId uint, id uint) (depart
 
 func (service *departmentService) FindDepartmentByDivId(divId uint) (departmentOutput []model.SelectDepartmentParameter, err error) {
 	res, err := service.departmentRepository.FindDepartmentByDivId(divId)
+	return res, err
+}
+
+func (service *departmentService) CountDepartmentName(search string) (count int64, err error) {
+	res, err := service.departmentRepository.CountDepartmentName(search)
 	return res, err
 }
 

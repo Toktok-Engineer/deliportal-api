@@ -32,6 +32,7 @@ type UserRepository interface {
 	UpdateDataPassword(user model.User, username string, email string) (userOutput model.User, err error)
 	UpdateDataRequest(user model.User, username string, email string) (userOutput model.User, err error)
 	SendMail(mail model.Mail) (res gin.H, err error)
+	SendMail2(mail model.Mail2) (res gin.H, err error)
 }
 
 type userConnection struct {
@@ -216,6 +217,42 @@ func (db *userConnection) SendMail(mail model.Mail) (res gin.H, err error) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "Deli Portal Admin <deliportaladmin@deli.id>")
 	m.SetHeader("To", To)
+	m.SetHeader("Subject", Subject)
+	m.SetBody("text/html", Body)
+
+	d := gomail.NewDialer("mail.deli.id", 587, "itsupport@deli.id", "P@ssw0rdDeli123!")
+
+	// Send the email to Bob, Cora and Dan.
+	err = d.DialAndSend(m)
+	if err != nil {
+		result = gin.H{
+			"result": err.Error(),
+			"count":  0,
+		}
+	} else {
+		result = gin.H{
+			"result": "Success Sending Email",
+			"count":  1,
+		}
+	}
+
+	return result, err
+}
+
+func (db *userConnection) SendMail2(mail model.Mail2) (res gin.H, err error) {
+	var (
+		result gin.H
+	)
+
+	To := mail.To
+	Subject := mail.Subject
+	Body := mail.Body
+	Cc := mail.Cc
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", "Deli Portal Admin <deliportaladmin@deli.id>")
+	m.SetHeader("To", To)
+	m.SetHeader("Cc", Cc)
 	m.SetHeader("Subject", Subject)
 	m.SetBody("text/html", Body)
 
