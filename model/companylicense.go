@@ -3,7 +3,7 @@ package model
 type CompanyLicense struct {
 	ID                    uint    `json:"company_license_id"`
 	ParentLicenseID       uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"parent_license_id"`
-	LicenseNo             string  `gorm:"type:varchar(100);not null" json:"license_no"`
+	LicenseNo             string  `gorm:"type:varchar(150);not null" json:"license_no"`
 	LicenseTypeID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"license_type_id"`
 	CompanyID             uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
 	Renewable             bool    `gorm:"not null;typedefault:null" json:"renewable"`
@@ -36,7 +36,7 @@ type SelectCompanyLicenseParameter struct {
 	CompanyName           string `gorm:"type:varchar(50);not null" json:"company_name"`
 	BusinessUnitName      string `gorm:"type:varchar(100);not null" json:"business_unit_name"`
 	ParentLicenseID       uint   `gorm:"type:bigint;foreign_key;not null;index:" json:"parent_license_id"`
-	LicenseNo             string `gorm:"type:varchar(100);not null" json:"license_no"`
+	LicenseNo             string `gorm:"type:varchar(150);not null" json:"license_no"`
 	LicenseParentNo       string `gorm:"type:varchar(50)" json:"license_parent_no"`
 	LicenseTypeID         uint   `gorm:"type:bigint;foreign_key;not null;index:" json:"license_type_id"`
 	LicenseTypeName       string `gorm:"type:varchar(50);not null;unique" json:"license_type_name"`
@@ -77,7 +77,7 @@ type SelectCompanyLicenseParameter struct {
 
 type CreateCompanyLicenseParameter struct {
 	ParentLicenseID       uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"parent_license_id"`
-	LicenseNo             string  `gorm:"type:varchar(100);not null" json:"license_no"`
+	LicenseNo             string  `gorm:"type:varchar(150);not null" json:"license_no"`
 	LicenseTypeID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"license_type_id"`
 	CompanyID             uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
 	Renewable             bool    `gorm:"not null;typedefault:null" json:"renewable"`

@@ -67,10 +67,7 @@ func (db *UserRoleConnection) SearchUserRole(limit int, offset int, order string
 }
 
 func (db *UserRoleConnection) CountSearchUserRole(search string, usernameID int) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("user_roles").Select("user_roles.id,	user_roles.user_id, users.username,	users.password,	employees.firstname, employees.lastname, users.employee_id, users.email, user_roles.role_id,	roles.role_code, roles.role_description, user_roles.remark,	user_roles.created_user_id, user_roles.updated_user_id,	user_roles.deleted_user_id, user_roles.created_at, user_roles.updated_at, user_roles.deleted_at").Joins("left join users ON user_roles.user_id = users.id").Joins("left join roles ON user_roles.role_id = roles.id").Joins("left join employees on users.employee_id = employees.id").Where("(lower(employees.firstname) LIKE ? OR lower(employees.lastname) LIKE ? OR lower(roles.role_code) LIKE ? OR lower(user_roles.remark) LIKE ?) AND user_roles.user_id = ? AND user_roles.deleted_at = 0", final, final, final, final, usernameID).Count(&count)
 	return count, res.Error
 }

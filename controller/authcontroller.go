@@ -19,6 +19,7 @@ type AuthController interface {
 	SendMail2(c *gin.Context)
 	UpdateDataPassword(c *gin.Context)
 	UpdateDataRequest(c *gin.Context)
+	UploadDocument(c *gin.Context)
 }
 
 type authController struct {
@@ -241,18 +242,13 @@ func (b *authController) SendMail2(c *gin.Context) {
 	)
 	err := c.ShouldBindJSON(&Data)
 	if err != nil {
-		if Data.To == "" && Data.Cc == "" && Data.Subject == "" && Data.Body == "" {
-			response := helper.BuildErrorResponse("Failed to process request", "Recipient, Cc, Subject, and Body are missing", helper.EmptyObj{})
+		if Data.To == "" && Data.Subject == "" && Data.Body == "" {
+			response := helper.BuildErrorResponse("Failed to process request", "Recipient, Subject, and Body are missing", helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 			return
 		}
 		if Data.To == "" {
 			response := helper.BuildErrorResponse("Failed to process request", "Recipient is missing", helper.EmptyObj{})
-			c.AbortWithStatusJSON(http.StatusBadRequest, response)
-			return
-		}
-		if Data.Cc == "" {
-			response := helper.BuildErrorResponse("Failed to process request", "CC is missing", helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 			return
 		}
@@ -328,6 +324,7 @@ func (b *authController) UpdateDataPassword(c *gin.Context) {
 		}
 	}
 }
+
 func (b *authController) UpdateDataRequest(c *gin.Context) {
 	var (
 		Data     model.RequestPasswordChangeParameter
@@ -353,6 +350,27 @@ func (b *authController) UpdateDataRequest(c *gin.Context) {
 				response = helper.BuildResponse(true, "OK", user)
 				c.JSON(http.StatusOK, response)
 			}
+		}
+	}
+}
+
+func (b *authController) UploadDocument(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, response)
+	} else {
+		form2, err := b.authService.UploadDocument(file, file.Filename)
+		if err != nil {
+			response = helper.BuildErrorResponse("Failed to upload files", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", form2)
+			c.JSON(http.StatusOK, response)
 		}
 	}
 }

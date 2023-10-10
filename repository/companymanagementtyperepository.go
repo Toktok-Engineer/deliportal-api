@@ -65,10 +65,7 @@ func (db *CompanyManagementTypeConnection) SearchCompanyManagementType(limit int
 }
 
 func (db *CompanyManagementTypeConnection) CountSearchCompanyManagementType(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("company_management_types").Where("(lower(company_management_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }

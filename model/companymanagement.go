@@ -4,7 +4,7 @@ type CompanyManagement struct {
 	ID                      uint    `json:"company_management_id"`
 	CompanyID               uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
 	CompanyManagementTypeID uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_management_type_id"`
-	ManagementName          string  `gorm:"type:varchar(50);not null" json:"management_name"`
+	ManagementName          string  `gorm:"type:varchar(100);not null" json:"management_name"`
 	Remark                  string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserID           uint    `gorm:"type:bigint;not null" json:"created_user_id"`
 	UpdatedUserID           uint    `gorm:"type:bigint;not null" json:"updated_user_id"`
@@ -20,7 +20,7 @@ type SelectCompanyManagementParameter struct {
 	CompanyName               string `gorm:"type:varchar(50);not null;unique" json:"company_name"`
 	CompanyManagementTypeID   uint   `gorm:"type:bigint;foreign_key;not null;index:" json:"company_management_type_id"`
 	CompanyManagementTypeName string `gorm:"type:varchar(50);not null;unique" json:"company_management_type_name"`
-	ManagementName            string `gorm:"type:varchar(50);not null" json:"management_name"`
+	ManagementName            string `gorm:"type:varchar(100);not null" json:"management_name"`
 	Remark                    string `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserID             uint   `gorm:"type:bigint;not null" json:"created_user_id"`
 	CreatedUser               string `gorm:"type:varchar(100);" json:"created_user"`

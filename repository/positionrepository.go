@@ -65,10 +65,7 @@ func (db *PositionConnection) SearchPosition(limit int, offset int, order string
 }
 
 func (db *PositionConnection) CountSearchPosition(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("positions").Where("(lower(position_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }

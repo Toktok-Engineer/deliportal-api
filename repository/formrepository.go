@@ -74,10 +74,7 @@ func (db *FormConnection) SearchForm(limit int, offset int, order string, dir st
 }
 
 func (db *FormConnection) CountSearchForm(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Count(&count)
 	return count, res.Error
 }

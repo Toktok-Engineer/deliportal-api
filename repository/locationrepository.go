@@ -65,10 +65,7 @@ func (db *LocationConnection) SearchLocation(limit int, offset int, order string
 }
 
 func (db *LocationConnection) CountSearchLocation(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("locations").Where("(lower(location_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }

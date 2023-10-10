@@ -66,10 +66,7 @@ func (db *EmailQueueConnection) SearchEmailQueue(limit int, offset int, order st
 }
 
 func (db *EmailQueueConnection) CountSearchEmailQueue(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("email_queues").Select("email_queues.id, email_queues.email_queue_type_id, email_queue_types.email_queue_type_name, email_queues.email_recipient, email_queues.email_cc, email_queues.email_subject, email_queues.email_body, email_queues.status, email_queues.error_message, email_queues.remark, email_queues.created_user_id, email_queues.updated_user_id, email_queues.deleted_user_id, to_char(to_timestamp(email_queues.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(email_queues.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(email_queues.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join email_queue_types ON email_queues.email_queue_type_id = email_queue_types.id").Where("(lower(email_queue_types.email_queue_type_name) LIKE ? OR lower(email_queues.email_recipient) LIKE ? OR lower(email_queues.email_cc) LIKE ? OR lower(email_queues.email_subject) LIKE ? OR lower(email_queues.email_body) LIKE ? OR lower(email_queues.error_message) LIKE ? OR lower(email_queues.remark) LIKE ?) AND email_queues.deleted_at = 0", final, final, final, final, final, final, final).Count(&count)
 	return count, res.Error
 }

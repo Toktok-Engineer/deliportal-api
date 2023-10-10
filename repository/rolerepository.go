@@ -65,10 +65,7 @@ func (db *RoleConnection) SearchRole(limit int, offset int, order string, dir st
 }
 
 func (db *RoleConnection) CountSearchRole(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("roles").Where("(lower(role_code) LIKE ? OR lower(role_description) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final).Count(&count)
 	return count, res.Error
 }

@@ -145,10 +145,7 @@ func (db *userConnection) SearchUser(limit int, offset int, order string, dir st
 }
 
 func (db *userConnection) CountSearchUser(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("users").Select("users.id, users.username, users.password, users.employee_id, employees.nik, employees.firstname, employees.lastname, employees.initials, employees.signature, employees.division_id, divisions.division_name, employees.department_id, departments.department_name, employees.section_id, sections.section_name, employees.position_id, positions.position_name, employees.location_id, locations.location_name, users.email, users.request_change_at, users.remark, users.created_user_id, users.updated_user_id, users.deleted_user_id, users.created_at, users.updated_at, users.deleted_at, users.company_group_id, company_groups.company_group_name").Joins("left join company_groups ON users.company_group_id = company_groups.id").Joins("left join employees ON users.employee_id = employees.id").Joins("left join divisions ON employees.division_id = divisions.id").Joins("left join departments ON employees.department_id = departments.id").Joins("left join sections ON employees.section_id = sections.id").Joins("left join positions ON employees.position_id = positions.id").Joins("left join locations ON employees.location_id = locations.id").Where("(lower(users.username) LIKE ? OR lower(employees.nik) LIKE ? OR lower(employees.firstname) LIKE ? OR lower(employees.lastname) LIKE ? OR lower(employees.email) LIKE ? OR lower(employees.remark) LIKE ?) AND departments.deleted_at = 0", final, final, final, final, final, final).Count(&count)
 	return count, res.Error
 }
@@ -252,7 +249,9 @@ func (db *userConnection) SendMail2(mail model.Mail2) (res gin.H, err error) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "Deli Portal Admin <deliportaladmin@deli.id>")
 	m.SetHeader("To", To)
-	m.SetHeader("Cc", Cc)
+	if Cc != "" {
+		m.SetHeader("Cc", Cc)
+	}
 	m.SetHeader("Subject", Subject)
 	m.SetBody("text/html", Body)
 

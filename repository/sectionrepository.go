@@ -68,10 +68,7 @@ func (db *SectionConnection) SearchSection(limit int, offset int, order string, 
 }
 
 func (db *SectionConnection) CountSearchSection(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("sections").Select("sections.id, sections.section_name, sections.division_id, divisions.division_name, sections.department_id, departments.department_name, sections.remark, sections.created_user_id, sections.updated_user_id, sections.deleted_user_id, sections.created_at, sections.updated_at, sections.deleted_at").Joins("left join departments ON sections.department_id = departments.id").Joins("left join divisions ON sections.division_id = divisions.id").Where("(lower(sections.section_name) LIKE ? OR lower(divisions.division_name) LIKE ? OR lower(departments.department_name) LIKE ? OR lower(departments.remark) LIKE ?) AND sections.deleted_at = 0", final, final, final, final).Count(&count)
 	return count, res.Error
 }
@@ -113,10 +110,7 @@ func (db *SectionConnection) FindSectionByDivisionID(divId uint) (sectionOutput 
 }
 
 func (db *SectionConnection) CountSectionName(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("sections").Select("sections.id, sections.section_name, sections.division_id, divisions.division_name, sections.department_id, departments.department_name, sections.remark, sections.created_user_id, sections.updated_user_id, sections.deleted_user_id, sections.created_at, sections.updated_at, sections.deleted_at").Joins("left join departments ON sections.department_id = departments.id").Joins("left join divisions ON sections.division_id = divisions.id").Where("lower(sections.section_name) LIKE ?", final).Count(&count)
 	return count, res.Error
 }

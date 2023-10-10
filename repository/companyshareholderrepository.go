@@ -66,10 +66,7 @@ func (db *CompanyShareholderConnection) SearchCompanyShareholder(limit int, offs
 }
 
 func (db *CompanyShareholderConnection) CountSearchCompanyShareholder(search string, companyId int) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("company_shareholders").Select("company_shareholders.id, company_shareholders.company_id, company_shareholders.shareholder_name,company_shareholders.number_of_share, company_shareholders.percentage_of_share, company_shareholders.share_amount, company_shareholders.remark, company_shareholders.created_user_id, createdUID.username AS created_user, company_shareholders.updated_user_id, updatedUID.username AS updated_user, company_shareholders.deleted_user_id, deletedUID.username AS deleted_user, to_char(to_timestamp(company_shareholders.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(company_shareholders.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(company_shareholders.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join users createdUID on company_shareholders.created_user_id = createdUID.id").Joins("left join users updatedUID on company_shareholders.updated_user_id = updatedUID.id").Joins("left join users deletedUID on company_shareholders.deleted_user_id = deletedUID.id").Where("(lower(company_shareholders.shareholder_name) LIKE ? OR lower(company_shareholders.number_of_share::varchar(50)) LIKE ? OR lower(company_shareholders.percentage_of_share::varchar(50)) LIKE ? OR lower(company_shareholders.share_amount::varchar(50)) LIKE ? OR lower(to_char(to_timestamp(company_shareholders.created_at::numeric), 'DD-Mon-YYYY')) LIKE ? OR lower(to_char(to_timestamp(company_shareholders.updated_at::numeric), 'DD-Mon-YYYY')) LIKE ? OR lower(company_shareholders.remark) LIKE ? OR lower(createdUID.username) LIKE ?  OR lower(updatedUID.username) LIKE ? ) AND company_shareholders.company_id = ? AND company_shareholders.deleted_at = 0", final, final, final, final, final, final, final, final, final, companyId).Count(&count)
 	return count, res.Error
 }

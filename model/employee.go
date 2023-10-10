@@ -5,7 +5,7 @@ type Employee struct {
 	NIK           string  `gorm:"type:varchar(20);not null" json:"nik"`
 	Firstname     string  `gorm:"type:varchar(30);not null" json:"first_name"`
 	Lastname      string  `gorm:"type:varchar(30)" json:"last_name"`
-	Email         string  `gorm:"type:varchar(30);not null" json:"email"`
+	Email         string  `gorm:"type:varchar(50);not null" json:"email"`
 	Initials      []byte  `json:"initials"`
 	Signature     []byte  `json:"signature"`
 	DivisionID    uint    `gorm:"type:bigint;foreign_key;index:" json:"division_id"`
@@ -20,6 +20,8 @@ type Employee struct {
 	CreatedAt     float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt     float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt     float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
+	JoinedAt      float64 `gorm:"type:double precision;typedefault:null" json:"joined_at"`
+	JenisKelamin  string  `gorm:"type:varchar(50)" json:"jenis_kelamin"`
 }
 
 type SelectEmployeeParameter struct {
@@ -47,13 +49,28 @@ type SelectEmployeeParameter struct {
 	CreatedAt      float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt      float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt      float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
+	JoinedAt       string  `gorm:"type:varchar(100);not null" json:"joined_at"`
+	JenisKelamin   string  `gorm:"type:varchar(50);not null" json:"jenis_kelamin"`
+}
+
+type SelectEmployeeCuti struct {
+	Fullname       string `gorm:"type:varchar(150);not null" json:"fullname"`
+	DivisionID     uint   `gorm:"type:bigint;foreign_key;index:" json:"division_id"`
+	DivisionName   string `gorm:"type:varchar(50);not null;unique" json:"division_name"`
+	DepartmentID   uint   `gorm:"type:bigint;foreign_key;index:" json:"department_id"`
+	DepartmentName string `gorm:"type:varchar(50);not null;unique" json:"department_name"`
+	SectionID      uint   `gorm:"type:bigint;foreign_key;index:" json:"section_id"`
+	SectionName    string `gorm:"type:varchar(50);not null;unique" json:"section_name"`
+	PositionID     uint   `gorm:"type:bigint;foreign_key;index:" json:"position_id"`
+	PositionName   string `gorm:"type:varchar(50);not null;unique" json:"position_name"`
+	JenisKelamin   string `gorm:"type:varchar(50);not null" json:"jenis_kelamin"`
 }
 
 type CreateEmployeeParameter struct {
 	NIK           string  `gorm:"type:varchar(20);not null" json:"nik"`
 	Firstname     string  `gorm:"type:varchar(30);not null" json:"first_name"`
 	Lastname      string  `gorm:"type:varchar(30)" json:"last_name"`
-	Email         string  `gorm:"type:varchar(30);not null" json:"email"`
+	Email         string  `gorm:"type:varchar(50);not null" json:"email"`
 	Initials      []byte  `json:"initials"`
 	Signature     []byte  `json:"signature"`
 	DivisionID    uint    `gorm:"type:bigint;foreign_key;index:" json:"division_id"`
@@ -68,4 +85,6 @@ type CreateEmployeeParameter struct {
 	CreatedAt     float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt     float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt     float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
+	JoinedAt      float64 `gorm:"type:double precision;typedefault:null" json:"joined_at"`
+	JenisKelamin  string  `gorm:"type:varchar(50);not null" json:"jenis_kelamin"`
 }

@@ -67,10 +67,7 @@ func (db *DepartmentConnection) SearchDepartment(limit int, offset int, order st
 }
 
 func (db *DepartmentConnection) CountSearchDepartment(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("(lower(divisions.division_name) LIKE ? OR lower(departments.department_name) LIKE ? OR lower(departments.remark) LIKE ?) AND departments.deleted_at = 0", final, final, final).Count(&count)
 	return count, res.Error
 }
@@ -103,10 +100,7 @@ func (db *DepartmentConnection) FindDepartmentByDivId(divId uint) (departmentOut
 }
 
 func (db *DepartmentConnection) CountDepartmentName(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("departments").Select("departments.id, departments.department_name, departments.division_id, divisions.division_name, departments.remark, departments.created_user_id, departments.updated_user_id, departments.deleted_user_id, departments.created_at, departments.updated_at, departments.deleted_at").Joins("left join divisions ON departments.division_id = divisions.id").Where("lower(departments.department_name) LIKE ?", final).Count(&count)
 	return count, res.Error
 }
