@@ -3,7 +3,7 @@ package model
 type CompanyShareholder struct {
 	ID                uint    `json:"company_shareholder_id"`
 	CompanyID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
-	ShareholderName   string  `gorm:"type:varchar(50);not null" json:"shareholder_name"`
+	ShareholderName   string  `gorm:"type:varchar(100);not null" json:"shareholder_name"`
 	NumberOfShare     float64 `gorm:"type:double precision;not null" json:"number_of_share"`
 	PercentageOfShare float64 `gorm:"type:double precision;not null" json:"percentage_of_share"`
 	ShareAmount       float64 `gorm:"type:double precision;not null" json:"share_amount"`
@@ -19,7 +19,7 @@ type CompanyShareholder struct {
 type SelectCompanyShareholder struct {
 	ID                uint    `json:"company_shareholder_id"`
 	CompanyID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
-	ShareholderName   string  `gorm:"type:varchar(50);not null" json:"shareholder_name"`
+	ShareholderName   string  `gorm:"type:varchar(100);not null" json:"shareholder_name"`
 	NumberOfShare     float64 `gorm:"type:double precision;not null" json:"number_of_share"`
 	PercentageOfShare float64 `gorm:"type:double precision;not null" json:"percentage_of_share"`
 	ShareAmount       float64 `gorm:"type:double precision;not null" json:"share_amount"`
@@ -37,7 +37,7 @@ type SelectCompanyShareholder struct {
 
 type CreateCompanyShareholderParameter struct {
 	CompanyID         uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"company_id"`
-	ShareholderName   string  `gorm:"type:varchar(50);not null" json:"shareholder_name"`
+	ShareholderName   string  `gorm:"type:varchar(100);not null" json:"shareholder_name"`
 	NumberOfShare     float64 `gorm:"type:double precision;not null" json:"number_of_share"`
 	PercentageOfShare float64 `gorm:"type:double precision;not null" json:"percentage_of_share"`
 	ShareAmount       float64 `gorm:"type:double precision;not null" json:"share_amount"`

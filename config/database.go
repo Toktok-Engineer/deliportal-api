@@ -35,13 +35,15 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
-	db.AutoMigrate(&model.InternalMemoType{})
-	db.AutoMigrate(&model.InternalMemo{})
-	db.AutoMigrate(&model.InternalMemoCirculation{})
-	db.AutoMigrate(&model.InternalMemoAttachment{})
-	db.AutoMigrate(&model.InternalMemoTracing{})
-	db.AutoMigrate(&model.ImDefaultCirculation{})
-	db.AutoMigrate(&model.CompanyLicense{})
+	db.AutoMigrate(&model.Employee{})
+	db.AutoMigrate(&model.LeaveTypes{})
+	db.AutoMigrate(&model.NonWorkingType{})
+	db.AutoMigrate(&model.NonWorkingDay{})
+	db.AutoMigrate(&model.EmployeeLeaveCredit{})
+	db.AutoMigrate(&model.EmployeeLeaveRequest{})
+	db.AutoMigrate(&model.EmployeeLeaveRequestApproval{})
+	db.AutoMigrate(&model.EmployeeLeaveRequestTracing{})
+	db.AutoMigrate(&model.EmployeeLeaveRequestDump{})
 
 	return db
 }

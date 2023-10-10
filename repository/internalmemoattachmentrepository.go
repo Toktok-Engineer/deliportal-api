@@ -67,10 +67,7 @@ func (db *InternalMemoAttachmentConnection) SearchInternalMemoAttachment(limit i
 }
 
 func (db *InternalMemoAttachmentConnection) CountSearchInternalMemoAttachment(search string, internalMemoId int) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("internal_memo_attachments").Select("internal_memo_attachments.id, internal_memo_attachments.internal_memo_id, internal_memo_attachments.file_name, internal_memo_attachments.description, internal_memo_attachments.file_url, internal_memo_attachments.remark, internal_memo_attachments.created_user_id, createdUID.username AS created_user, internal_memo_attachments.updated_user_id, updatedUID.username AS updated_user, internal_memo_attachments.deleted_user_id, deletedUID.username AS deleted_user, to_char(to_timestamp(internal_memo_attachments.created_at::numeric), 'DD-Mon-YYYY') as created_at, to_char(to_timestamp(internal_memo_attachments.updated_at::numeric), 'DD-Mon-YYYY') as updated_at, to_char(to_timestamp(internal_memo_attachments.deleted_at::numeric), 'DD-Mon-YYYY') as deleted_at").Joins("left join users createdUID on internal_memo_attachments.created_user_id = createdUID.id").Joins("left join users updatedUID on internal_memo_attachments.updated_user_id = updatedUID.id").Joins("left join users deletedUID on internal_memo_attachments.deleted_user_id = deletedUID.id").Where("(lower(internal_memo_attachments.file_url) LIKE ? OR lower(internal_memo_attachments.description) LIKE ? OR lower(to_char(to_timestamp(internal_memo_attachments.created_at::numeric), 'DD-Mon-YYYY')) LIKE ? AND internal_memo_attachments.internal_memo_id = ? AND internal_memo_attachments.deleted_at = 0", final, final, final, internalMemoId).Count(&count)
 	return count, res.Error
 }

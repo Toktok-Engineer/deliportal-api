@@ -68,10 +68,7 @@ func (db *RoleFormConnection) SearchRoleForm(limit int, offset int, order string
 }
 
 func (db *RoleFormConnection) CountSearchRoleForm(search string, roleID int) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("role_forms").Select("role_forms.id, role_forms.role_id, roles.role_code, roles.role_description, role_forms.form_id, forms.form_code, forms.form_description, role_forms.create_flag, role_forms.read_flag, role_forms.update_flag, role_forms.delete_flag, role_forms.remark, role_forms.created_user_id, role_forms.updated_user_id, role_forms.deleted_user_id, role_forms.created_at, role_forms.updated_at, role_forms.deleted_at ").Joins("left join roles ON role_forms.role_id = roles.id").Joins("left join forms ON role_forms.form_id = forms.id").Where("(lower(roles.role_code) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(role_forms.remark) LIKE ?) AND role_forms.role_id = ? AND role_forms.deleted_at = 0", final, final, final, roleID).Count(&count)
 	return count, res.Error
 }

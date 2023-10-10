@@ -9,11 +9,15 @@ import (
 
 type CompanyLicenseService interface {
 	FindCompanyLicenseByCompanyId(id uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
-	CountCompanyLicenseAll(companyId int) (count int64, err error)
+	CountCompanyLicenseAll(companyId int, licenseGroup uint) (count int64, err error)
 	FindCompanyLicenses() (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
-	FindCompanyLicensesOffset(limit int, offset int, order string, dir string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
-	SearchCompanyLicense(limit int, offset int, order string, dir string, search string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
-	CountSearchCompanyLicense(search string, companyId int) (count int64, err error)
+	FindCompanyLicensesOffset(limit int, offset int, order string, dir string, companyId int, licenseGroup uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	SearchCompanyLicense(limit int, offset int, order string, dir string, search string, companyId int, licenseGroup uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	CountSearchCompanyLicense(search string, companyId int, licenseGroup uint) (count int64, err error)
+	CountCompanyLicenseAllMobile(companyId int) (count int64, err error)
+	FindCompanyLicensesOffsetMobile(limit int, offset int, order string, dir string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	SearchCompanyLicenseMobile(limit int, offset int, order string, dir string, search string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
+	CountSearchCompanyLicenseMobile(search string, companyId int) (count int64, err error)
 	CountCompanyLicenseApp(companyID string) (count int64, err error)
 	FindCompanyLicensesApp(limit int, offset int, order string, dir string, companyID string) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
 	SearchCompanyLicenseApp(limit int, offset int, order string, dir string, search string, companyID string) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error)
@@ -52,8 +56,8 @@ func (service *companyLicenseService) FindCompanyLicenseByCompanyId(id uint) (co
 	return res, err
 }
 
-func (service *companyLicenseService) CountCompanyLicenseAll(companyId int) (count int64, err error) {
-	res, err := service.companyLicenseRepository.CountCompanyLicenseAll(companyId)
+func (service *companyLicenseService) CountCompanyLicenseAll(companyId int, licenseGroup uint) (count int64, err error) {
+	res, err := service.companyLicenseRepository.CountCompanyLicenseAll(companyId, licenseGroup)
 	return res, err
 }
 
@@ -62,18 +66,38 @@ func (service *companyLicenseService) FindCompanyLicenses() (companyLicenseOutpu
 	return res, err
 }
 
-func (service *companyLicenseService) FindCompanyLicensesOffset(limit int, offset int, order string, dir string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
-	res, err := service.companyLicenseRepository.FindCompanyLicensesOffset(limit, offset, order, dir, companyId)
+func (service *companyLicenseService) FindCompanyLicensesOffset(limit int, offset int, order string, dir string, companyId int, licenseGroup uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
+	res, err := service.companyLicenseRepository.FindCompanyLicensesOffset(limit, offset, order, dir, companyId, licenseGroup)
 	return res, err
 }
 
-func (service *companyLicenseService) SearchCompanyLicense(limit int, offset int, order string, dir string, search string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
-	res, err := service.companyLicenseRepository.SearchCompanyLicense(limit, offset, order, dir, search, companyId)
+func (service *companyLicenseService) SearchCompanyLicense(limit int, offset int, order string, dir string, search string, companyId int, licenseGroup uint) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
+	res, err := service.companyLicenseRepository.SearchCompanyLicense(limit, offset, order, dir, search, companyId, licenseGroup)
 	return res, err
 }
 
-func (service *companyLicenseService) CountSearchCompanyLicense(search string, companyId int) (count int64, err error) {
-	res, err := service.companyLicenseRepository.CountSearchCompanyLicense(search, companyId)
+func (service *companyLicenseService) CountSearchCompanyLicense(search string, companyId int, licenseGroup uint) (count int64, err error) {
+	res, err := service.companyLicenseRepository.CountSearchCompanyLicense(search, companyId, licenseGroup)
+	return res, err
+}
+
+func (service *companyLicenseService) CountCompanyLicenseAllMobile(companyId int) (count int64, err error) {
+	res, err := service.companyLicenseRepository.CountCompanyLicenseAllMobile(companyId)
+	return res, err
+}
+
+func (service *companyLicenseService) FindCompanyLicensesOffsetMobile(limit int, offset int, order string, dir string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
+	res, err := service.companyLicenseRepository.FindCompanyLicensesOffsetMobile(limit, offset, order, dir, companyId)
+	return res, err
+}
+
+func (service *companyLicenseService) SearchCompanyLicenseMobile(limit int, offset int, order string, dir string, search string, companyId int) (companyLicenseOutput []model.SelectCompanyLicenseParameter, err error) {
+	res, err := service.companyLicenseRepository.SearchCompanyLicenseMobile(limit, offset, order, dir, search, companyId)
+	return res, err
+}
+
+func (service *companyLicenseService) CountSearchCompanyLicenseMobile(search string, companyId int) (count int64, err error) {
+	res, err := service.companyLicenseRepository.CountSearchCompanyLicenseMobile(search, companyId)
 	return res, err
 }
 

@@ -67,10 +67,7 @@ func (db *LicenseTypeConnection) SearchLicenseType(limit int, offset int, order 
 }
 
 func (db *LicenseTypeConnection) CountSearchLicenseType(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("(lower(group_license_types.group_license_type_name) LIKE ? OR lower(license_types.license_type_name) LIKE ? OR lower(license_types.remark) LIKE ?) AND license_types.deleted_at = 0", final, final, final).Count(&count)
 	return count, res.Error
 }

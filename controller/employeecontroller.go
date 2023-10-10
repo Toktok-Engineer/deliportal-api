@@ -20,6 +20,11 @@ type EmployeeController interface {
 	FindEmployeeById(c *gin.Context)
 	FindEmployeeByNik(c *gin.Context)
 	FindExcEmployee(c *gin.Context)
+	FindEmployeeByDepartment(c *gin.Context)
+	FindEmployeeByPosition(c *gin.Context)
+	FindEmployeeByDivIdAndDepId(c *gin.Context)
+	FindEmployeeByDate(c *gin.Context)
+	FindEmployeeCuti(c *gin.Context)
 	InsertEmployee(c *gin.Context)
 	UpdateEmployee(c *gin.Context)
 	DeleteEmployee(c *gin.Context)
@@ -227,6 +232,154 @@ func (b *employeeController) FindExcEmployee(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
 		employees, err = b.employeeService.FindExcEmployee(uint(id))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", employees)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *employeeController) FindEmployeeByDivIdAndDepId(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	DivId, err := strconv.ParseUint(c.Param("DivId"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param division id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		DepId, err := strconv.ParseUint(c.Param("DepId"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param department id was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			employees, err := b.employeeService.FindEmployeeByDivIdAndDepId(uint(DivId), uint(DepId))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", employees)
+				c.JSON(http.StatusOK, response)
+			}
+		}
+	}
+}
+
+func (b *employeeController) FindEmployeeByDepartment(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	DepId, err := strconv.ParseUint(c.Param("department"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param department id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		employees, err := b.employeeService.FindEmployeeByDepartment(int(DepId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", employees)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
+func (b *employeeController) FindEmployeeByPosition(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	group, err := strconv.ParseUint(c.Param("group"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param group id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		division := c.Param("division")
+		if division == "" {
+			response = helper.BuildErrorResponse("No param division name was found", "No data with given division name", helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			department := c.Param("department")
+			if department == "" {
+				response = helper.BuildErrorResponse("No param department name was found", "No data with given department name", helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				position := c.Param("position")
+				if position == "" {
+					response = helper.BuildErrorResponse("No param position name was found", "No data with given position name", helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					employees, err := b.employeeService.FindEmployeeByPosition(int(group), division, department, position)
+					if err != nil {
+						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+						c.JSON(http.StatusNotFound, response)
+					} else {
+						response = helper.BuildResponse(true, "OK", employees)
+						c.JSON(http.StatusOK, response)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *employeeController) FindEmployeeCuti(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	group, err := strconv.ParseUint(c.Param("group"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param group id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		section, err := strconv.ParseUint(c.Param("section"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param section id was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			division, err := strconv.ParseUint(c.Param("division"), 0, 0)
+			if err != nil {
+				response = helper.BuildErrorResponse("No param division id was found", err.Error(), helper.EmptyObj{})
+				c.AbortWithStatusJSON(http.StatusBadRequest, response)
+			} else {
+				department, err := strconv.ParseUint(c.Param("department"), 0, 0)
+				if err != nil {
+					response = helper.BuildErrorResponse("No param department id was found", err.Error(), helper.EmptyObj{})
+					c.AbortWithStatusJSON(http.StatusBadRequest, response)
+				} else {
+					position, err := strconv.ParseUint(c.Param("position"), 0, 0)
+					if err != nil {
+						response = helper.BuildErrorResponse("No param position id was found", err.Error(), helper.EmptyObj{})
+						c.AbortWithStatusJSON(http.StatusBadRequest, response)
+					} else {
+						employees, err := b.employeeService.FindEmployeeCuti(int(group), int(section), int(division), int(department), int(position))
+						if err != nil {
+							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+							c.JSON(http.StatusNotFound, response)
+						} else {
+							response = helper.BuildResponse(true, "OK", employees)
+							c.JSON(http.StatusOK, response)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (b *employeeController) FindEmployeeByDate(c *gin.Context) {
+	var (
+		response helper.Response
+	)
+	date, err := strconv.ParseFloat(c.Param("date"), 64)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param date was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		employees, err := b.employeeService.FindEmployeeByDate(float64(date))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)

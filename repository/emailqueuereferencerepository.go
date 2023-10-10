@@ -65,10 +65,7 @@ func (db *EmailQueueReferenceConnection) SearchEmailQueueReference(limit int, of
 }
 
 func (db *EmailQueueReferenceConnection) CountSearchEmailQueueReference(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("email_queue_references").Select("email_queue_references.id, email_queue_references.email_queue_id, email_queue_references.email_queue_type_id, email_queue_types.email_queue_type_name, email_queue_references.reference_id, email_queue_references.remark, email_queue_references.created_user_id, email_queue_references.updated_user_id, email_queue_references.deleted_user_id, email_queue_references.created_at, email_queue_references.updated_at, email_queue_references.deleted_at").Joins("left join email_queue_types ON email_queue_references.email_queue_type_id = email_queue_types.id").Where("lower(email_queue_types.email_queue_type_name) LIKE ? AND email_queue_references.deleted_at = 0", final).Count(&count)
 	return count, res.Error
 }

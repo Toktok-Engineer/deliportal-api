@@ -64,10 +64,7 @@ func (db *companyGroupConnection) SearchCompanyGroup(limit int, offset int, orde
 }
 
 func (db *companyGroupConnection) CountSearchCompanyGroup(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("company_groups").Where("(lower(company_group_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }

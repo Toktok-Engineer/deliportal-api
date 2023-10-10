@@ -64,10 +64,7 @@ func (db *internalMemoTypeConnection) SearchInternalMemoType(limit int, offset i
 }
 
 func (db *internalMemoTypeConnection) CountSearchInternalMemoType(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("internal_memo_types").Where("(lower(internal_memo_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }

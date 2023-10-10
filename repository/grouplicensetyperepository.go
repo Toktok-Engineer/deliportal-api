@@ -64,10 +64,7 @@ func (db *groupLicenseTypeConnection) SearchGroupLicenseType(limit int, offset i
 }
 
 func (db *groupLicenseTypeConnection) CountSearchGroupLicenseType(search string) (count int64, err error) {
-	var (
-		final string
-	)
-	final = "%" + strings.ToLower(search) + "%"
+	final := "%" + strings.ToLower(search) + "%"
 	res := db.connection.Debug().Table("group_license_types").Where("(lower(group_license_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }

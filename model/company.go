@@ -3,6 +3,7 @@ package model
 type Company struct {
 	ID                  uint    `json:"company_id"`
 	CompanyName         string  `gorm:"type:varchar(50);not null;unique" json:"company_name"`
+	PreviousCompanyName string  `gorm:"type:varchar(50)" json:"previous_company_name"`
 	BusinessUnitID      uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"business_unit_id"`
 	Address             string  `gorm:"type:varchar(500);not null" json:"address"`
 	LegalLicenseFileUrl string  `gorm:"type:varchar(200);not null" json:"legal_license_file_url"`
@@ -23,6 +24,7 @@ type Company struct {
 type SelectCompanyParameter struct {
 	ID                  uint   `json:"company_id"`
 	CompanyName         string `gorm:"type:varchar(50);not null;unique" json:"company_name"`
+	PreviousCompanyName string `gorm:"type:varchar(50)" json:"previous_company_name"`
 	BusinessUnitID      uint   `gorm:"type:bigint;foreign_key;not null;index:" json:"business_unit_id"`
 	BusinessUnitName    string `gorm:"type:varchar(100);not null;unique" json:"business_unit_name"`
 	Address             string `gorm:"type:varchar(500);not null" json:"address"`
@@ -49,6 +51,7 @@ type SelectCompanyParameter struct {
 
 type CreateCompanyParameter struct {
 	CompanyName         string  `gorm:"type:varchar(50);not null;unique" json:"company_name"`
+	PreviousCompanyName string  `gorm:"type:varchar(50)" json:"previous_company_name"`
 	BusinessUnitID      uint    `gorm:"type:bigint;foreign_key;not null;index:" json:"business_unit_id"`
 	Address             string  `gorm:"type:varchar(500);not null" json:"address"`
 	LegalLicenseFileUrl string  `gorm:"type:varchar(200);not null" json:"legal_license_file_url"`

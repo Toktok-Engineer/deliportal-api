@@ -16,7 +16,12 @@ type EmployeeService interface {
 	FindEmployeeById(id uint) (employeeOutput model.SelectEmployeeParameter, err error)
 	FindEmployeeByNik(nik uint) (employeeOutput model.SelectEmployeeParameter, err error)
 	FindExcEmployee(id uint) (employeeOutput []model.SelectEmployeeParameter, err error)
+	FindEmployeeByDepartment(department int) (employeeOutput []model.SelectEmployeeParameter, err error)
+	FindEmployeeByPosition(group int, division string, department string, position string) (employeeOutput model.SelectEmployeeParameter, err error)
+	FindEmployeeByDivIdAndDepId(Divid uint, DepId uint) (employeeOutput []model.SelectEmployeeParameter, err error)
+	FindEmployeeByDate(date float64) (employeeOutput []model.SelectEmployeeParameter, err error)
 	InsertEmployee(employee model.CreateEmployeeParameter) (employeeOutput model.Employee, err error)
+	FindEmployeeCuti(group int, section int, division int, department int, position int) (employeeOutput []model.SelectEmployeeCuti, err error)
 	UpdateEmployee(employee model.Employee, id uint) (employeeOutput model.Employee, err error)
 	DeleteEmployee(employee model.Employee, id uint) (employeeOutput model.Employee, err error)
 }
@@ -68,6 +73,31 @@ func (service *employeeService) FindEmployeeByNik(nik uint) (employeeOutput mode
 
 func (service *employeeService) FindExcEmployee(id uint) (employeeOutput []model.SelectEmployeeParameter, err error) {
 	res, err := service.employeeRepository.FindExcEmployee(id)
+	return res, err
+}
+
+func (service *employeeService) FindEmployeeByDepartment(department int) (employeeOutput []model.SelectEmployeeParameter, err error) {
+	res, err := service.employeeRepository.FindEmployeeByDepartment(department)
+	return res, err
+}
+
+func (service *employeeService) FindEmployeeByPosition(group int, division string, department string, position string) (employeeOutput model.SelectEmployeeParameter, err error) {
+	res, err := service.employeeRepository.FindEmployeeByPosition(group, division, department, position)
+	return res, err
+}
+
+func (service *employeeService) FindEmployeeByDivIdAndDepId(Divid uint, DepId uint) (employeeOutput []model.SelectEmployeeParameter, err error) {
+	res, err := service.employeeRepository.FindEmployeeByDivIdAndDepId(Divid, DepId)
+	return res, err
+}
+
+func (service *employeeService) FindEmployeeCuti(group int, section int, division int, department int, position int) (employeeOutput []model.SelectEmployeeCuti, err error) {
+	res, err := service.employeeRepository.FindEmployeeCuti(group, section, division, department, position)
+	return res, err
+}
+
+func (service *employeeService) FindEmployeeByDate(date float64) (employeeOutput []model.SelectEmployeeParameter, err error) {
+	res, err := service.employeeRepository.FindEmployeeByDate(date)
 	return res, err
 }
 
