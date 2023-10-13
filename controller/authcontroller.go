@@ -5,6 +5,7 @@ import (
 	"deliportal-api/model"
 	"deliportal-api/service"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -364,7 +365,10 @@ func (b *authController) UploadDocument(c *gin.Context) {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		form2, err := b.authService.UploadDocument(file, file.Filename)
+		name := strings.Split(file.Header.Get("Content-Disposition"), ";")
+		fileName := strings.Replace(name[2], " filename=", "", -1)
+		fileName = strings.Replace(fileName, `"`, "", -1)
+		form2, err := b.authService.UploadDocument(file, fileName)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to upload files", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
