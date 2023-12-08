@@ -13,6 +13,7 @@ type EmployeeLeaveRequestDumpRepository interface {
 	// SearchEmployeeLeaveRequestDump(limit int, offset int, order string, dir string, search string) (businessunitOutput []model.EmployeeLeaveRequestDump, err error)
 	// CountSearchEmployeeLeaveRequestDump(search string) (count int64, err error)
 	FindEmployeeLeaveRequestDumpById(id uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
+	FindEmployeeLeaveRequestDumpByErlIdandEmp(id uint, tracingID uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
 	FindExcEmployeeLeaveRequestDump(id uint) (employeeLeaveRequestDumpOutput []model.EmployeeLeaveRequestDump, err error)
 	InsertEmployeeLeaveRequestDump(employeeLeaveRequestDump model.EmployeeLeaveRequestDump) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
 	UpdateEmployeeLeaveRequestDump(employeeLeaveRequestDump model.EmployeeLeaveRequestDump, id uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
@@ -73,6 +74,14 @@ func (db *employeeLeaveRequestDumpConnection) FindEmployeeLeaveRequestDumpById(i
 		employeeLeaveRequestDump model.EmployeeLeaveRequestDump
 	)
 	res := db.connection.Where("id=? AND deleted_at = 0", id).Take(&employeeLeaveRequestDump)
+	return employeeLeaveRequestDump, res.Error
+}
+
+func (db *employeeLeaveRequestDumpConnection) FindEmployeeLeaveRequestDumpByErlIdandEmp(id uint, tracingID uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error) {
+	var (
+		employeeLeaveRequestDump model.EmployeeLeaveRequestDump
+	)
+	res := db.connection.Where("employee_leave_request_id=? AND employee_leave_request_tracing_id=? AND deleted_at = 0", id, tracingID).Take(&employeeLeaveRequestDump)
 	return employeeLeaveRequestDump, res.Error
 }
 

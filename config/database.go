@@ -35,14 +35,6 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
-	db.AutoMigrate(&model.Employee{})
-	db.AutoMigrate(&model.LeaveTypes{})
-	db.AutoMigrate(&model.NonWorkingType{})
-	db.AutoMigrate(&model.NonWorkingDay{})
-	db.AutoMigrate(&model.EmployeeLeaveCredit{})
-	db.AutoMigrate(&model.EmployeeLeaveRequest{})
-	db.AutoMigrate(&model.EmployeeLeaveRequestApproval{})
-	db.AutoMigrate(&model.EmployeeLeaveRequestTracing{})
 	db.AutoMigrate(&model.EmployeeLeaveRequestDump{})
 
 	return db

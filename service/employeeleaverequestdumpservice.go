@@ -14,6 +14,7 @@ type EmployeeLeaveRequestDumpService interface {
 	// SearchEmployeeLeaveRequestDump(limit int, offset int, order string, dir string, search string) (businessunitOutput []model.EmployeeLeaveRequestDump, err error)
 	// CountSearchEmployeeLeaveRequestDump(search string) (count int64, err error)
 	FindEmployeeLeaveRequestDumpById(id uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
+	FindEmployeeLeaveRequestDumpByErlIdandEmp(id uint, tracingID uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
 	FindExcEmployeeLeaveRequestDump(id uint) (employeeLeaveRequestDumpOutput []model.EmployeeLeaveRequestDump, err error)
 	InsertEmployeeLeaveRequestDump(employeeLeaveRequestDump model.CreateEmployeeLeaveRequestDumpParameter) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
 	UpdateEmployeeLeaveRequestDump(employeeLeaveRequestDump model.EmployeeLeaveRequestDump, id uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error)
@@ -57,6 +58,9 @@ func (service *employeeLeaveRequestDumpService) FindEmployeeLeaveRequestDumpsOff
 
 func (service *employeeLeaveRequestDumpService) FindEmployeeLeaveRequestDumpById(id uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error) {
 	return service.employeeLeaveRequestDumpRepository.FindEmployeeLeaveRequestDumpById(id)
+}
+func (service *employeeLeaveRequestDumpService) FindEmployeeLeaveRequestDumpByErlIdandEmp(id uint, tracingID uint) (employeeLeaveRequestDumpOutput model.EmployeeLeaveRequestDump, err error) {
+	return service.employeeLeaveRequestDumpRepository.FindEmployeeLeaveRequestDumpByErlIdandEmp(id, tracingID)
 }
 
 func (service *employeeLeaveRequestDumpService) FindExcEmployeeLeaveRequestDump(id uint) (employeeLeaveRequestDumpOutput []model.EmployeeLeaveRequestDump, err error) {

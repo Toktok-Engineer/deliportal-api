@@ -17,6 +17,7 @@ type EmployeeLeaveRequestDumpController interface {
 	// SearchEmployeeLeaveRequestDump(c *gin.Context)
 	// CountSearchEmployeeLeaveRequestDump(c *gin.Context)
 	FindEmployeeLeaveRequestDumpById(c *gin.Context)
+	FindEmployeeLeaveRequestDumpByErlIdandEmp(c *gin.Context)
 	FindExcEmployeeLeaveRequestDump(c *gin.Context)
 	InsertEmployeeLeaveRequestDump(c *gin.Context)
 	UpdateEmployeeLeaveRequestDump(c *gin.Context)
@@ -192,6 +193,32 @@ func (b *employeeLeaveRequestDumpController) FindEmployeeLeaveRequestDumpById(c 
 	}
 }
 
+func (b *employeeLeaveRequestDumpController) FindEmployeeLeaveRequestDumpByErlIdandEmp(c *gin.Context) {
+	var (
+		employeeLeaveRequestDump model.EmployeeLeaveRequestDump
+		response                 helper.Response
+	)
+	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		tracingID, err := strconv.ParseUint(c.Param("tracingID"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param employeeId was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			employeeLeaveRequestDump, err = b.employeeLeaveRequestDumpService.FindEmployeeLeaveRequestDumpByErlIdandEmp(uint(id), uint(tracingID))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", employeeLeaveRequestDump)
+				c.JSON(http.StatusOK, response)
+			}
+		}
+	}
+}
 func (b *employeeLeaveRequestDumpController) FindExcEmployeeLeaveRequestDump(c *gin.Context) {
 	var (
 		employeeLeaveRequestDumps []model.EmployeeLeaveRequestDump

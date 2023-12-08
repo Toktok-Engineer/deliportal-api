@@ -20,6 +20,7 @@ type EmployeeLeaveRequestApprovalController interface {
 	// FindExcEmployeeLeaveRequestApproval(c *gin.Context)
 	FindEmployeeLeaveRequestApprovalApproved(c *gin.Context)
 	FindEmployeeLeaveRequestApprovalOpenApproved(c *gin.Context)
+	FindEmployeeLeaveRequestApprovalOverwrite(c *gin.Context)
 	FindEmployeeLeaveRequestApprovalByERId(c *gin.Context)
 	// CountEmployeeLeaveRequestApprovalName(c *gin.Context)
 	InsertEmployeeLeaveRequestApproval(c *gin.Context)
@@ -289,6 +290,28 @@ func (b *employeeLeaveRequestApprovalController) FindEmployeeLeaveRequestApprova
 		}
 	}
 }
+
+func (b *employeeLeaveRequestApprovalController) FindEmployeeLeaveRequestApprovalOverwrite(c *gin.Context) {
+	var (
+		employeeLeaveRequestApprovals model.SelectEmployeeLeaveRequestApprovalParameter
+		response                      helper.Response
+	)
+	elrId, err := strconv.ParseUint(c.Param("elrId"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param employee leave request id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		employeeLeaveRequestApprovals, err = b.employeeLeaveRequestApprovalService.FindEmployeeLeaveRequestApprovalOverwrite(uint(elrId))
+		if err != nil {
+			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
+		} else {
+			response = helper.BuildResponse(true, "OK", employeeLeaveRequestApprovals)
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func (b *employeeLeaveRequestApprovalController) FindEmployeeLeaveRequestApprovalByERId(c *gin.Context) {
 	var (
 		employeeLeaveRequestApprovals model.SelectEmployeeLeaveRequestApprovalParameter

@@ -17,6 +17,7 @@ type EmployeeLeaveRequestApprovalService interface {
 	// FindExcEmployeeLeaveRequestApproval(divId uint, id uint) (employeeLeaveRequestApprovalOutput []model.SelectEmployeeLeaveRequestApprovalParameter, err error)
 	FindEmployeeLeaveRequestApprovalApproved(elrid uint) (employeeLeaveRequestApprovalOutput []model.SelectEmployeeLeaveRequestApprovalParameter, err error)
 	FindEmployeeLeaveRequestApprovalOpenApproved(elrid uint) (employeeLeaveRequestApprovalOutput []model.SelectEmployeeLeaveRequestApprovalParameter, err error)
+	FindEmployeeLeaveRequestApprovalOverwrite(elrid uint) (employeeLeaveRequestApprovalOutput model.SelectEmployeeLeaveRequestApprovalParameter, err error)
 	FindEmployeeLeaveRequestApprovalByERId(elrid uint) (employeeLeaveRequestApprovalOutput model.SelectEmployeeLeaveRequestApprovalParameter, err error)
 	// CountEmployeeLeaveRequestApprovalName(search string) (count int64, err error)
 	InsertEmployeeLeaveRequestApproval(employeeLeaveRequestApproval model.CreateEmployeeLeaveRequestApprovalParameter) (employeeLeaveRequestApprovalOutput model.EmployeeLeaveRequestApproval, err error)
@@ -79,6 +80,10 @@ func (service *employeeLeaveRequestApprovalService) FindEmployeeLeaveRequestAppr
 	return res, err
 }
 
+func (service *employeeLeaveRequestApprovalService) FindEmployeeLeaveRequestApprovalOverwrite(elrid uint) (employeeLeaveRequestApprovalOutput model.SelectEmployeeLeaveRequestApprovalParameter, err error) {
+	res, err := service.employeeLeaveRequestApprovalRepository.FindEmployeeLeaveRequestApprovalOverwrite(elrid)
+	return res, err
+}
 func (service *employeeLeaveRequestApprovalService) FindEmployeeLeaveRequestApprovalByERId(erlid uint) (employeeLeaveRequestApprovalOutput model.SelectEmployeeLeaveRequestApprovalParameter, err error) {
 	res, err := service.employeeLeaveRequestApprovalRepository.FindEmployeeLeaveRequestApprovalByERId(erlid)
 	return res, err
