@@ -39,7 +39,7 @@ func (db *CompanyManagementConnection) FindCompanyManagements(companyId int) (co
 	var (
 		companyManagements []model.CompanyManagement
 	)
-	res := db.connection.Where("company_id = ? AND deleted_at = 0", companyId).Order("shareholder_name").Find(&companyManagements)
+	res := db.connection.Where("company_id = ? AND deleted_at = 0", companyId).Order("management_name").Find(&companyManagements)
 	return companyManagements, res.Error
 }
 

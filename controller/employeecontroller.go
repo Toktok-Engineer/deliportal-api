@@ -202,15 +202,14 @@ func (b *employeeController) FindEmployeeById(c *gin.Context) {
 
 func (b *employeeController) FindEmployeeByNik(c *gin.Context) {
 	var (
-		employee model.SelectEmployeeParameter
 		response helper.Response
 	)
-	nik, err := strconv.ParseUint(c.Param("nik"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+	nik := c.Param("nik")
+	if nik == "" {
+		response = helper.BuildErrorResponse("No param nik found", "No data with given department name", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		employee, err = b.employeeService.FindEmployeeByNik(uint(nik))
+		employee, err := b.employeeService.FindEmployeeByNik(nik)
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)

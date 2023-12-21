@@ -14,7 +14,7 @@ type EmployeeRepository interface {
 	SearchEmployee(limit int, offset int, order string, dir string, search string) (employeeOutput []model.SelectEmployeeParameter, err error)
 	CountSearchEmployee(search string) (count int64, err error)
 	FindEmployeeById(id uint) (employeeOutput model.SelectEmployeeParameter, err error)
-	FindEmployeeByNik(nik uint) (employeeOutput model.SelectEmployeeParameter, err error)
+	FindEmployeeByNik(nik string) (employeeOutput model.SelectEmployeeParameter, err error)
 	FindExcEmployee(id uint) (employeeOutput []model.SelectEmployeeParameter, err error)
 	FindEmployeeByDepartment(department int) (employeeOutput []model.SelectEmployeeParameter, err error)
 	FindEmployeeByPosition(group int, division string, department string, position string) (employeeOutput model.SelectEmployeeParameter, err error)
@@ -85,7 +85,7 @@ func (db *EmployeeConnection) FindEmployeeById(id uint) (employeeOutput model.Se
 	return employee, res.Error
 }
 
-func (db *EmployeeConnection) FindEmployeeByNik(nik uint) (employeeOutput model.SelectEmployeeParameter, err error) {
+func (db *EmployeeConnection) FindEmployeeByNik(nik string) (employeeOutput model.SelectEmployeeParameter, err error) {
 	var (
 		employee model.SelectEmployeeParameter
 	)

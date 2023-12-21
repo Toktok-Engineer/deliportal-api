@@ -14,7 +14,7 @@ type EmployeeService interface {
 	SearchEmployee(limit int, offset int, order string, dir string, search string) (employeeOutput []model.SelectEmployeeParameter, err error)
 	CountSearchEmployee(search string) (count int64, err error)
 	FindEmployeeById(id uint) (employeeOutput model.SelectEmployeeParameter, err error)
-	FindEmployeeByNik(nik uint) (employeeOutput model.SelectEmployeeParameter, err error)
+	FindEmployeeByNik(nik string) (employeeOutput model.SelectEmployeeParameter, err error)
 	FindExcEmployee(id uint) (employeeOutput []model.SelectEmployeeParameter, err error)
 	FindEmployeeByDepartment(department int) (employeeOutput []model.SelectEmployeeParameter, err error)
 	FindEmployeeByPosition(group int, division string, department string, position string) (employeeOutput model.SelectEmployeeParameter, err error)
@@ -66,7 +66,7 @@ func (service *employeeService) FindEmployeeById(id uint) (employeeOutput model.
 	return res, err
 }
 
-func (service *employeeService) FindEmployeeByNik(nik uint) (employeeOutput model.SelectEmployeeParameter, err error) {
+func (service *employeeService) FindEmployeeByNik(nik string) (employeeOutput model.SelectEmployeeParameter, err error) {
 	res, err := service.employeeRepository.FindEmployeeByNik(nik)
 	return res, err
 }

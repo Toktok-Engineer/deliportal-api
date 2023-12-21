@@ -221,9 +221,9 @@ func (b *userController) FindUserByUName(c *gin.Context) {
 	var (
 		response helper.Response
 	)
-	UName := c.Param("UName")
+	UName := c.Param("uName")
 	if UName == "" {
-		response = helper.BuildErrorResponse("No param UName was found", "No data with given UName", helper.EmptyObj{})
+		response = helper.BuildErrorResponse("No param uName was found", "No data with given UName", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
 		user, err := b.userService.FindUserByUName(UName)

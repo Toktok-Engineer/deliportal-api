@@ -37,7 +37,7 @@ func (db *employeeLeaveRequestDumpConnection) FindEmployeeLeaveRequestDumps() (b
 	var (
 		businessunits []model.EmployeeLeaveRequestDump
 	)
-	res := db.connection.Where("deleted_at = 0").Order("employee_leave_request_dump_id").Find(&businessunits)
+	res := db.connection.Where("deleted_at = 0").Order("id").Find(&businessunits)
 	return businessunits, res.Error
 }
 
@@ -89,7 +89,7 @@ func (db *employeeLeaveRequestDumpConnection) FindExcEmployeeLeaveRequestDump(id
 	var (
 		employeeLeaveRequestDumps []model.EmployeeLeaveRequestDump
 	)
-	res := db.connection.Where("id!=? AND deleted_at = 0", id).Order("employee_leave_request_dump_id").Find(&employeeLeaveRequestDumps)
+	res := db.connection.Where("id!=? AND deleted_at = 0", id).Order("id").Find(&employeeLeaveRequestDumps)
 	return employeeLeaveRequestDumps, res.Error
 }
 
