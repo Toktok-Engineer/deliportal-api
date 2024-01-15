@@ -3,6 +3,7 @@ package repository
 import (
 	"deliportal-api/model"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -281,7 +282,7 @@ func (db *EmployeeLeaveCreditConnection) FindEmployeeLeaveCreditByEmpId(empid ui
 	var (
 		employee_leave_credit model.EmployeeLeaveCredit
 	)
-	res := db.connection.Where("employee_id=? AND deleted_at = 0", empid).Order("period_year").Take(&employee_leave_credit)
+	res := db.connection.Where("employee_id=? AND period_year = ? AND deleted_at = 0 ", empid, time.Now().Year()).Order("period_year").Take(&employee_leave_credit)
 	return employee_leave_credit, res.Error
 }
 
