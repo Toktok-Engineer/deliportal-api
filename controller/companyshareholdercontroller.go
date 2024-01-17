@@ -22,6 +22,7 @@ type CompanyShareholderController interface {
 	InsertCompanyShareholder(c *gin.Context)
 	UpdateCompanyShareholder(c *gin.Context)
 	DeleteCompanyShareholder(c *gin.Context)
+	ReportCompanyShareholder(c *gin.Context)
 }
 
 type companyShareholderController struct {
@@ -355,6 +356,33 @@ func (b *companyShareholderController) DeleteCompanyShareholder(c *gin.Context) 
 					response = helper.BuildResponse(true, "OK", companyShareholder)
 					c.JSON(http.StatusOK, response)
 				}
+			}
+		}
+	}
+}
+
+func (b *companyShareholderController) ReportCompanyShareholder(c *gin.Context) {
+	var (
+		companyShareholder []model.SelectCompanyShareholderReport
+		response           helper.Response
+	)
+	year, err := strconv.ParseUint(c.Param("year"), 0, 0)
+	if err != nil {
+		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response)
+	} else {
+		groupId, err := strconv.ParseUint(c.Param("groupId"), 0, 0)
+		if err != nil {
+			response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+			c.AbortWithStatusJSON(http.StatusBadRequest, response)
+		} else {
+			companyShareholder, err = b.companyShareholderService.ReportCompanyShareholder(int(year), int(groupId))
+			if err != nil {
+				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, response)
+			} else {
+				response = helper.BuildResponse(true, "OK", companyShareholder)
+				c.JSON(http.StatusOK, response)
 			}
 		}
 	}

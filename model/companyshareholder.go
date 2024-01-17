@@ -49,3 +49,12 @@ type CreateCompanyShareholderParameter struct {
 	UpdatedAt         float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt         float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
 }
+
+type SelectCompanyShareholderReport struct {
+	ID                int     `json:"company_shareholder_id"`
+	CompanyName       string  `gorm:"type:varchar(100);" json:"company_name"`
+	ShareholderName   string  `gorm:"type:varchar(100);not null" json:"shareholder_name"`
+	NumberOfShare     float64 `gorm:"type:double precision;not null" json:"number_of_share"`
+	PercentageOfShare float64 `gorm:"type:double precision;not null" json:"percentage_of_share"`
+	ShareAmount       float64 `gorm:"type:double precision;not null" json:"share_amount"`
+}

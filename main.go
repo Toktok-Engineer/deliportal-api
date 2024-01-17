@@ -504,6 +504,7 @@ func main() {
 		companyShareholderGroup.POST("/", companyShareholderController.InsertCompanyShareholder)
 		companyShareholderGroup.PUT("/:id", companyShareholderController.UpdateCompanyShareholder)
 		companyShareholderGroup.DELETE("/:id", companyShareholderController.DeleteCompanyShareholder)
+		companyShareholderGroup.GET("report/:year/:groupId", companyShareholderController.ReportCompanyShareholder)
 	}
 
 	companyManagementGroup := r.Group("/api/companyManagement", middleware.AuthorizeJWT(jwtService))
@@ -519,6 +520,7 @@ func main() {
 		companyManagementGroup.POST("/", companyManagementController.InsertCompanyManagement)
 		companyManagementGroup.PUT("/:id", companyManagementController.UpdateCompanyManagement)
 		companyManagementGroup.DELETE("/:id", companyManagementController.DeleteCompanyManagement)
+		companyManagementGroup.GET("report/:year/:groupId", companyManagementController.ReportCompanyManagement)
 	}
 
 	companyLicenseGroup := r.Group("/api/companyLicense", middleware.AuthorizeJWT(jwtService))

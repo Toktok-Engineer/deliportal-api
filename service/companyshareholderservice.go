@@ -19,6 +19,7 @@ type CompanyShareholderService interface {
 	InsertCompanyShareholder(companyShareholder model.CreateCompanyShareholderParameter) (companyShareholderOutput model.CompanyShareholder, err error)
 	UpdateCompanyShareholder(companyShareholder model.CompanyShareholder, id uint) (companyShareholderOutput model.CompanyShareholder, err error)
 	DeleteCompanyShareholder(companyShareholder model.CompanyShareholder, id uint) (companyShareholderOutput model.CompanyShareholder, err error)
+	ReportCompanyShareholder(year int, groupId int) (companyShareholderOutput []model.SelectCompanyShareholderReport, err error)
 }
 
 type companyShareholderService struct {
@@ -98,5 +99,10 @@ func (service *companyShareholderService) DeleteCompanyShareholder(companyShareh
 		return newCompanyShareholder, err1
 	}
 	res, err := service.companyShareholderRepository.UpdateCompanyShareholder(newCompanyShareholder, id)
+	return res, err
+}
+
+func (service *companyShareholderService) ReportCompanyShareholder(year int, groupId int) (companyShareholderOutput []model.SelectCompanyShareholderReport, err error) {
+	res, err := service.companyShareholderRepository.ReportCompanyShareholder(year, groupId)
 	return res, err
 }

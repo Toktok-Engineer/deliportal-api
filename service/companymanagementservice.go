@@ -19,6 +19,7 @@ type CompanyManagementService interface {
 	InsertCompanyManagement(companyManagement model.CreateCompanyManagementParameter) (companyManagementOutput model.CompanyManagement, err error)
 	UpdateCompanyManagement(companyManagement model.CompanyManagement, id uint) (companyManagementOutput model.CompanyManagement, err error)
 	DeleteCompanyManagement(companyManagement model.CompanyManagement, id uint) (companyManagementOutput model.CompanyManagement, err error)
+	ReportCompanyManagement(year int, groupId int) (companyManagementOutput []model.SelectCompanyManagementReport, err error)
 }
 
 type companyManagementService struct {
@@ -98,5 +99,10 @@ func (service *companyManagementService) DeleteCompanyManagement(companyManageme
 		return newCompanyManagement, err1
 	}
 	res, err := service.companyManagementRepository.UpdateCompanyManagement(newCompanyManagement, id)
+	return res, err
+}
+
+func (service *companyManagementService) ReportCompanyManagement(year int, groupId int) (companyManagementOutput []model.SelectCompanyManagementReport, err error) {
+	res, err := service.companyManagementRepository.ReportCompanyManagement(year, groupId)
 	return res, err
 }

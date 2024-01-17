@@ -18,6 +18,7 @@ type CompanyManagementRepository interface {
 	FindCompanyManagementByCompanyId(id uint) (companyManagementOutput []model.SelectCompanyManagementParameter, err error)
 	InsertCompanyManagement(companyManagement model.CompanyManagement) (companyManagementOutput model.CompanyManagement, err error)
 	UpdateCompanyManagement(companyManagement model.CompanyManagement, id uint) (companyManagementOutput model.CompanyManagement, err error)
+	ReportCompanyManagement(year int, groupId int) (companyManagementOutput []model.SelectCompanyManagementReport, err error)
 }
 
 type CompanyManagementConnection struct {
@@ -105,5 +106,13 @@ func (db *CompanyManagementConnection) InsertCompanyManagement(companyManagement
 
 func (db *CompanyManagementConnection) UpdateCompanyManagement(companyManagement model.CompanyManagement, id uint) (companyManagementOutput model.CompanyManagement, err error) {
 	res := db.connection.Where("id=?", id).Updates(&companyManagement)
+	return companyManagement, res.Error
+}
+
+func (db *CompanyManagementConnection) ReportCompanyManagement(year int, groupId int) (companyManagementOutput []model.SelectCompanyManagementReport, err error) {
+	var (
+		companyManagement []model.SelectCompanyManagementReport
+	)
+	res := db.connection.Raw("SELECT * FROM public.function_generate_management_excel($1, $2) ORDER BY company_management_id", year, groupId).Find(&companyManagement)
 	return companyManagement, res.Error
 }

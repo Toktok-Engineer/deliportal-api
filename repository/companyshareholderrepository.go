@@ -18,6 +18,7 @@ type CompanyShareholderRepository interface {
 	FindExcCompanyShareholder(id uint) (companyShareholderOutput []model.CompanyShareholder, err error)
 	InsertCompanyShareholder(companyShareholder model.CompanyShareholder) (companyShareholderOutput model.CompanyShareholder, err error)
 	UpdateCompanyShareholder(companyShareholder model.CompanyShareholder, id uint) (companyShareholderOutput model.CompanyShareholder, err error)
+	ReportCompanyShareholder(year int, groupId int) (companyShareholderOutput []model.SelectCompanyShareholderReport, err error)
 }
 
 type CompanyShareholderConnection struct {
@@ -102,5 +103,13 @@ func (db *CompanyShareholderConnection) InsertCompanyShareholder(companySharehol
 
 func (db *CompanyShareholderConnection) UpdateCompanyShareholder(companyShareholder model.CompanyShareholder, id uint) (companyShareholderOutput model.CompanyShareholder, err error) {
 	res := db.connection.Where("id=?", id).Updates(&companyShareholder)
+	return companyShareholder, res.Error
+}
+
+func (db *CompanyShareholderConnection) ReportCompanyShareholder(year int, groupId int) (companyShareholderOutput []model.SelectCompanyShareholderReport, err error) {
+	var (
+		companyShareholder []model.SelectCompanyShareholderReport
+	)
+	res := db.connection.Raw("SELECT * FROM public.function_generate_shareholder_excel($1, $2) ORDER BY company_shareholder_id", year, groupId).Find(&companyShareholder)
 	return companyShareholder, res.Error
 }

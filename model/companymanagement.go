@@ -45,3 +45,10 @@ type CreateCompanyManagementParameter struct {
 	UpdatedAt               float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt               float64 `gorm:"type:double precision;typedefault:null" json:"deleted_at"`
 }
+
+type SelectCompanyManagementReport struct {
+	ID                        int    `json:"company_management_id"`
+	CompanyName               string `gorm:"type:varchar(100);" json:"company_name"`
+	CompanyManagementTypeName string `gorm:"type:varchar(100);not null;unique" json:"company_management_type_name"`
+	ManagementName            string `gorm:"type:varchar(100);not null" json:"management_name"`
+}
