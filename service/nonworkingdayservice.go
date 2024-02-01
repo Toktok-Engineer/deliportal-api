@@ -15,6 +15,10 @@ type NonWorkingDayService interface {
 	FindNonWorkingDaysOffset(limit int, offset int, order string, dir string) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error)
 	SearchNonWorkingDay(limit int, offset int, order string, dir string, search string) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error)
 	CountSearchNonWorkingDay(search string) (count int64, err error)
+	CountNonWorkingDayExPersonalia() (count int64, err error)
+	FindNonWorkingDaysExPersonaliaOffset(limit int, offset int, order string, dir string) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error)
+	SearchNonWorkingDayExPersonalia(limit int, offset int, order string, dir string, search string) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error)
+	CountSearchNonWorkingDayExPersonalia(search string) (count int64, err error)
 	FindNonWorkingDayById(id uint) (nonWorkingDayOutput model.SelectNonWorkingDayParameter, err error)
 	FindExcNonWorkingDay(nwtId uint, id uint) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error)
 	FindNonWorkingDayByNWTId(nwtId uint) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error)
@@ -67,6 +71,25 @@ func (service *nonWorkingDayService) SearchNonWorkingDay(limit int, offset int, 
 
 func (service *nonWorkingDayService) CountSearchNonWorkingDay(search string) (count int64, err error) {
 	res, err := service.nonWorkingDayRepository.CountSearchNonWorkingDay(search)
+	return res, err
+}
+
+func (service *nonWorkingDayService) CountNonWorkingDayExPersonalia() (count int64, err error) {
+	res, err := service.nonWorkingDayRepository.CountNonWorkingDayExPersonalia()
+	return res, err
+}
+func (service *nonWorkingDayService) FindNonWorkingDaysExPersonaliaOffset(limit int, offset int, order string, dir string) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error) {
+	res, err := service.nonWorkingDayRepository.FindNonWorkingDaysExPersonaliaOffset(limit, offset, order, dir)
+	return res, err
+}
+
+func (service *nonWorkingDayService) SearchNonWorkingDayExPersonalia(limit int, offset int, order string, dir string, search string) (nonWorkingDayOutput []model.SelectNonWorkingDayParameter, err error) {
+	res, err := service.nonWorkingDayRepository.SearchNonWorkingDayExPersonalia(limit, offset, order, dir, search)
+	return res, err
+}
+
+func (service *nonWorkingDayService) CountSearchNonWorkingDayExPersonalia(search string) (count int64, err error) {
+	res, err := service.nonWorkingDayRepository.CountSearchNonWorkingDayExPersonalia(search)
 	return res, err
 }
 
