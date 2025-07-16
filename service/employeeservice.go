@@ -21,7 +21,7 @@ type EmployeeService interface {
 	FindEmployeeByDivIdAndDepId(Divid uint, DepId uint) (employeeOutput []model.SelectEmployeeParameter, err error)
 	FindEmployeeByDate(date float64) (employeeOutput []model.SelectEmployeeParameter, err error)
 	InsertEmployee(employee model.CreateEmployeeParameter) (employeeOutput model.Employee, err error)
-	FindEmployeeCuti(group int, section int, division int, department int, position int) (employeeOutput []model.SelectEmployeeCuti, err error)
+	FindEmployeeCuti(group int, subsection int, section int, division int, department int, position int) (employeeOutput []model.SelectEmployeeCuti, err error)
 	UpdateEmployee(employee model.Employee, id uint) (employeeOutput model.Employee, err error)
 	DeleteEmployee(employee model.Employee, id uint) (employeeOutput model.Employee, err error)
 }
@@ -91,8 +91,8 @@ func (service *employeeService) FindEmployeeByDivIdAndDepId(Divid uint, DepId ui
 	return res, err
 }
 
-func (service *employeeService) FindEmployeeCuti(group int, section int, division int, department int, position int) (employeeOutput []model.SelectEmployeeCuti, err error) {
-	res, err := service.employeeRepository.FindEmployeeCuti(group, section, division, department, position)
+func (service *employeeService) FindEmployeeCuti(group int, subsection int, section int, division int, department int, position int) (employeeOutput []model.SelectEmployeeCuti, err error) {
+	res, err := service.employeeRepository.FindEmployeeCuti(group, subsection, section, division, department, position)
 	return res, err
 }
 

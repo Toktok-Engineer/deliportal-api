@@ -11,6 +11,7 @@ type Employee struct {
 	DivisionID    uint    `gorm:"type:bigint;foreign_key;index:" json:"division_id"`
 	DepartmentID  uint    `gorm:"type:bigint;foreign_key;index:" json:"department_id"`
 	SectionID     uint    `gorm:"type:bigint;foreign_key;index:" json:"section_id"`
+	SubSectionID  uint    `gorm:"type:bigint;foreign_key;index:" json:"sub_section_id"`
 	PositionID    uint    `gorm:"type:bigint;foreign_key;index:" json:"position_id"`
 	LocationID    uint    `gorm:"type:bigint;foreign_key;index:" json:"location_id"`
 	Remark        string  `gorm:"type:varchar(200)" json:"remark"`
@@ -38,6 +39,8 @@ type SelectEmployeeParameter struct {
 	DepartmentName string  `gorm:"type:varchar(50);not null;unique" json:"department_name"`
 	SectionID      uint    `gorm:"type:bigint;foreign_key;index:" json:"section_id"`
 	SectionName    string  `gorm:"type:varchar(50);not null;unique" json:"section_name"`
+	SubSectionID   uint    `gorm:"type:bigint;foreign_key;index:" json:"sub_section_id"`
+	SubSectionName string  `gorm:"type:varchar(50);not null;unique" json:"sub_section_name"`
 	PositionID     uint    `gorm:"type:bigint;foreign_key;index:" json:"position_id"`
 	PositionName   string  `gorm:"type:varchar(50);not null;unique" json:"position_name"`
 	LocationID     uint    `gorm:"type:bigint;foreign_key;index:" json:"location_id"`
@@ -76,6 +79,7 @@ type CreateEmployeeParameter struct {
 	DivisionID    uint    `gorm:"type:bigint;foreign_key;index:" json:"division_id"`
 	DepartmentID  uint    `gorm:"type:bigint;foreign_key;index:" json:"department_id"`
 	SectionID     uint    `gorm:"type:bigint;foreign_key;index:" json:"section_id"`
+	SubSectionID  uint    `gorm:"type:bigint;foreign_key;index:" json:"sub_section_id"`
 	PositionID    uint    `gorm:"type:bigint;foreign_key;index:" json:"position_id"`
 	LocationID    uint    `gorm:"type:bigint;foreign_key;index:" json:"location_id"`
 	Remark        string  `gorm:"type:varchar(200)" json:"remark"`

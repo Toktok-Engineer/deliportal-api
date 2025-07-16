@@ -16,6 +16,7 @@ var (
 	divisionRepository                        repository.DivisionRepository                        = repository.NewDivisionRepository(db)
 	departmentRepository                      repository.DepartmentRepository                      = repository.NewDepartmentRepository(db)
 	sectionRepository                         repository.SectionRepository                         = repository.NewSectionRepository(db)
+	subsectionRepository                      repository.SubSectionRepository                      = repository.NewSubSectionRepository(db)
 	positionRepository                        repository.PositionRepository                        = repository.NewPositionRepository(db)
 	locationRepository                        repository.LocationRepository                        = repository.NewLocationRepository(db)
 	employeeRepository                        repository.EmployeeRepository                        = repository.NewEmployeeRepository(db)
@@ -68,6 +69,7 @@ var (
 	divisionService                           service.DivisionService                              = service.NewDivisionService(divisionRepository)
 	departmentService                         service.DepartmentService                            = service.NewDepartmentService(departmentRepository)
 	sectionService                            service.SectionService                               = service.NewSectionService(sectionRepository)
+	subsectionService                         service.SubSectionService                            = service.NewSubSectionService(subsectionRepository)
 	positionService                           service.PositionService                              = service.NewPositionService(positionRepository)
 	locationService                           service.LocationService                              = service.NewLocationService(locationRepository)
 	employeeService                           service.EmployeeService                              = service.NewEmployeeService(employeeRepository)
@@ -121,6 +123,7 @@ var (
 	divisionController                        controller.DivisionController                        = controller.NewDivisionController(divisionService, jwtService)
 	departmentController                      controller.DepartmentController                      = controller.NewDepartmentController(departmentService, jwtService)
 	sectionController                         controller.SectionController                         = controller.NewSectionController(sectionService, jwtService)
+	subsectionController                      controller.SubSectionController                      = controller.NewSubSectionController(subsectionService, jwtService)
 	positionController                        controller.PositionController                        = controller.NewPositionController(positionService, jwtService)
 	locationController                        controller.LocationController                        = controller.NewLocationController(locationService, jwtService)
 	employeeController                        controller.EmployeeController                        = controller.NewEmployeeController(employeeService, jwtService)
@@ -236,6 +239,24 @@ func main() {
 		sectionGroup.DELETE("/:id", sectionController.DeleteSection)
 	}
 
+	subsectionGroup := r.Group("/api/subsection", middleware.AuthorizeJWT(jwtService))
+	{
+		subsectionGroup.GET("/", subsectionController.CountSubSectionAll)
+		subsectionGroup.GET("/all", subsectionController.FindSubSections)
+		subsectionGroup.GET("/list/:limit/:offset/:order/:dir", subsectionController.FindSubSectionsOffset)
+		subsectionGroup.GET("/search/:limit/:offset/:order/:dir/:search", subsectionController.SearchSubSection)
+		subsectionGroup.GET("/countSearch/:search", subsectionController.CountSearchSubSection)
+		subsectionGroup.GET("/:id", subsectionController.FindSubSectionById)
+		subsectionGroup.GET("/exc/:sectionId/:id", subsectionController.FindExcSubSection)
+		subsectionGroup.GET("/bySection/:sectionId", subsectionController.FindSubSectionBySecId)
+		subsectionGroup.GET("/byDepartment/:depId", subsectionController.FindSubSectionByDepId)
+		subsectionGroup.GET("/byDivision/:divId", subsectionController.FindSubSectionByDivisionID)
+		subsectionGroup.GET("/countSectionName/:search", subsectionController.CountSubSectionName)
+		subsectionGroup.POST("/", subsectionController.InsertSubSection)
+		subsectionGroup.PUT("/:id", subsectionController.UpdateSubSection)
+		subsectionGroup.DELETE("/:id", subsectionController.DeleteSubSection)
+	}
+
 	positionGroup := r.Group("/api/position", middleware.AuthorizeJWT(jwtService))
 	{
 		positionGroup.GET("/", positionController.CountPositionAll)
@@ -278,7 +299,7 @@ func main() {
 		employeeGroup.GET("/byPosition/:group/:division/:department/:position", employeeController.FindEmployeeByPosition)
 		employeeGroup.GET("/byDivandDep/:DivId/:DepId", employeeController.FindEmployeeByDivIdAndDepId)
 		employeeGroup.GET("/byDate/:date", employeeController.FindEmployeeByDate)
-		employeeGroup.GET("/cuti/:group/:section/:division/:department/:position", employeeController.FindEmployeeCuti)
+		employeeGroup.GET("/cuti/:group/:subsection/:section/:division/:department/:position", employeeController.FindEmployeeCuti)
 		employeeGroup.POST("/", employeeController.InsertEmployee)
 		employeeGroup.PUT("/:id", employeeController.UpdateEmployee)
 		employeeGroup.DELETE("/:id", employeeController.DeleteEmployee)
