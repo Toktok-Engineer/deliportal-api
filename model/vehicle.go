@@ -8,6 +8,7 @@ type Vehicle struct {
 	VehicleMerkID           uint    `json:"vehicle_merk_id"`
 	VehicleTypeID           uint    `json:"vehicle_type_id"`
 	VehicleRegistrationName string  `gorm:"type:varchar(100);not null" json:"vehicle_registration_name"`
+	NamaPengguna            string  `gorm:"type:varchar(100);" json:"nama_pengguna"`
 	ProductionYear          uint    `gorm:"type:bigint;not null" json:"production_year"`
 	CompanyID               uint    `json:"company_id"`
 	ChassisNumber           string  `gorm:"type:varchar(50);not null" json:"chassis_number"`
@@ -39,6 +40,7 @@ type SelectVehicleParameter struct {
 	VehicleTypeID           uint    `json:"vehicle_type_id"`
 	VehicleTypeName         string  `gorm:"type:varchar(50);not null" json:"vehicle_type_name"`
 	VehicleRegistrationName string  `gorm:"type:varchar(100);not null" json:"vehicle_registration_name"`
+	NamaPengguna            string  `gorm:"type:varchar(100);" json:"nama_pengguna"`
 	ProductionYear          uint    `gorm:"type:bigint;not null" json:"production_year"`
 	CompanyID               uint    `json:"company_id"`
 	CompanyName             string  `gorm:"type:varchar(50);not null" json:"company_name"`
@@ -71,6 +73,7 @@ type CreateVehicleParameter struct {
 	VehicleMerkID           uint    `json:"vehicle_merk_id"`
 	VehicleTypeID           uint    `json:"vehicle_type_id"`
 	VehicleRegistrationName string  `gorm:"type:varchar(100);not null" json:"vehicle_registration_name"`
+	NamaPengguna            string  `gorm:"type:varchar(100);" json:"nama_pengguna"`
 	ProductionYear          uint    `gorm:"type:bigint;not null" json:"production_year"`
 	CompanyID               uint    `json:"company_id"`
 	ChassisNumber           string  `gorm:"type:varchar(50);not null" json:"chassis_number"`

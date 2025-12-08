@@ -35,9 +35,7 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
-	db.AutoMigrate(&model.EmployeeLeaveRequestDump{})
-	db.AutoMigrate(&model.Employee{})
-	db.AutoMigrate(&model.SubSection{})
+	db.AutoMigrate(&model.Vehicle{})
 
 	return db
 }
