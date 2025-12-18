@@ -65,6 +65,11 @@ var (
 	employeeleaverequestapprovalRepository    repository.EmployeeLeaveRequestApprovalRepository    = repository.NewEmployeeLeaveRequestApprovalRepository(db)
 	employeeleaverequesttracingRepository     repository.EmployeeLeaveRequestTracingRepository     = repository.NewEmployeeLeaveRequestTracingRepository(db)
 	employeeLeaveRequestDumpRepository        repository.EmployeeLeaveRequestDumpRepository        = repository.NewEmployeeLeaveRequestDumpRepository(db)
+	asuransiRepository                        repository.AsuransiRepository                        = repository.NewAsuransiRepository(db)
+	asuransiRekeningRepository                repository.AsuransiRekeningRepository                = repository.NewAsuransiRekeningRepository(db)
+	stnkReminderRepository                    repository.STNKReminderRepository                    = repository.NewSTNKReminderRepository(db)
+	asuransiReminderRepository                repository.AsuransiReminderRepository                = repository.NewAsuransiReminderRepository(db)
+	kirReminderRepository                     repository.KIRReminderRepository                     = repository.NewKIRReminderRepository(db)
 	authService                               service.AuthService                                  = service.NewAuthService(userRepository)
 	divisionService                           service.DivisionService                              = service.NewDivisionService(divisionRepository)
 	departmentService                         service.DepartmentService                            = service.NewDepartmentService(departmentRepository)
@@ -118,6 +123,11 @@ var (
 	employeeleaverequestapprovalService       service.EmployeeLeaveRequestApprovalService          = service.NewEmployeeLeaveRequestApprovalService(employeeleaverequestapprovalRepository)
 	employeeleaverequesttracingService        service.EmployeeLeaveRequestTracingService           = service.NewEmployeeLeaveRequestTracingService(employeeleaverequesttracingRepository)
 	employeeLeaveRequestDumpService           service.EmployeeLeaveRequestDumpService              = service.NewEmployeeLeaveRequestDumpService(employeeLeaveRequestDumpRepository)
+	asuransiService                           service.AsuransiService                              = service.NewAsuransiService(asuransiRepository)
+	asuransiRekeningService                   service.AsuransiRekeningService                      = service.NewAsuransiRekeningService(asuransiRekeningRepository)
+	stnkReminderService                       service.STNKReminderService                          = service.NewSTNKReminderService(stnkReminderRepository)
+	asuransiReminderService                   service.AsuransiReminderService                      = service.NewAsuransiReminderService(asuransiReminderRepository)
+	kirReminderService                        service.KIRReminderService                           = service.NewKIRReminderService(kirReminderRepository)
 	jwtService                                service.JWTService                                   = service.NewJWTService()
 	authController                            controller.AuthController                            = controller.NewAuthController(authService, jwtService)
 	divisionController                        controller.DivisionController                        = controller.NewDivisionController(divisionService, jwtService)
@@ -172,6 +182,11 @@ var (
 	employeeleaverequestapprovalController    controller.EmployeeLeaveRequestApprovalController    = controller.NewEmployeeLeaveRequestApprovalController(employeeleaverequestapprovalService, jwtService)
 	employeeleaverequesttracingController     controller.EmployeeLeaveRequestTracingController     = controller.NewEmployeeLeaveRequestTracingController(employeeleaverequesttracingService, jwtService)
 	employeeLeaveRequestDumpController        controller.EmployeeLeaveRequestDumpController        = controller.NewEmployeeLeaveRequestDumpController(employeeLeaveRequestDumpService, jwtService)
+	asuransiController                        controller.AsuransiController                        = controller.NewAsuransiController(asuransiService, jwtService)
+	asuransiRekeningController                controller.AsuransiRekeningController                = controller.NewAsuransiRekeningController(asuransiRekeningService, jwtService)
+	stnkReminderController                    controller.STNKReminderController                    = controller.NewSTNKReminderController(stnkReminderService, jwtService)
+	asuransiReminderController                controller.AsuransiReminderController                = controller.NewAsuransiReminderController(asuransiReminderService, jwtService)
+	kirReminderController                     controller.KIRReminderController                     = controller.NewKIRReminderController(kirReminderService, jwtService)
 )
 
 func main() {
@@ -313,6 +328,7 @@ func main() {
 		userGroup.GET("/search/:limit/:offset/:order/:dir/:search", userController.SearchUser)
 		userGroup.GET("/countSearch/:search", userController.CountSearchUser)
 		userGroup.GET("/:id", userController.FindUserById)
+		userGroup.GET("/employee/:employee_id", userController.FindByEmployeeID)
 		userGroup.GET("/full/:id", userController.FindUsersAll)
 		userGroup.GET("/byNUName/:uName", userController.FindUserByUName)
 		userGroup.GET("/exc/:id", userController.FindExcUser)
@@ -1064,6 +1080,76 @@ func main() {
 		employeeLeaveRequestDumpGroup.POST("/", employeeLeaveRequestDumpController.InsertEmployeeLeaveRequestDump)
 		employeeLeaveRequestDumpGroup.PUT("/:id", employeeLeaveRequestDumpController.UpdateEmployeeLeaveRequestDump)
 		employeeLeaveRequestDumpGroup.DELETE("/:id", employeeLeaveRequestDumpController.DeleteEmployeeLeaveRequestDump)
+	}
+
+	asuransiGroup := r.Group("/api/Asuransi", middleware.AuthorizeJWT(jwtService))
+	{
+		asuransiGroup.GET("/", asuransiController.CountAsuransiAll)
+		asuransiGroup.GET("/all", asuransiController.FindAsuransis)
+		asuransiGroup.GET("/list/:limit/:offset/:order/:dir", asuransiController.FindAsuransisOffset)
+		asuransiGroup.GET("/search/:limit/:offset/:order/:dir/:search", asuransiController.SearchAsuransi)
+		asuransiGroup.GET("/countSearch/:search", asuransiController.CountSearchAsuransi)
+		asuransiGroup.GET("/:id", asuransiController.FindAsuransiById)
+		asuransiGroup.GET("/exc/:id", asuransiController.FindExcAsuransi)
+		asuransiGroup.POST("/", asuransiController.InsertAsuransi)
+		asuransiGroup.PUT("/:id", asuransiController.UpdateAsuransi)
+		asuransiGroup.DELETE("/:id", asuransiController.DeleteAsuransi)
+	}
+
+	asuransiRekeningGroup := r.Group("/api/AsuransiRekening", middleware.AuthorizeJWT(jwtService))
+	{
+		asuransiRekeningGroup.GET("/count/:asuransi_id", asuransiRekeningController.CountAsuransiRekeningAll)
+		asuransiRekeningGroup.GET("/all", asuransiRekeningController.FindAsuransiRekenings)
+		asuransiRekeningGroup.GET("/list/:asuransi_id/:limit/:offset/:order/:dir", asuransiRekeningController.FindAsuransiRekeningsOffset)
+		asuransiRekeningGroup.GET("/search/:asuransi_id/:limit/:offset/:order/:dir/:search", asuransiRekeningController.SearchAsuransiRekening)
+		asuransiRekeningGroup.GET("/countSearch/:asuransi_id/:search", asuransiRekeningController.CountSearchAsuransiRekening)
+		asuransiRekeningGroup.GET("/:id", asuransiRekeningController.FindAsuransiRekeningById)
+		asuransiRekeningGroup.GET("/exc/:id", asuransiRekeningController.FindExcAsuransiRekening)
+		asuransiRekeningGroup.POST("/", asuransiRekeningController.InsertAsuransiRekening)
+		asuransiRekeningGroup.PUT("/:id", asuransiRekeningController.UpdateAsuransiRekening)
+		asuransiRekeningGroup.DELETE("/:id", asuransiRekeningController.DeleteAsuransiRekening)
+	}
+
+	stnkReminderGroup := r.Group("/api/STNKReminder", middleware.AuthorizeJWT(jwtService))
+	{
+		stnkReminderGroup.GET("/count/:vehicle_id", stnkReminderController.CountSTNKReminderAll)
+		stnkReminderGroup.GET("/all", stnkReminderController.FindSTNKReminders)
+		stnkReminderGroup.GET("/list/:vehicle_id/:limit/:offset/:order/:dir", stnkReminderController.FindSTNKRemindersOffset)
+		stnkReminderGroup.GET("/search/:vehicle_id/:limit/:offset/:order/:dir/:search", stnkReminderController.SearchSTNKReminder)
+		stnkReminderGroup.GET("/countSearch/:vehicle_id/:search", stnkReminderController.CountSearchSTNKReminder)
+		stnkReminderGroup.GET("/:id", stnkReminderController.FindSTNKReminderById)
+		stnkReminderGroup.GET("/exc/:id", stnkReminderController.FindExcSTNKReminder)
+		stnkReminderGroup.POST("/", stnkReminderController.InsertSTNKReminder)
+		stnkReminderGroup.PUT("/:id", stnkReminderController.UpdateSTNKReminder)
+		stnkReminderGroup.DELETE("/:id", stnkReminderController.DeleteSTNKReminder)
+	}
+
+	asuransiReminderGroup := r.Group("/api/AsuransiReminder", middleware.AuthorizeJWT(jwtService))
+	{
+		asuransiReminderGroup.GET("/count/:vehicle_id", asuransiReminderController.CountAsuransiReminderAll)
+		asuransiReminderGroup.GET("/all", asuransiReminderController.FindAsuransiReminders)
+		asuransiReminderGroup.GET("/list/:vehicle_id/:limit/:offset/:order/:dir", asuransiReminderController.FindAsuransiRemindersOffset)
+		asuransiReminderGroup.GET("/search/:vehicle_id/:limit/:offset/:order/:dir/:search", asuransiReminderController.SearchAsuransiReminder)
+		asuransiReminderGroup.GET("/countSearch/:vehicle_id/:search", asuransiReminderController.CountSearchAsuransiReminder)
+		asuransiReminderGroup.GET("/:id", asuransiReminderController.FindAsuransiReminderById)
+		asuransiReminderGroup.GET("/exc/:id", asuransiReminderController.FindExcAsuransiReminder)
+		asuransiReminderGroup.POST("/", asuransiReminderController.InsertAsuransiReminder)
+		asuransiReminderGroup.PUT("/:id", asuransiReminderController.UpdateAsuransiReminder)
+		asuransiReminderGroup.DELETE("/:id", asuransiReminderController.DeleteAsuransiReminder)
+	}
+
+	kirReminderGroup := r.Group("/api/KIRReminder", middleware.AuthorizeJWT(jwtService))
+	{
+		kirReminderGroup.GET("/count/:vehicle_id", kirReminderController.CountKIRReminderAll)
+		kirReminderGroup.GET("/all", kirReminderController.FindKIRReminders)
+		kirReminderGroup.GET("/list/:vehicle_id/:limit/:offset/:order/:dir", kirReminderController.FindKIRRemindersOffset)
+		kirReminderGroup.GET("/search/:vehicle_id/:limit/:offset/:order/:dir/:search", kirReminderController.SearchKIRReminder)
+		kirReminderGroup.GET("/countSearch/:vehicle_id/:search", kirReminderController.CountSearchKIRReminder)
+		kirReminderGroup.GET("/:id", kirReminderController.FindKIRReminderById)
+		kirReminderGroup.GET("/exc/:id", kirReminderController.FindExcKIRReminder)
+		kirReminderGroup.POST("/", kirReminderController.InsertKIRReminder)
+		kirReminderGroup.PUT("/:id", kirReminderController.UpdateKIRReminder)
+		kirReminderGroup.DELETE("/:id", kirReminderController.DeleteKIRReminder)
 	}
 
 	tokenGroup := r.Group("/api/token")

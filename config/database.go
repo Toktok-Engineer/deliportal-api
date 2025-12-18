@@ -35,7 +35,13 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
+<<<<<<< HEAD
 	db.AutoMigrate(&model.Vehicle{})
+	db.AutoMigrate(&model.Asuransi{})
+	db.AutoMigrate(&model.AsuransiRekening{})
+	db.AutoMigrate(&model.STNKReminder{})
+	db.AutoMigrate(&model.AsuransiReminder{})
+	db.AutoMigrate(&model.KIRReminder{})
 
 	return db
 }

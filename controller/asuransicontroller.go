@@ -8,44 +8,39 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/go-cmp/cmp"
 )
 
-type UserController interface {
-	CountUserAll(c *gin.Context)
-	FindUsersAll(c *gin.Context)
-	FindUsers(c *gin.Context)
-	FindUsersOffset(c *gin.Context)
-	SearchUser(c *gin.Context)
-	CountSearchUser(c *gin.Context)
-	FindUserById(c *gin.Context)
-	FindUserByUName(c *gin.Context)
-	FindByEmployeeID(c *gin.Context)
-	FindExcUser(c *gin.Context)
-	InsertUser(c *gin.Context)
-	UpdateUser(c *gin.Context)
-	DeleteUser(c *gin.Context)
+type AsuransiController interface {
+	CountAsuransiAll(c *gin.Context)
+	FindAsuransis(c *gin.Context)
+	FindAsuransisOffset(c *gin.Context)
+	SearchAsuransi(c *gin.Context)
+	CountSearchAsuransi(c *gin.Context)
+	FindAsuransiById(c *gin.Context)
+	FindExcAsuransi(c *gin.Context)
+	InsertAsuransi(c *gin.Context)
+	UpdateAsuransi(c *gin.Context)
+	DeleteAsuransi(c *gin.Context)
 }
 
-type userController struct {
-	userService service.UserService
-	jwtService  service.JWTService
+type asuransiController struct {
+	asuransiService service.AsuransiService
+	jwtService         service.JWTService
 }
 
-func NewUserController(userServ service.UserService, jwtServ service.JWTService) UserController {
-	return &userController{
-		userService: userServ,
-		jwtService:  jwtServ,
+func NewAsuransiController(asuransiServ service.AsuransiService, jwtServ service.JWTService) AsuransiController {
+	return &asuransiController{
+		asuransiService: asuransiServ,
+		jwtService:         jwtServ,
 	}
 }
 
-func (b *userController) CountUserAll(c *gin.Context) {
+func (b *asuransiController) CountAsuransiAll(c *gin.Context) {
 	var (
-		count    int64
 		response helper.Response
 	)
 
-	count, err := b.userService.CountUserAll()
+	count, err := b.asuransiService.CountAsuransiAll()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
@@ -55,46 +50,25 @@ func (b *userController) CountUserAll(c *gin.Context) {
 	}
 }
 
-func (b *userController) FindUsersAll(c *gin.Context) {
+func (b *asuransiController) FindAsuransis(c *gin.Context) {
 	var (
-		user     model.SelectUserParameter
-		response helper.Response
+		vehiclemerks []model.Asuransi
+		response     helper.Response
 	)
-	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		user, err = b.userService.FindUsersAll(uint(id))
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", user)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *userController) FindUsers(c *gin.Context) {
-	var (
-		users    []model.SelectUserParameter
-		response helper.Response
-	)
-	users, err := b.userService.FindUsers()
+	vehiclemerks, err := b.asuransiService.FindAsuransis()
 	if err != nil {
 		response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusNotFound, response)
 	} else {
-		response = helper.BuildResponse(true, "OK", users)
+		response = helper.BuildResponse(true, "OK", vehiclemerks)
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func (b *userController) FindUsersOffset(c *gin.Context) {
+func (b *asuransiController) FindAsuransisOffset(c *gin.Context) {
 	var (
-		users    []model.SelectUserParameter
-		response helper.Response
+		vehiclemerks []model.Asuransi
+		response     helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -117,12 +91,12 @@ func (b *userController) FindUsersOffset(c *gin.Context) {
 					response = helper.BuildErrorResponse("No param dir was found", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					users, err = b.userService.FindUsersOffset(int(limit), int(offset), order, dir)
+					vehiclemerks, err = b.asuransiService.FindAsuransisOffset(int(limit), int(offset), order, dir)
 					if err != nil {
 						response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 						c.JSON(http.StatusNotFound, response)
 					} else {
-						response = helper.BuildResponse(true, "OK", users)
+						response = helper.BuildResponse(true, "OK", vehiclemerks)
 						c.JSON(http.StatusOK, response)
 					}
 				}
@@ -131,10 +105,10 @@ func (b *userController) FindUsersOffset(c *gin.Context) {
 	}
 }
 
-func (b *userController) SearchUser(c *gin.Context) {
+func (b *asuransiController) SearchAsuransi(c *gin.Context) {
 	var (
-		users    []model.SelectUserParameter
-		response helper.Response
+		vehiclemerks []model.Asuransi
+		response     helper.Response
 	)
 
 	limit, err := strconv.ParseInt(c.Param("limit"), 0, 0)
@@ -162,12 +136,12 @@ func (b *userController) SearchUser(c *gin.Context) {
 						response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 						c.AbortWithStatusJSON(http.StatusBadRequest, response)
 					} else {
-						users, err = b.userService.SearchUser(int(limit), int(offset), order, dir, search)
+						vehiclemerks, err = b.asuransiService.SearchAsuransi(int(limit), int(offset), order, dir, search)
 						if err != nil {
 							response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 							c.JSON(http.StatusNotFound, response)
 						} else {
-							response = helper.BuildResponse(true, "OK", users)
+							response = helper.BuildResponse(true, "OK", vehiclemerks)
 							c.JSON(http.StatusOK, response)
 						}
 					}
@@ -177,7 +151,7 @@ func (b *userController) SearchUser(c *gin.Context) {
 	}
 }
 
-func (b *userController) CountSearchUser(c *gin.Context) {
+func (b *asuransiController) CountSearchAsuransi(c *gin.Context) {
 	var (
 		response helper.Response
 	)
@@ -186,7 +160,7 @@ func (b *userController) CountSearchUser(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param search was found", "No data with given search", helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		count, err := b.userService.CountSearchUser(search)
+		count, err := b.asuransiService.CountSearchAsuransi(search)
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
@@ -197,150 +171,111 @@ func (b *userController) CountSearchUser(c *gin.Context) {
 	}
 }
 
-func (b *userController) FindUserById(c *gin.Context) {
+func (b *asuransiController) FindAsuransiById(c *gin.Context) {
 	var (
-		user     model.SelectUserParameter
-		response helper.Response
+		asuransi model.Asuransi
+		response    helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		user, err = b.userService.FindUserById(uint(id))
+		asuransi, err = b.asuransiService.FindAsuransiById(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", user)
+			response = helper.BuildResponse(true, "OK", asuransi)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *userController) FindUserByUName(c *gin.Context) {
+func (b *asuransiController) FindExcAsuransi(c *gin.Context) {
 	var (
-		response helper.Response
-	)
-	UName := c.Param("uName")
-	if UName == "" {
-		response = helper.BuildErrorResponse("No param uName was found", "No data with given UName", helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		user, err := b.userService.FindUserByUName(UName)
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", user)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-func (b *userController) FindByEmployeeID(c *gin.Context) {
-	var (
-		response helper.Response
-	)
-	EmployeeID, err := strconv.ParseUint(c.Param("employee_id"), 0, 0)
-	if err != nil {
-		response = helper.BuildErrorResponse("No param employee_id was found", err.Error(), helper.EmptyObj{})
-		c.AbortWithStatusJSON(http.StatusBadRequest, response)
-	} else {
-		user, err := b.userService.FindByEmployeeID(uint(EmployeeID))
-		if err != nil {
-			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusNotFound, response)
-		} else {
-			response = helper.BuildResponse(true, "OK", user)
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func (b *userController) FindExcUser(c *gin.Context) {
-	var (
-		users    []model.SelectUserParameter
-		response helper.Response
+		asuransis []model.Asuransi
+		response     helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		users, err = b.userService.FindExcUser(uint(id))
+		asuransis, err = b.asuransiService.FindExcAsuransi(uint(id))
 		if err != nil {
 			response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", users)
+			response = helper.BuildResponse(true, "OK", asuransis)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *userController) InsertUser(c *gin.Context) {
+func (b *asuransiController) InsertAsuransi(c *gin.Context) {
 	var (
-		user                model.User
-		response            helper.Response
-		CreateUserParameter model.CreateUserParameter
+		asuransi                model.Asuransi
+		response                   helper.Response
+		CreateAsuransiParameter model.CreateAsuransiParameter
 	)
-	err := c.ShouldBindJSON(&CreateUserParameter)
+	err := c.ShouldBindJSON(&CreateAsuransiParameter)
 	if err != nil {
 		response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, response)
 	} else {
-		user, err = b.userService.InsertUser(CreateUserParameter)
+		asuransi, err = b.asuransiService.InsertAsuransi(CreateAsuransiParameter)
 		if err != nil {
-			response = helper.BuildErrorResponse("Failed to register user", err.Error(), helper.EmptyObj{})
-			c.JSON(http.StatusBadRequest, response)
+			response = helper.BuildErrorResponse("Failed to register asuransi", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusNotFound, response)
 		} else {
-			response = helper.BuildResponse(true, "OK", user)
+			response = helper.BuildResponse(true, "OK", asuransi)
 			c.JSON(http.StatusOK, response)
 		}
 	}
 }
 
-func (b *userController) UpdateUser(c *gin.Context) {
+func (b *asuransiController) UpdateAsuransi(c *gin.Context) {
 	var (
-		newData  model.User
-		oldData  model.SelectUserParameter
+		newData  model.Asuransi
+		oldData  model.Asuransi
 		response helper.Response
 	)
-
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
 	if err != nil {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		err := c.ShouldBindJSON(&newData)
+		err = c.ShouldBindJSON(&newData)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.userService.FindUserById(uint(id))
+			oldData, err = b.asuransiService.FindAsuransiById(uint(id))
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+				res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, res)
+			} else if (oldData == model.Asuransi{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				user, err := b.userService.UpdateUser(newData, uint(id))
+				asuransi, err := b.asuransiService.UpdateAsuransi(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to update user", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to update asuransi", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", user)
+					response = helper.BuildResponse(true, "OK", asuransi)
 					c.JSON(http.StatusOK, response)
 				}
 			}
 		}
 	}
 }
-func (b *userController) DeleteUser(c *gin.Context) {
+
+func (b *asuransiController) DeleteAsuransi(c *gin.Context) {
 	var (
-		newData  model.User
-		oldData  model.SelectUserParameter
+		newData  model.Asuransi
+		oldData  model.Asuransi
 		response helper.Response
 	)
 	id, err := strconv.ParseUint(c.Param("id"), 0, 0)
@@ -348,25 +283,25 @@ func (b *userController) DeleteUser(c *gin.Context) {
 		response = helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
 		c.AbortWithStatusJSON(http.StatusBadRequest, response)
 	} else {
-		err := c.ShouldBindJSON(&newData)
+		err = c.ShouldBindJSON(&newData)
 		if err != nil {
 			response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
 			c.AbortWithStatusJSON(http.StatusBadRequest, response)
 		} else {
-			oldData, err = b.userService.FindUserById(uint(id))
+			oldData, err = b.asuransiService.FindAsuransiById(uint(id))
 			if err != nil {
-				response = helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
-				c.JSON(http.StatusNotFound, response)
-			} else if (cmp.Equal(oldData, model.SelectEmployeeParameter{})) {
+				res := helper.BuildErrorResponse("Failed to process request", err.Error(), helper.EmptyObj{})
+				c.JSON(http.StatusNotFound, res)
+			} else if (oldData == model.Asuransi{}) {
 				response = helper.BuildErrorResponse("Data not found", err.Error(), helper.EmptyObj{})
 				c.JSON(http.StatusNotFound, response)
 			} else {
-				user, err := b.userService.DeleteUser(newData, uint(id))
+				asuransi, err := b.asuransiService.DeleteAsuransi(newData, uint(id))
 				if err != nil {
-					response = helper.BuildErrorResponse("Failed to delete user", err.Error(), helper.EmptyObj{})
+					response = helper.BuildErrorResponse("Failed to delete asuransi", err.Error(), helper.EmptyObj{})
 					c.AbortWithStatusJSON(http.StatusBadRequest, response)
 				} else {
-					response = helper.BuildResponse(true, "OK", user)
+					response = helper.BuildResponse(true, "OK", asuransi)
 					c.JSON(http.StatusOK, response)
 				}
 			}
