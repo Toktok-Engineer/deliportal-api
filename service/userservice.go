@@ -16,6 +16,7 @@ type UserService interface {
 	CountSearchUser(search string) (count int64, err error)
 	FindUserById(id uint) (userOutput model.SelectUserParameter, err error)
 	FindUserByUName(uName string) (userOutput model.SelectUserParameter, err error)
+	FindByEmployeeID(employeeID uint) (userOutput model.SelectUserParameter, err error)
 	FindExcUser(id uint) (userOutput []model.SelectUserParameter, err error)
 	InsertUser(user model.CreateUserParameter) (userOutput model.User, err error)
 	UpdateUser(user model.User, id uint) (userOutput model.User, err error)
@@ -69,6 +70,11 @@ func (service *userService) FindUserById(id uint) (userOutput model.SelectUserPa
 
 func (service *userService) FindUserByUName(uName string) (userOutput model.SelectUserParameter, err error) {
 	res, err := service.userRepository.FindUserByUName(uName)
+	return res, err
+}
+
+func (service *userService) FindByEmployeeID(employeeID uint) (userOutput model.SelectUserParameter, err error) {
+	res, err := service.userRepository.FindByEmployeeID(employeeID)
 	return res, err
 }
 

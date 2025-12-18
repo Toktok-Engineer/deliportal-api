@@ -18,9 +18,12 @@ type Vehicle struct {
 	MachineNumber           string  `gorm:"type:varchar(50);not null" json:"machine_number"`
 	OriginalBPKBStorage     string  `gorm:"type:varchar(50);not null" json:"original_bpkb_storage"`
 	BPKBNumber              string  `gorm:"type:varchar(50);not null" json:"bpkb_number"`
-	STNKEndDate             float64 `gorm:"type:double precision;" json:"stnk_end_date"`
-	TaxSTNKEndDate          float64 `gorm:"type:double precision;" json:"tax_stnk_end_date"`
-	KIREndDate              float64 `gorm:"type:double precision;" json:"kir_end_date"`
+	Price                   float64 `gorm:"type:double precision" json:"price"`
+	Flag                    string  `gorm:"type:varchar(50);not null" json:"flag"`
+	NamaPTPembiayaan        uint    `json:"nama_pt_pembiayaan"`
+	FlagReminder            uint    `json:"flag_reminder"`
+	Status                  string  `json:"status"`
+	EmailPengguna           string  `gorm:"type:varchar(100);not null" json:"email_pengguna"`
 	LocationID              uint    `json:"location_id"`
 	Remark                  string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserID           uint    `gorm:"type:bigint;not null" json:"created_user_id"`
@@ -29,7 +32,6 @@ type Vehicle struct {
 	CreatedAt               float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt               float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt               float64 `gorm:"type:double precision;" json:"deleted_at"`
-	Price                   float64 `gorm:"type:double precision" json:"price"`
 }
 
 type SelectVehicleParameter struct {
@@ -54,9 +56,12 @@ type SelectVehicleParameter struct {
 	MachineNumber           string  `gorm:"type:varchar(50);not null" json:"machine_number"`
 	OriginalBPKBStorage     string  `gorm:"type:varchar(50);not null" json:"original_bpkb_storage"`
 	BPKBNumber              string  `gorm:"type:varchar(50);not null" json:"bpkb_number"`
-	STNKEndDate             string  `gorm:"type:varchar(100);" json:"stnk_end_date"`
-	TaxSTNKEndDate          string  `gorm:"type:varchar(100);" json:"tax_stnk_end_date"`
-	KIREndDate              string  `gorm:"type:varchar(100);" json:"kir_end_date"`
+	Price                   float64 `gorm:"type:double precision" json:"price"`
+	Flag                    string  `gorm:"type:varchar(50);not null" json:"flag"`
+	NamaPTPembiayaan        string  `json:"nama_pt_pembiayaan"`
+	FlagReminder            uint    `json:"flag_reminder"`
+	Status                  string  `json:"status"`
+	EmailPengguna           string  `gorm:"type:varchar(100);not null" json:"email_pengguna"`
 	LocationID              uint    `json:"location_id"`
 	LocationName            string  `gorm:"type:varchar(50);not null" json:"location_name"`
 	Remark                  string  `gorm:"type:varchar(200)" json:"remark"`
@@ -69,7 +74,6 @@ type SelectVehicleParameter struct {
 	CreatedAt               string  `gorm:"type:varchar(100);not null" json:"created_at"`
 	UpdatedAt               string  `gorm:"type:varchar(100);not null" json:"updated_at"`
 	DeletedAt               string  `gorm:"type:varchar(100);typedefault:null" json:"deleted_at"`
-	Price                   float64 `gorm:"type:double precision" json:"price"`
 }
 
 type CreateVehicleParameter struct {
@@ -89,9 +93,12 @@ type CreateVehicleParameter struct {
 	MachineNumber           string  `gorm:"type:varchar(50);not null" json:"machine_number"`
 	OriginalBPKBStorage     string  `gorm:"type:varchar(50);not null" json:"original_bpkb_storage"`
 	BPKBNumber              string  `gorm:"type:varchar(50);not null" json:"bpkb_number"`
-	STNKEndDate             float64 `gorm:"type:double precision;" json:"stnk_end_date"`
-	TaxSTNKEndDate          float64 `gorm:"type:double precision;" json:"tax_stnk_end_date"`
-	KIREndDate              float64 `gorm:"type:double precision;" json:"kir_end_date"`
+	Price                   float64 `gorm:"type:double precision" json:"price"`
+	Flag                    string  `gorm:"type:varchar(50);not null" json:"flag"`
+	NamaPTPembiayaan        uint    `json:"nama_pt_pembiayaan"`
+	FlagReminder            uint    `json:"flag_reminder"`
+	Status                  string  `json:"status"`
+	EmailPengguna           string  `gorm:"type:varchar(100);not null" json:"email_pengguna"`
 	LocationID              uint    `json:"location_id"`
 	Remark                  string  `gorm:"type:varchar(200)" json:"remark"`
 	CreatedUserID           uint    `gorm:"type:bigint;not null" json:"created_user_id"`
@@ -100,5 +107,4 @@ type CreateVehicleParameter struct {
 	CreatedAt               float64 `gorm:"type:double precision;not null" json:"created_at"`
 	UpdatedAt               float64 `gorm:"type:double precision;not null" json:"updated_at"`
 	DeletedAt               float64 `gorm:"type:double precision;" json:"deleted_at"`
-	Price                   float64 `gorm:"type:double precision" json:"price"`
 }
