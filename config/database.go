@@ -35,7 +35,13 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
+<<<<<<< HEAD
 	db.AutoMigrate(&model.Vehicle{})
+=======
+	db.AutoMigrate(&model.EmployeeLeaveRequestDump{})
+	db.AutoMigrate(&model.Employee{})
+	db.AutoMigrate(&model.SubSection{})
+>>>>>>> 7a97ae3 (Clean initial commit)
 
 	return db
 }
