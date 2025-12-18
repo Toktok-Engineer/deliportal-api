@@ -35,7 +35,6 @@ func ConnectDataBase() *gorm.DB {
 	}
 
 	db.AutoMigrate()
-<<<<<<< HEAD
 	db.AutoMigrate(&model.Vehicle{})
 	db.AutoMigrate(&model.Asuransi{})
 	db.AutoMigrate(&model.AsuransiRekening{})
