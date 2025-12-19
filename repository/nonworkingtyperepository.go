@@ -32,7 +32,7 @@ func NewNonWorkingTypeRepository(db *gorm.DB) NonWorkingTypeRepository {
 }
 
 func (db *NonWorkingTypeConnection) CountNonWorkingTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("non_working_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("non_working_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -68,7 +68,7 @@ func (db *NonWorkingTypeConnection) SearchNonWorkingType(limit int, offset int, 
 
 func (db *NonWorkingTypeConnection) CountSearchNonWorkingType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("non_working_types").Where("(lower(non_working_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("non_working_types").Where("(lower(non_working_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 
@@ -82,7 +82,7 @@ func (db *NonWorkingTypeConnection) FindNonWorkingTypeById(id uint) (nonworkingt
 
 func (db *NonWorkingTypeConnection) CountNonWorkingTypeName(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("non_working_types").Where("lower(non_working_type_name) LIKE ?", final).Count(&count)
+	res := db.connection.Table("non_working_types").Where("lower(non_working_type_name) LIKE ?", final).Count(&count)
 	return count, res.Error
 }
 

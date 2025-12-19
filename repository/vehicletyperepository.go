@@ -29,7 +29,7 @@ func NewVehicleTypeRepository(db *gorm.DB) VehicleTypeRepository {
 	}
 }
 func (db *vehicleTypeConnection) CountVehicleTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("vehicle_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("vehicle_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *vehicleTypeConnection) SearchVehicleType(limit int, offset int, order 
 
 func (db *vehicleTypeConnection) CountSearchVehicleType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("vehicle_types").Where("(lower(vehicle_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("vehicle_types").Where("(lower(vehicle_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

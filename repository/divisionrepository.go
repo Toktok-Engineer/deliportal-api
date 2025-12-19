@@ -31,7 +31,7 @@ func NewDivisionRepository(db *gorm.DB) DivisionRepository {
 }
 
 func (db *DivisionConnection) CountDivisionAll() (count int64, err error) {
-	res := db.connection.Debug().Table("divisions").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("divisions").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -67,7 +67,7 @@ func (db *DivisionConnection) SearchDivision(limit int, offset int, order string
 
 func (db *DivisionConnection) CountSearchDivision(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("divisions").Where("(lower(division_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("divisions").Where("(lower(division_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 
@@ -81,7 +81,7 @@ func (db *DivisionConnection) FindDivisionById(id uint) (divisionOutput model.Di
 
 func (db *DivisionConnection) CountDivisionName(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("divisions").Where("lower(division_name) LIKE ?", final).Count(&count)
+	res := db.connection.Table("divisions").Where("lower(division_name) LIKE ?", final).Count(&count)
 	return count, res.Error
 }
 

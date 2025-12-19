@@ -29,7 +29,7 @@ func NewVehicleMerkRepository(db *gorm.DB) VehicleMerkRepository {
 	}
 }
 func (db *vehicleMerkConnection) CountVehicleMerkAll() (count int64, err error) {
-	res := db.connection.Debug().Table("vehicle_merks").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("vehicle_merks").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *vehicleMerkConnection) SearchVehicleMerk(limit int, offset int, order 
 
 func (db *vehicleMerkConnection) CountSearchVehicleMerk(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("vehicle_merks").Where("(lower(vehicle_merk_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("vehicle_merks").Where("(lower(vehicle_merk_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

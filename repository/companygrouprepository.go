@@ -29,7 +29,7 @@ func NewCompanyGroupRepository(db *gorm.DB) CompanyGroupRepository {
 	}
 }
 func (db *companyGroupConnection) CountCompanyGroupAll() (count int64, err error) {
-	res := db.connection.Debug().Table("company_groups").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("company_groups").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *companyGroupConnection) SearchCompanyGroup(limit int, offset int, orde
 
 func (db *companyGroupConnection) CountSearchCompanyGroup(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("company_groups").Where("(lower(company_group_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("company_groups").Where("(lower(company_group_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

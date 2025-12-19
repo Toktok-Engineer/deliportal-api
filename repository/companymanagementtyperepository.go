@@ -30,7 +30,7 @@ func NewCompanyManagementTypeRepository(db *gorm.DB) CompanyManagementTypeReposi
 }
 
 func (db *CompanyManagementTypeConnection) CountCompanyManagementTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("company_management_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("company_management_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -66,7 +66,7 @@ func (db *CompanyManagementTypeConnection) SearchCompanyManagementType(limit int
 
 func (db *CompanyManagementTypeConnection) CountSearchCompanyManagementType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("company_management_types").Where("(lower(company_management_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("company_management_types").Where("(lower(company_management_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

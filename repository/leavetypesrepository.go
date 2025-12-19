@@ -31,7 +31,7 @@ func NewLeaveTypeRepository(db *gorm.DB) LeaveTypesRepository {
 }
 
 func (db *LeaveTypeConnection) CountLeaveTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("leave_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("leave_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -67,7 +67,7 @@ func (db *LeaveTypeConnection) SearchLeaveType(limit int, offset int, order stri
 
 func (db *LeaveTypeConnection) CountSearchLeaveType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("leave_types").Where("(lower(leave_type_name) LIKE ? OR lower(limits::varchar(50)) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final).Count(&count)
+	res := db.connection.Table("leave_types").Where("(lower(leave_type_name) LIKE ? OR lower(limits::varchar(50)) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final).Count(&count)
 	return count, res.Error
 }
 
@@ -81,7 +81,7 @@ func (db *LeaveTypeConnection) FindLeaveTypeById(id uint) (leavetypesOutput mode
 
 func (db *LeaveTypeConnection) CountLeaveTypeName(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("leave_types").Where("lower(leave_type_name) LIKE ?", final).Count(&count)
+	res := db.connection.Table("leave_types").Where("lower(leave_type_name) LIKE ?", final).Count(&count)
 	return count, res.Error
 }
 

@@ -29,7 +29,7 @@ func NewGroupLicenseTypeRepository(db *gorm.DB) GroupLicenseTypeRepository {
 	}
 }
 func (db *groupLicenseTypeConnection) CountGroupLicenseTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("group_license_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("group_license_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *groupLicenseTypeConnection) SearchGroupLicenseType(limit int, offset i
 
 func (db *groupLicenseTypeConnection) CountSearchGroupLicenseType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("group_license_types").Where("(lower(group_license_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("group_license_types").Where("(lower(group_license_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

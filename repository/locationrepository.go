@@ -30,7 +30,7 @@ func NewLocationRepository(db *gorm.DB) LocationRepository {
 }
 
 func (db *LocationConnection) CountLocationAll() (count int64, err error) {
-	res := db.connection.Debug().Table("locations").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("locations").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -66,7 +66,7 @@ func (db *LocationConnection) SearchLocation(limit int, offset int, order string
 
 func (db *LocationConnection) CountSearchLocation(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("locations").Where("(lower(location_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("locations").Where("(lower(location_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

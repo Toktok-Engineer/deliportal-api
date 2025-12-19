@@ -29,7 +29,7 @@ func NewEmployeeLeaveRequestDumpRepository(db *gorm.DB) EmployeeLeaveRequestDump
 	}
 }
 func (db *employeeLeaveRequestDumpConnection) CountEmployeeLeaveRequestDumpAll() (count int64, err error) {
-	res := db.connection.Debug().Table("employee_leave_request_dumps").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("employee_leave_request_dumps").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *employeeLeaveRequestDumpConnection) FindEmployeeLeaveRequestDumpsOffse
 
 // func (db *employeeLeaveRequestDumpConnection) CountSearchEmployeeLeaveRequestDump(search string) (count int64, err error) {
 // 	final := "%" + strings.ToLower(search) + "%"
-// 	res := db.connection.Debug().Table("business_units").Where("(lower(business_unit_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+// 	res := db.connection.Table("business_units").Where("(lower(business_unit_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 // 	return count, res.Error
 // }
 
