@@ -30,7 +30,7 @@ func NewRoleRepository(db *gorm.DB) RoleRepository {
 }
 
 func (db *RoleConnection) CountRoleAll() (count int64, err error) {
-	res := db.connection.Debug().Table("roles").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("roles").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -66,7 +66,7 @@ func (db *RoleConnection) SearchRole(limit int, offset int, order string, dir st
 
 func (db *RoleConnection) CountSearchRole(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("roles").Where("(lower(role_code) LIKE ? OR lower(role_description) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final).Count(&count)
+	res := db.connection.Table("roles").Where("(lower(role_code) LIKE ? OR lower(role_description) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final).Count(&count)
 	return count, res.Error
 }
 

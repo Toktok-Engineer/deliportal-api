@@ -26,7 +26,7 @@ func NewEmployeeLeaveRequestTracingRepository(db *gorm.DB) EmployeeLeaveRequestT
 }
 
 func (db *employeeLeaveRequestTracingConnection) CountEmployeeLeaveRequestTracingAll(employeeLeaveRequestId int) (count int64, err error) {
-	res := db.connection.Debug().Table("employee_leave_request_tracings").Where("employee_leave_request_id = ? AND deleted_at = 0", employeeLeaveRequestId).Count(&count)
+	res := db.connection.Table("employee_leave_request_tracings").Where("employee_leave_request_id = ? AND deleted_at = 0", employeeLeaveRequestId).Count(&count)
 	return count, res.Error
 }
 

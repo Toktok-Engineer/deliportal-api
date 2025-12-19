@@ -29,7 +29,7 @@ func NewSTNKReminderRepository(db *gorm.DB) STNKReminderRepository {
 	}
 }
 func (db *stnkReminderConnection) CountSTNKReminderAll(vehicleID int) (count int64, err error) {
-	res := db.connection.Debug().Table("stnk_reminders").Where("deleted_at = 0 AND vehicle_id = ?", vehicleID).Count(&count)
+	res := db.connection.Table("stnk_reminders").Where("deleted_at = 0 AND vehicle_id = ?", vehicleID).Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *stnkReminderConnection) SearchSTNKReminder(vehicleID int, limit int, o
 
 func (db *stnkReminderConnection) CountSearchSTNKReminder(vehicleID int, search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("stnk_reminders").Where("(lower(to_char(to_timestamp(stnk_end_date::numeric), 'DD-Mon-YYYY')) LIKE ?) AND deleted_at = 0 AND vehicle_id = ?", final, vehicleID).Count(&count)
+	res := db.connection.Table("stnk_reminders").Where("(lower(to_char(to_timestamp(stnk_end_date::numeric), 'DD-Mon-YYYY')) LIKE ?) AND deleted_at = 0 AND vehicle_id = ?", final, vehicleID).Count(&count)
 	return count, res.Error
 }
 

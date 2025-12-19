@@ -26,7 +26,7 @@ func NewInternalMemoTracingRepository(db *gorm.DB) InternalMemoTracingRepository
 }
 
 func (db *internalMemoTracingConnection) CountInternalMemoTracingAll(internalMemoId int) (count int64, err error) {
-	res := db.connection.Debug().Table("internal_memo_tracings").Where("internal_memo_id = ? AND deleted_at = 0", internalMemoId).Count(&count)
+	res := db.connection.Table("internal_memo_tracings").Where("internal_memo_id = ? AND deleted_at = 0", internalMemoId).Count(&count)
 	return count, res.Error
 }
 

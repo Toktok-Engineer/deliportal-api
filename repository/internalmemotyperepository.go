@@ -29,7 +29,7 @@ func NewInternalMemoTypeRepository(db *gorm.DB) InternalMemoTypeRepository {
 	}
 }
 func (db *internalMemoTypeConnection) CountInternalMemoTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("internal_memo_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("internal_memo_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *internalMemoTypeConnection) SearchInternalMemoType(limit int, offset i
 
 func (db *internalMemoTypeConnection) CountSearchInternalMemoType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("internal_memo_types").Where("(lower(internal_memo_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("internal_memo_types").Where("(lower(internal_memo_type_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

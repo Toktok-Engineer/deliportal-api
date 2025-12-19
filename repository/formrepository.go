@@ -39,7 +39,7 @@ func NewFormRepository(db *gorm.DB) FormRepository {
 }
 
 func (db *FormConnection) CountFormAll() (count int64, err error) {
-	res := db.connection.Debug().Table("forms").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("forms").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -47,7 +47,7 @@ func (db *FormConnection) FindForms() (formOutput []model.SelectFormParameter, e
 	var (
 		forms []model.SelectFormParameter
 	)
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order("forms.form_code").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order("forms.form_code").Find(&forms)
 	return forms, res.Error
 }
 
@@ -57,7 +57,7 @@ func (db *FormConnection) FindFormsOffset(limit int, offset int, order string, d
 		forms          []model.SelectFormParameter
 	)
 	orderDirection = order + " " + dir
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&forms)
 	return forms, res.Error
 }
 
@@ -69,13 +69,13 @@ func (db *FormConnection) SearchForm(limit int, offset int, order string, dir st
 	)
 	orderDirection = order + " " + dir
 	final = "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&forms)
 	return forms, res.Error
 }
 
 func (db *FormConnection) CountSearchForm(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Count(&count)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("(lower(forms.form_php) LIKE ? OR lower(forms.form_code) LIKE ? OR lower(forms.form_description) LIKE ? OR lower(form_types.Form_type_code) LIKE ? OR lower(form_types.form_type_description) LIKE ? OR lower(forms.remark) LIKE ?) AND forms.deleted_at = 0", final, final, final, final, final, final).Count(&count)
 	return count, res.Error
 }
 
@@ -84,7 +84,7 @@ func (db *FormConnection) FindFormJoinRole(uId uint, fpId uint) (formOutput []mo
 		forms []model.SelectFormCRUDParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at, bool_or(role_forms.create_flag) AS \"create_flag\", bool_or(role_forms.read_flag) AS \"read_flag\", bool_or(role_forms.update_flag) AS \"update_flag\", bool_or(role_forms.delete_flag) AS \"delete_flag\"").Joins("left join form_types ON forms.form_type_id = form_types.id").Joins("left join role_forms ON forms.id = role_forms.form_id").Joins("left join user_roles ON role_forms.role_id = user_roles.role_id").Where("user_roles.user_id = ? AND forms.form_parent_id = ? AND role_forms.deleted_at = 0", uId, fpId).Group("forms.id, form_types.Form_type_code, form_types.form_type_description").Order("forms.sequence_no").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at, bool_or(role_forms.create_flag) AS \"create_flag\", bool_or(role_forms.read_flag) AS \"read_flag\", bool_or(role_forms.update_flag) AS \"update_flag\", bool_or(role_forms.delete_flag) AS \"delete_flag\"").Joins("left join form_types ON forms.form_type_id = form_types.id").Joins("left join role_forms ON forms.id = role_forms.form_id").Joins("left join user_roles ON role_forms.role_id = user_roles.role_id").Where("user_roles.user_id = ? AND forms.form_parent_id = ? AND role_forms.deleted_at = 0", uId, fpId).Group("forms.id, form_types.Form_type_code, form_types.form_type_description").Order("forms.sequence_no").Find(&forms)
 	return forms, res.Error
 }
 
@@ -93,7 +93,7 @@ func (db *FormConnection) FindFormByRole(uId uint) (formOutput []model.SelectFor
 		forms []model.SelectFormCRUDParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at, bool_or(role_forms.create_flag) AS \"create_flag\", bool_or(role_forms.read_flag) AS \"read_flag\", bool_or(role_forms.update_flag) AS \"update_flag\", bool_or(role_forms.delete_flag) AS \"delete_flag\"").Joins("left join form_types ON forms.form_type_id = form_types.id").Joins("left join role_forms ON forms.id = role_forms.form_id").Joins("left join user_roles ON role_forms.role_id = user_roles.role_id").Where("user_roles.user_id = ? AND role_forms.deleted_at = 0", uId).Group("forms.id, form_types.Form_type_code, form_types.form_type_description").Order("forms.sequence_no").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at, bool_or(role_forms.create_flag) AS \"create_flag\", bool_or(role_forms.read_flag) AS \"read_flag\", bool_or(role_forms.update_flag) AS \"update_flag\", bool_or(role_forms.delete_flag) AS \"delete_flag\"").Joins("left join form_types ON forms.form_type_id = form_types.id").Joins("left join role_forms ON forms.id = role_forms.form_id").Joins("left join user_roles ON role_forms.role_id = user_roles.role_id").Where("user_roles.user_id = ? AND role_forms.deleted_at = 0", uId).Group("forms.id, form_types.Form_type_code, form_types.form_type_description").Order("forms.sequence_no").Find(&forms)
 	return forms, res.Error
 }
 
@@ -102,7 +102,7 @@ func (db *FormConnection) FindFormByType(tyId uint) (formOutput []model.SelectFo
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id BETWEEN ? AND ? AND forms.deleted_at = 0", tyId, tyId).Order("forms.sequence_no").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id BETWEEN ? AND ? AND forms.deleted_at = 0", tyId, tyId).Order("forms.sequence_no").Find(&forms)
 	return forms, res.Error
 }
 
@@ -111,7 +111,7 @@ func (db *FormConnection) FindExcFormByType(tyId uint, id uint) (formOutput []mo
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id BETWEEN ? AND ? AND forms.id!=? AND forms.deleted_at = 0", tyId, tyId, id).Order("forms.sequence_no").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id BETWEEN ? AND ? AND forms.id!=? AND forms.deleted_at = 0", tyId, tyId, id).Order("forms.sequence_no").Find(&forms)
 	return forms, res.Error
 }
 
@@ -120,7 +120,7 @@ func (db *FormConnection) FindFormById(id uint) (formOutput model.SelectFormPara
 		form model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id=? AND forms.deleted_at = 0", id).Order("forms.id").Take(&form)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id=? AND forms.deleted_at = 0", id).Order("forms.id").Take(&form)
 	return form, res.Error
 }
 
@@ -129,7 +129,7 @@ func (db *FormConnection) FindFormByFormTypeId(ftId uint) (formOutput []model.Se
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id=? AND forms.deleted_at = 0", ftId).Order("forms.id").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id=? AND forms.deleted_at = 0", ftId).Order("forms.id").Find(&forms)
 	return forms, res.Error
 }
 
@@ -138,7 +138,7 @@ func (db *FormConnection) FindExcForm(ftId uint, id uint) (formOutput []model.Se
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id = ? AND forms.id!=? AND forms.deleted_at = 0", ftId, id).Order("forms.form_code").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id = ? AND forms.id!=? AND forms.deleted_at = 0", ftId, id).Order("forms.form_code").Find(&forms)
 	return forms, res.Error
 }
 
@@ -147,7 +147,7 @@ func (db *FormConnection) FindFormHeadDetail(id uint) (formOutput model.SelectFo
 		form model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id=? AND forms.deleted_at = 0", id).Order("forms.form_code").Take(&form)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id=? AND forms.deleted_at = 0", id).Order("forms.form_code").Take(&form)
 	return form, res.Error
 }
 
@@ -156,7 +156,7 @@ func (db *FormConnection) FindFormHead(ftId uint) (formOutput []model.SelectForm
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id=? AND forms.deleted_at = 0", ftId).Order("forms.form_code").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.form_type_id=? AND forms.deleted_at = 0", ftId).Order("forms.form_code").Find(&forms)
 	return forms, res.Error
 }
 
@@ -165,7 +165,7 @@ func (db *FormConnection) FindExcFormHead(id uint) (formOutput []model.SelectFor
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id!=? AND forms.form_type_id = 1 AND forms.deleted_at = 0", id).Order("forms.form_code").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id!=? AND forms.form_type_id = 1 AND forms.deleted_at = 0", id).Order("forms.form_code").Find(&forms)
 	return forms, res.Error
 }
 
@@ -174,7 +174,7 @@ func (db *FormConnection) FindExcFormOnly(id uint) (formOutput []model.SelectFor
 		forms []model.SelectFormParameter
 	)
 
-	res := db.connection.Debug().Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id!=? AND forms.deleted_at = 0", id).Order("forms.form_code").Find(&forms)
+	res := db.connection.Table("forms").Select("forms.id, forms.form_php, forms.form_code, forms.form_description, forms.form_type_id, form_types.Form_type_code, form_types.form_type_description, forms.form_parent_id, forms.sequence_no, forms.class_tag, forms.remark, forms.created_user_id, forms.updated_user_id, forms.deleted_user_id, forms.created_at, forms.updated_at, forms.deleted_at").Joins("left join form_types ON forms.form_type_id = form_types.id").Where("forms.id!=? AND forms.deleted_at = 0", id).Order("forms.form_code").Find(&forms)
 	return forms, res.Error
 }
 

@@ -29,7 +29,7 @@ func NewVehicleLicenseTypeRepository(db *gorm.DB) VehicleLicenseTypeRepository {
 	}
 }
 func (db *vehicleLicenseTypeConnection) CountVehicleLicenseTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("vehicle_license_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("vehicle_license_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *vehicleLicenseTypeConnection) SearchVehicleLicenseType(limit int, offs
 
 func (db *vehicleLicenseTypeConnection) CountSearchVehicleLicenseType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("vehicle_license_types").Where("(lower(vehicle_license_type_name) LIKE ? OR lower(reminder_first_month::TEXT) LIKE ? OR lower(reminder_month::TEXT) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final, final).Count(&count)
+	res := db.connection.Table("vehicle_license_types").Where("(lower(vehicle_license_type_name) LIKE ? OR lower(reminder_first_month::TEXT) LIKE ? OR lower(reminder_month::TEXT) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final, final).Count(&count)
 	return count, res.Error
 }
 

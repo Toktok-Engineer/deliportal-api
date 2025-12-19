@@ -29,7 +29,7 @@ func NewAsuransiReminderRepository(db *gorm.DB) AsuransiReminderRepository {
 	}
 }
 func (db *asuransiReminderConnection) CountAsuransiReminderAll(vehicleID int) (count int64, err error) {
-	res := db.connection.Debug().Table("asuransi_reminders").Where("asuransi_reminders.deleted_at = 0 AND asuransi_reminders.vehicle_id = ?", vehicleID).Count(&count)
+	res := db.connection.Table("asuransi_reminders").Where("asuransi_reminders.deleted_at = 0 AND asuransi_reminders.vehicle_id = ?", vehicleID).Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *asuransiReminderConnection) SearchAsuransiReminder(vehicleID int, limi
 
 func (db *asuransiReminderConnection) CountSearchAsuransiReminder(vehicleID int, search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("asuransi_reminders").Select("asuransi_reminders.id, asuransi_reminders.vehicle_id, to_char(to_timestamp(asuransi_end_date::numeric), 'DD-Mon-YYYY') as asuransi_end_date, asuransi_reminders.asuransi_id, asuransis.asuransi_name, asuransi_reminders.nomor_polis, asuransi_reminders.status, asuransi_reminders.price , asuransi_reminders.bukti_bayar").Joins("left join asuransis ON asuransis.id = asuransi_reminders.asuransi_id").Where("(lower(to_char(to_timestamp(asuransi_reminders.asuransi_end_date::numeric), 'DD-Mon-YYYY')) LIKE ? OR lower(asuransi_reminders.price::text) LIKE ? OR lower(asuransis.asuransi_name) LIKE ? OR lower(asuransi_reminders.nomor_polis) LIKE ?) AND asuransi_reminders.deleted_at = 0 AND asuransi_reminders.vehicle_id = ?", final, final, final, final, vehicleID).Count(&count)
+	res := db.connection.Table("asuransi_reminders").Select("asuransi_reminders.id, asuransi_reminders.vehicle_id, to_char(to_timestamp(asuransi_end_date::numeric), 'DD-Mon-YYYY') as asuransi_end_date, asuransi_reminders.asuransi_id, asuransis.asuransi_name, asuransi_reminders.nomor_polis, asuransi_reminders.status, asuransi_reminders.price , asuransi_reminders.bukti_bayar").Joins("left join asuransis ON asuransis.id = asuransi_reminders.asuransi_id").Where("(lower(to_char(to_timestamp(asuransi_reminders.asuransi_end_date::numeric), 'DD-Mon-YYYY')) LIKE ? OR lower(asuransi_reminders.price::text) LIKE ? OR lower(asuransis.asuransi_name) LIKE ? OR lower(asuransi_reminders.nomor_polis) LIKE ?) AND asuransi_reminders.deleted_at = 0 AND asuransi_reminders.vehicle_id = ?", final, final, final, final, vehicleID).Count(&count)
 	return count, res.Error
 }
 

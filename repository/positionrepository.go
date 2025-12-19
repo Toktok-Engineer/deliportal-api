@@ -30,7 +30,7 @@ func NewPositionRepository(db *gorm.DB) PositionRepository {
 }
 
 func (db *PositionConnection) CountPositionAll() (count int64, err error) {
-	res := db.connection.Debug().Table("positions").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("positions").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -66,7 +66,7 @@ func (db *PositionConnection) SearchPosition(limit int, offset int, order string
 
 func (db *PositionConnection) CountSearchPosition(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("positions").Where("(lower(position_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
+	res := db.connection.Table("positions").Where("(lower(position_name) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final).Count(&count)
 	return count, res.Error
 }
 

@@ -32,7 +32,7 @@ func NewLicenseTypeRepository(db *gorm.DB) LicenseTypeRepository {
 }
 
 func (db *LicenseTypeConnection) CountLicenseTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("license_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("license_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -40,7 +40,7 @@ func (db *LicenseTypeConnection) FindLicenseTypes() (licenseTypeOutput []model.S
 	var (
 		licenseTypes []model.SelectLicenseTypeParameter
 	)
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.deleted_at = 0").Order("license_types.license_type_name").Find(&licenseTypes)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.deleted_at = 0").Order("license_types.license_type_name").Find(&licenseTypes)
 	return licenseTypes, res.Error
 }
 
@@ -50,7 +50,7 @@ func (db *LicenseTypeConnection) FindLicenseTypesOffset(limit int, offset int, o
 		licenseTypes   []model.SelectLicenseTypeParameter
 	)
 	orderDirection = order + " " + dir
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&licenseTypes)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.deleted_at = 0").Order(orderDirection).Limit(limit).Offset(offset).Find(&licenseTypes)
 	return licenseTypes, res.Error
 }
 
@@ -62,13 +62,13 @@ func (db *LicenseTypeConnection) SearchLicenseType(limit int, offset int, order 
 	)
 	orderDirection = order + " " + dir
 	final = "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("(lower(group_license_types.group_license_type_name) LIKE ? OR lower(license_types.license_type_name) LIKE ? OR lower(license_types.remark) LIKE ?) AND license_types.deleted_at = 0", final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&licenseTypes)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("(lower(group_license_types.group_license_type_name) LIKE ? OR lower(license_types.license_type_name) LIKE ? OR lower(license_types.remark) LIKE ?) AND license_types.deleted_at = 0", final, final, final).Order(orderDirection).Limit(limit).Offset(offset).Find(&licenseTypes)
 	return licenseTypes, res.Error
 }
 
 func (db *LicenseTypeConnection) CountSearchLicenseType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("(lower(group_license_types.group_license_type_name) LIKE ? OR lower(license_types.license_type_name) LIKE ? OR lower(license_types.remark) LIKE ?) AND license_types.deleted_at = 0", final, final, final).Count(&count)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("(lower(group_license_types.group_license_type_name) LIKE ? OR lower(license_types.license_type_name) LIKE ? OR lower(license_types.remark) LIKE ?) AND license_types.deleted_at = 0", final, final, final).Count(&count)
 	return count, res.Error
 }
 
@@ -76,7 +76,7 @@ func (db *LicenseTypeConnection) FindLicenseTypeById(id uint) (licenseTypeOutput
 	var (
 		licenseType model.SelectLicenseTypeParameter
 	)
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.id=? AND license_types.deleted_at = 0", id).Take(&licenseType)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.id=? AND license_types.deleted_at = 0", id).Take(&licenseType)
 	return licenseType, res.Error
 }
 
@@ -84,7 +84,7 @@ func (db *LicenseTypeConnection) FindExcLicenseType(id uint) (licenseTypeOutput 
 	var (
 		licenseTypes []model.SelectLicenseTypeParameter
 	)
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.id!=? AND license_types.deleted_at = 0", id).Order("license_types.license_type_name").Find(&licenseTypes)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.id!=? AND license_types.deleted_at = 0", id).Order("license_types.license_type_name").Find(&licenseTypes)
 	return licenseTypes, res.Error
 }
 
@@ -93,7 +93,7 @@ func (db *LicenseTypeConnection) FindExcCompleteLicenseType(groupLT uint, id uin
 		licenseTypes []model.SelectLicenseTypeParameter
 	)
 
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.group_license_type_id = ? AND license_types.id!=? AND license_types.deleted_at = 0", groupLT, id).Order("license_types.license_type_name").Find(&licenseTypes)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.group_license_type_id = ? AND license_types.id!=? AND license_types.deleted_at = 0", groupLT, id).Order("license_types.license_type_name").Find(&licenseTypes)
 	return licenseTypes, res.Error
 }
 
@@ -102,7 +102,7 @@ func (db *LicenseTypeConnection) FindLicenseTypeByGroupLT(groupLT uint) (license
 		licenseTypes []model.SelectLicenseTypeParameter
 	)
 
-	res := db.connection.Debug().Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.group_license_type_id=? AND license_types.deleted_at = 0", groupLT).Order("license_types.license_type_name").Find(&licenseTypes)
+	res := db.connection.Table("license_types").Select("license_types.id, license_types.license_type_name, license_types.reminder_before_month, license_types.management_reminder_before_month, license_types.reminder_frequency_day, license_types.management_reminder_frequency_day, license_types.group_license_type_id, group_license_types.group_license_type_name, license_types.remark, license_types.created_user_id, license_types.updated_user_id, license_types.deleted_user_id, license_types.created_at, license_types.updated_at, license_types.deleted_at").Joins("left join group_license_types ON license_types.group_license_type_id = group_license_types.id").Where("license_types.group_license_type_id=? AND license_types.deleted_at = 0", groupLT).Order("license_types.license_type_name").Find(&licenseTypes)
 	return licenseTypes, res.Error
 }
 

@@ -30,7 +30,7 @@ func NewEmailQueueTypeRepository(db *gorm.DB) EmailQueueTypeRepository {
 }
 
 func (db *emailQueueTypeConnection) CountEmailQueueTypeAll() (count int64, err error) {
-	res := db.connection.Debug().Table("email_queue_types").Where("deleted_at = 0").Count(&count)
+	res := db.connection.Table("email_queue_types").Where("deleted_at = 0").Count(&count)
 	return count, res.Error
 }
 
@@ -66,7 +66,7 @@ func (db *emailQueueTypeConnection) SearchEmailQueueType(limit int, offset int, 
 
 func (db *emailQueueTypeConnection) CountSearchEmailQueueType(search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("email_queue_types").Where("(lower(email_queue_type_name) LIKE ? OR lower(table_reference) LIKE ? OR lower(field_reference) LIKE ? OR lower(email_recipient) LIKE ? OR lower(email_subject) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final, final, final, final).Count(&count)
+	res := db.connection.Table("email_queue_types").Where("(lower(email_queue_type_name) LIKE ? OR lower(table_reference) LIKE ? OR lower(field_reference) LIKE ? OR lower(email_recipient) LIKE ? OR lower(email_subject) LIKE ? OR lower(remark) LIKE ?) AND deleted_at = 0", final, final, final, final, final, final).Count(&count)
 	return count, res.Error
 }
 

@@ -29,7 +29,7 @@ func NewKIRReminderRepository(db *gorm.DB) KIRReminderRepository {
 	}
 }
 func (db *kirReminderConnection) CountKIRReminderAll(vehicleID int) (count int64, err error) {
-	res := db.connection.Debug().Table("kir_reminders").Where("deleted_at = 0 AND vehicle_id = ?", vehicleID).Count(&count)
+	res := db.connection.Table("kir_reminders").Where("deleted_at = 0 AND vehicle_id = ?", vehicleID).Count(&count)
 	return count, res.Error
 }
 
@@ -65,7 +65,7 @@ func (db *kirReminderConnection) SearchKIRReminder(vehicleID int, limit int, off
 
 func (db *kirReminderConnection) CountSearchKIRReminder(vehicleID int, search string) (count int64, err error) {
 	final := "%" + strings.ToLower(search) + "%"
-	res := db.connection.Debug().Table("kir_reminders").Where("(lower(to_char(to_timestamp(kir_end_date::numeric), 'DD-Mon-YYYY')) LIKE ?) AND deleted_at = 0 AND vehicle_id = ?", final, vehicleID).Count(&count)
+	res := db.connection.Table("kir_reminders").Where("(lower(to_char(to_timestamp(kir_end_date::numeric), 'DD-Mon-YYYY')) LIKE ?) AND deleted_at = 0 AND vehicle_id = ?", final, vehicleID).Count(&count)
 	return count, res.Error
 }
 
